@@ -3,6 +3,7 @@ outputs/*
 celeba_data.zip
 data_mnistsvhntext.zip
 PolyMNIST.zip
+clfs/wandb/*
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -21,7 +21,7 @@ class MVJointVAE(MVVAE):
     def log_additional_values_val(self):
         pass
 
-    def forward(self, batch, resample):
+    def forward(self, batch):
         data = batch[0]
         labels = batch[1]
 
