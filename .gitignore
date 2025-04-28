@@ -1,3 +1,8 @@
+data/*
+outputs/*
+celeba_data.zip
+data_mnistsvhntext.zip
+PolyMNIST.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -1,0 +1,46 @@
+{
+  "os": "Linux-4.18.0-477.27.1.el8_8.x86_64-x86_64-with-glibc2.28",
+  "python": "CPython 3.10.13",
+  "startedAt": "2025-04-28T11:11:19.341957Z",
+  "args": [
+    "dataset=CelebA",
+    "model=mixedprior"
+  ],
+  "program": "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py",
+  "codePath": "main_mv_wsl.py",
+  "git": {
+    "remote": "https://github.com/eso28599/mmvmvae.git",
+    "commit": "2137e9edf16acb7847fedcf2a1848ce9277720da"
+  },
+  "email": "eso18@ic.ac.uk",
+  "root": "/rds/general/user/eso18/home/mmvmvae/clfs",
+  "host": "cx3-20-2.cx3.hpc.ic.ac.uk",
+  "executable": "/rds/general/user/eso18/home/anaconda3/envs/mvvae/bin/python",
+  "codePathLocal": "main_mv_wsl.py",
+  "cpu_count": 64,
+  "cpu_count_logical": 64,
+  "gpu": "NVIDIA L40S",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "21464350720",
+      "used": "6924619776"
+    }
+  },
+  "memory": {
+    "total": "1081297711104"
+  },
+  "cpu": {
+    "count": 64,
+    "countLogical": 64
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA L40S",
+      "memoryTotal": "48305799168",
+      "cudaCores": 18176,
+      "architecture": "Ada"
+    }
+  ],
+  "cudaVersion": "12.7"
+}

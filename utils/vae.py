@@ -9,8 +9,8 @@ from networks.NetworksCUBimg import Encoder as EncoderCUBimg
 from networks.NetworksCUBimg import Decoder as DecoderCUBimg
 from networks.NetworksCUBsent import Encoder as EncoderCUBtext
 from networks.NetworksCUBsent import Decoder as DecoderCUBtext
-from networks.NetworksRatsspike import Encoder as RatsEncoder
-from networks.NetworksRatsspike import Decoder as RatsDecoder
+# from networks.NetworksRatsspike import Encoder as RatsEncoder
+# from networks.NetworksRatsspike import Decoder as RatsDecoder
 
 
 def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
@@ -70,18 +70,18 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
         )
     elif cfg.dataset.name.startswith(""):
         original_dims = [92, 79, 104, 49, 46]
-        encoders = nn.ModuleList(
-            [
-                RatsEncoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
-                for m in range(cfg.dataset.num_views)
-            ]
-        )
-        decoders = nn.ModuleList(
-            [
-                RatsDecoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
-                for m in range(cfg.dataset.num_views)
-            ]
-        )
+        # encoders = nn.ModuleList(
+        #     [
+        #         RatsEncoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
+        #         for m in range(cfg.dataset.num_views)
+        #     ]
+        # )
+        # decoders = nn.ModuleList(
+        #     [
+        #         RatsDecoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
+        #         for m in range(cfg.dataset.num_views)
+        #     ]
+        # )
     else:
         raise NotImplementedError(
             "Unknown dataset/networks to create encoders and decoders for specified config"

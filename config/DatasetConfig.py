@@ -14,9 +14,9 @@ class DataConfig:
 @dataclass
 class PolyMNISTDataConfig(DataConfig):
     num_views: int = 3
-    dir_data_base: str = "/usr/scratch/projects/multimodality/data"
+    dir_data_base: str = "/rds/general/user/eso18/home/mmvmvae/data"
     dir_clfs_base: str = (
-        "/usr/scratch/projects/multimodality/mvvae/experiments/trained_clfs/PolyMNIST"
+        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_polyMNIST"
     )
     n_clfs_outputs: int = 10
     num_labels: int = 1
@@ -34,12 +34,15 @@ class PMtranslatedData75Config(PolyMNISTDataConfig):
 class CelebADataConfig(DataConfig):
     name: str = "celeba"
     num_views: int = 2
-    dir_data: str = "/usr/scratch/projects/multimodality/data/CelebA"
+    dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/CelebA"
     dir_alphabet: str = (
-        "/home/thomas/polybox2/PhD/projects/research_stay/code/mvvae/utils"
+        "/rds/general/user/eso18/home/mmvmvae/utils"
     )
     dir_clf: str = (
-        "/usr/scratch/projects/multimodality/mvvae/experiments/trained_clfs/CelebA"
+        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba"
+    )
+    dir_clfs_base: str = (
+        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba"
     )
 
     len_sequence: int = 256
@@ -70,7 +73,7 @@ class CelebADataConfig(DataConfig):
 class CUBDataConfig(DataConfig):
     name: str = "CUB"
     num_views: int = 2
-    dir_data: str = "/usr/scratch/projects/multimodality/data/cub"
+    dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/cub"
     num_labels: int = 6
     dir_clf: str = (
         "/usr/scratch/projects/multimodality/mvvae/experiments/trained_clfs/cub"

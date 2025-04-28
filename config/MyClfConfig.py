@@ -8,15 +8,15 @@ from omegaconf import MISSING
 @dataclass
 class LogConfig:
     # wandb
-    wandb_entity: str = "thomassutter"
+    wandb_entity: str = "eso18"
     wandb_group: str = "MVVAEclf"
     wandb_run_name: str = ""
     wandb_project_name: str = "mvvae_clf"
-    wandb_log_freq: int = 50
+    wandb_log_freq: int = 2
     wandb_offline: bool = False
 
     # logs
-    dir_logs: str = "/usr/scratch/projects/multimodality/mvvae/experiments/clfs"
+    dir_logs: str = "/rds/general/user/eso18/home/mmvmvae/clfs"
 
 
 @dataclass

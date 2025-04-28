@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=8:mem=128gb:ngpus=1
+#PBS -l walltime=01:30:00
+#PBS -N run_celeba
+#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_celeba.log
+#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_celeba.err
+
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+source activate mvvae
+cd mmvmvae
+
+# export WANDB_API_KEY=82c79a9b03ae83665d2a91712d67ed448f661d6
+# wandb login $WANDB_API_KEY
+# export CUDA_LAUNCH_BLOCKING=1
+export HYDRA_FULL_ERROR=1
+python main_mv_wsl.py dataset="CelebA" model="mixedprior"
+

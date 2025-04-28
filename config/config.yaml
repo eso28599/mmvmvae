@@ -1,4 +1,5 @@
 defaults:
+  - _self_
   - base_config
   - log: log
   - eval: eval
@@ -6,5 +7,5 @@ defaults:
   - dataset: PMtranslated75
 
 dataset:
-  dir_data_base: "PUT YOUR DATA DIR HERE"
-  dir_clfs_base: "PUT YOUR CLF DIR HERE"
+  dir_data_base: "/rds/general/user/eso18/home/mmvmvae/data"
+  dir_clfs_base: "/rds/general/user/eso18/home/mmvmvae/trained_classifiers"

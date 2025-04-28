@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=8:mem=450gb
+#PBS -l walltime=01:30:00
+#PBS -N download_data
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+source activate mvvae
+# pip install --upgrade --no-cache-dir gdown
+# pip install gdown==4.6.0
+gdown --folder https://drive.google.com/drive/folders/1lr-laYwjDq3AzalaIe9jN4shpt1wBsYM -O /rds/general/user/eso18/home/mmvmvae/tmp.zip
+# Download CelebA and PolyMNIST datasets
+# fileid="1lr-laYwjDq3AzalaIe9jN4shpt1wBsYM"
+# filename="tmp.zip"
+# curl -L "https://drive.usercontent.google.com/download?id={fileId}&confirm=xxx" -o filename
+# html=`curl -c ./cookie -s -L "https://drive.google.com/uc?export=download&id=${fileid}"`
+# curl -Lb ./cookie "https://drive.google.com/uc?export=download&`echo ${html}|grep -Po '(confirm=[a-zA-Z0-9\-_]+)'`&id=${fileid}" -o ${filename}
+# unzip /rds/general/user/eso18/home/mmvmvae/tmp.zip
+unzip /rds/general/user/eso18/home/mmvmvae/celeba_data.zip -d /rds/general/user/eso18/home/mmvmvae/data/
+unzip /rds/general/user/eso18/home/mmvmvae/PolyMNIST.zip -d rds/general/user/eso18/home/mmvmvae/data/
+unzip /rds/general/user/eso18/home/mmvmvae/data_mnistsvhntext.zip -d rds/general/user/eso18/home/mmvmvae/data/
+

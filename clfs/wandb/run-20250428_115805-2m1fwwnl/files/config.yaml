@@ -1,0 +1,115 @@
+_wandb:
+    value:
+        cli_version: 0.19.10
+        m:
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+        python_version: 3.10.13
+        t:
+            "1":
+                - 1
+                - 5
+                - 9
+                - 41
+                - 50
+                - 53
+                - 55
+                - 103
+            "2":
+                - 1
+                - 5
+                - 9
+                - 41
+                - 50
+                - 53
+                - 55
+                - 103
+            "3":
+                - 7
+                - 13
+                - 16
+                - 23
+                - 55
+                - 66
+            "4": 3.10.13
+            "5": 0.19.10
+            "8":
+                - 5
+            "12": 0.19.10
+            "13": linux-x86_64
+cfg:
+    value: '{''dataset'': {''dir_data_base'': ''/rds/general/user/eso18/home/mmvmvae/data'', ''dir_clfs_base'': ''/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba'', ''name'': ''celeba'', ''num_workers'': 8, ''num_views'': 2, ''dir_data'': ''/rds/general/user/eso18/home/mmvmvae/data/CelebA'', ''dir_alphabet'': ''/rds/general/user/eso18/home/mmvmvae/utils'', ''dir_clf'': ''/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba'', ''len_sequence'': 256, ''random_text_ordering'': False, ''random_text_startindex'': True, ''img_size'': 64, ''image_channels'': 3, ''crop_size_img'': 148, ''n_clfs_outputs'': 40, ''num_labels'': 40, ''num_features'': 41, ''num_layers_img'': 5, ''filter_dim_img'': 64, ''filter_dim_text'': 64, ''beta_img'': 1.0, ''beta_text'': 1.0, ''skip_connections_img_weight_a'': 1.0, ''skip_connections_img_weight_b'': 1.0, ''skip_connections_text_weight_a'': 1.0, ''skip_connections_text_weight_b'': 1.0, ''use_rec_weight'': True, ''include_channels_rec_weight'': False}, ''seed'': 0, ''checkpoint_metric'': ''val/loss/loss'', ''log'': {''wandb_entity'': ''eso18-imperial-college-london'', ''wandb_group'': '''', ''wandb_run_name'': '''', ''wandb_project_name'': ''multi_view_vae'', ''wandb_log_freq'': 2, ''wandb_offline'': False, ''wandb_local_instance'': False, ''dir_logs'': ''/rds/general/user/eso18/home/mmvmvae/clfs'', ''downstream_logging_frequency'': 2, ''coherence_logging_frequency'': 2, ''img_plotting_frequency'': 2, ''fid_logging_frequency'': 1, ''debug'': False}, ''model'': {''device'': ''cuda'', ''batch_size'': 128, ''batch_size_eval'': 64, ''lr'': 0.0005, ''epochs'': 500, ''temp_annealing'': ''cosine'', ''latent_dim'': 256, ''beta'': 1.0, ''use_resnets'': True, ''name'': ''mixedprior'', ''alpha_annealing'': True, ''init_alpha_value'': 1.0, ''final_alpha_value'': 0.0, ''alpha_annealing_steps'': 150000}, ''eval'': {''num_samples_train'': 10000, ''max_iteration'': 10000, ''eval_downstream_task'': True, ''coherence'': True, ''path_inception_weights'': ''/rds/general/user/eso18/home/mmvmvae/pt_inception-2015-12-05-6726825d.pth''}}'
+checkpoint_metric:
+    value: val/loss/loss
+dataset:
+    value:
+        beta_img: 1
+        beta_text: 1
+        crop_size_img: 148
+        dir_alphabet: /rds/general/user/eso18/home/mmvmvae/utils
+        dir_clf: /rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba
+        dir_clfs_base: /rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba
+        dir_data: /rds/general/user/eso18/home/mmvmvae/data/CelebA
+        dir_data_base: /rds/general/user/eso18/home/mmvmvae/data
+        filter_dim_img: 64
+        filter_dim_text: 64
+        image_channels: 3
+        img_size: 64
+        include_channels_rec_weight: false
+        len_sequence: 256
+        n_clfs_outputs: 40
+        name: celeba
+        num_features: 41
+        num_labels: 40
+        num_layers_img: 5
+        num_views: 2
+        num_workers: 8
+        random_text_ordering: false
+        random_text_startindex: true
+        skip_connections_img_weight_a: 1
+        skip_connections_img_weight_b: 1
+        skip_connections_text_weight_a: 1
+        skip_connections_text_weight_b: 1
+        use_rec_weight: true
+eval:
+    value:
+        coherence: true
+        eval_downstream_task: true
+        max_iteration: 10000
+        num_samples_train: 10000
+        path_inception_weights: /rds/general/user/eso18/home/mmvmvae/pt_inception-2015-12-05-6726825d.pth
+log:
+    value:
+        coherence_logging_frequency: 2
+        debug: false
+        dir_logs: /rds/general/user/eso18/home/mmvmvae/clfs
+        downstream_logging_frequency: 2
+        fid_logging_frequency: 1
+        img_plotting_frequency: 2
+        wandb_entity: eso18-imperial-college-london
+        wandb_group: ""
+        wandb_local_instance: false
+        wandb_log_freq: 2
+        wandb_offline: false
+        wandb_project_name: multi_view_vae
+        wandb_run_name: ""
+model:
+    value:
+        alpha_annealing: true
+        alpha_annealing_steps: 150000
+        batch_size: 128
+        batch_size_eval: 64
+        beta: 1
+        device: cuda
+        epochs: 500
+        final_alpha_value: 0
+        init_alpha_value: 1
+        latent_dim: 256
+        lr: 0.0005
+        name: mixedprior
+        temp_annealing: cosine
+        use_resnets: true
+seed:
+    value: 0

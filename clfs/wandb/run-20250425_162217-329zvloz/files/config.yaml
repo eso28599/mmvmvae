@@ -1,0 +1,107 @@
+wandb_version: 1
+
+dataset:
+  desc: null
+  value:
+    dir_data_base: PUT YOUR DATA DIR HERE
+    dir_clfs_base: /rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba
+    name: celeba
+    num_workers: 8
+    num_views: 2
+    dir_data: /rds/general/user/eso18/home/mmvmvae/data/CelebA
+    dir_alphabet: /rds/general/user/eso18/home/mmvmvae/utils
+    dir_clf: /rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba
+    len_sequence: 256
+    random_text_ordering: false
+    random_text_startindex: true
+    img_size: 64
+    image_channels: 3
+    crop_size_img: 148
+    n_clfs_outputs: 40
+    num_labels: 40
+    num_features: 41
+    num_layers_img: 5
+    filter_dim_img: 64
+    filter_dim_text: 64
+    beta_img: 1.0
+    beta_text: 1.0
+    skip_connections_img_weight_a: 1.0
+    skip_connections_img_weight_b: 1.0
+    skip_connections_text_weight_a: 1.0
+    skip_connections_text_weight_b: 1.0
+    use_rec_weight: true
+    include_channels_rec_weight: false
+seed:
+  desc: null
+  value: 0
+checkpoint_metric:
+  desc: null
+  value: val/loss/loss
+log:
+  desc: null
+  value:
+    wandb_entity: eso18
+    wandb_group: mv_wsl
+    wandb_run_name: ''
+    wandb_project_name: mvvae
+    wandb_log_freq: 2
+    wandb_offline: false
+    wandb_local_instance: false
+    dir_logs: /rds/general/user/eso18/home/mmvmvae/clfs
+    downstream_logging_frequency: 2
+    coherence_logging_frequency: 2
+    img_plotting_frequency: 2
+    fid_logging_frequency: 1
+    debug: false
+model:
+  desc: null
+  value:
+    device: cuda
+    batch_size: 128
+    batch_size_eval: 64
+    lr: 0.0005
+    epochs: 500
+    temp_annealing: cosine
+    latent_dim: 256
+    beta: 1.0
+    use_resnets: true
+    name: mixedprior
+    alpha_annealing: true
+    init_alpha_value: 1.0
+    final_alpha_value: 0.0
+    alpha_annealing_steps: 150000
+eval:
+  desc: null
+  value:
+    num_samples_train: 10000
+    max_iteration: 10000
+    eval_downstream_task: true
+    coherence: true
+    path_inception_weights: /rds/general/user/eso18/home/mmvmvae/pt_inception-2015-12-05-6726825d.pth
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.13
+    cli_version: 0.16.2
+    framework: lightning
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1745594537.298552
+    t:
+      1:
+      - 1
+      - 5
+      - 9
+      - 41
+      - 50
+      - 53
+      - 55
+      - 103
+      3:
+      - 16
+      - 23
+      4: 3.10.13
+      5: 0.16.2
+      8:
+      - 5
+      13: linux-x86_64

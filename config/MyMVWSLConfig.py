@@ -9,21 +9,21 @@ from config.ModelConfig import ModelConfig
 @dataclass
 class LogConfig:
     # wandb
-    wandb_entity: str = "thomassutter"
-    wandb_group: str = "mv_wsl"
+    wandb_entity: str = "eso18-imperial-college-london"
+    wandb_group: str = ""
     wandb_run_name: str = ""
-    wandb_project_name: str = "mvvae"
-    wandb_log_freq: int = 50
+    wandb_project_name: str = "multi_view_vae"
+    wandb_log_freq: int = 2
     wandb_offline: bool = False
     wandb_local_instance: bool = False
 
     # logs
-    dir_logs: str = "/usr/scratch/projects/multimodality/mvvae/experiments"
+    dir_logs: str = "/rds/general/user/eso18/home/mmvmvae/clfs"
 
     # logging frequencies
-    downstream_logging_frequency: int = 50
-    coherence_logging_frequency: int = 50
-    img_plotting_frequency: int = 50
+    downstream_logging_frequency: int = 2
+    coherence_logging_frequency: int = 2
+    img_plotting_frequency: int = 2
     fid_logging_frequency: int = 1
 
     # debug level wandb
@@ -42,7 +42,7 @@ class EvalConfig:
 
     # fid
     path_inception_weights: str = (
-        "/usr/scratch/projects/multimodality/inception_v3/pt_inception-2015-12-05-6726825d.pth"
+        "/rds/general/user/eso18/home/mmvmvae/pt_inception-2015-12-05-6726825d.pth"
     )
 
 
