@@ -7,6 +7,7 @@ import wandb
 import hydra
 from hydra.core.config_store import ConfigStore
 from omegaconf import OmegaConf
+import torch # added for torch.set_float32_matmul_precision
 
 from utils import dataset
 
@@ -39,14 +40,19 @@ cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
 cs.store(group="dataset", name="cub", node=CUBDataConfig)
 cs.store(name="base_config", node=MyMVWSLConfig)
 
+torch.set_float32_matmul_precision('high') # added
 
 @hydra.main(version_base=None, config_path="config", config_name="config")
 def run_experiment(cfg: MyMVWSLConfig):
     print(cfg)
+    
+    # WANDB_API_KEY=$YOUR_API_KEY
     if cfg.log.wandb_local_instance:
         wandb.login(host=os.getenv("WANDB_LOCAL_URL"))
     elif not cfg.log.wandb_offline:
-        wandb.login(host="https://api.wandb.ai")
+        # wandb.login(host="https://api.wandb.ai")
+        wandb.login()
+        
     pl.seed_everything(cfg.seed, workers=True)
 
     # get data loaders
