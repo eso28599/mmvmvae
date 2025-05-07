@@ -3,7 +3,7 @@ from torch import nn
 from mv_vaes.mv_vae import MVVAE
 
 
-class MVMixedPriorVAE(MVVAE):
+class MVJointPriorVAE(MVVAE):
     def __init__(self, cfg):
         super().__init__(cfg)
         self.save_hyperparameters()
@@ -33,23 +33,6 @@ class MVMixedPriorVAE(MVVAE):
 
             dist_out_m = [mu_m, lv_m]
             dists_out[key] = dist_out_m
-            print(f"mod_m {key}")
-            print(mod_hat_m[0].shape)
-            print(mu_m.shape)
-            print(lv_m.shape)
-            print(mod_m[0])
-            print(mu_m)
-            print(lv_m)
-            print("z_m")
-            print(z_m)
-            print("mod_hat_m")
-            print(mod_hat_m[0][0])
-            # if torch.isnan(mod_hat_m).any():
-            #     print(f"mod_hat_m nan {key}")
-            # if torch.isnan(mu_m).any():
-            #     print(f"mu_m nan {key}")
-            # if torch.isnan(lv_m).any():
-            #     print(f"lv_m nan {key}") 
         return (mods_rec, dists_out, dists_enc_out)
 
     def get_reconstructions(self, mods_out, key, n_samples):
@@ -59,6 +42,24 @@ class MVMixedPriorVAE(MVVAE):
     def cond_generate_samples(self, m, z):
         mod_c_gen_m_tilde = self.decoders[m](z)
         return mod_c_gen_m_tilde
+    
+    # change to use C matrix
+    def calc_kl_divergence_C(self, mu0, logvar0, C, norm_value=None):
+
+        kld = -0.5 * (
+                torch.sum(
+                    1
+                    - logvar0.exp() / logvar1.exp()
+                    - (mu0 - mu1).pow(2) / logvar1.exp()
+                    + logvar0
+                    - logvar1,
+                    dim=-1,
+                )
+            )
+        if norm_value is not None:
+            kld = kld / float(norm_value)
+        return kld
+  
 
     def compute_loss(self, str_set, batch, forward_out):
         imgs, labels = batch
@@ -77,9 +78,20 @@ class MVMixedPriorVAE(MVVAE):
             )
         else:
             alpha_weight = self.cfg.model.final_alpha_value
+        alpha_weight = 1 # added in for testing
         self.log("alpha annealing", alpha_weight)
         klds = []
+        # need to change this 
+        # create a long vector with all mu_m, lv_m
+        mu = []
+        lv = []
         for m, key in enumerate(self.modality_names):
+          mu = torch.cat((mu, dists_out[key][0]), dim=1)
+          lv = torch.cat((lv, dists_out[key][1]), dim=1)
+        # comput KL divergence between joint posterior and joint prior
+        klds = self.calc_kl_divergence_C(mu, lv, self.C)
+        for m, key in enumerate(self.modality_names):
+            # dist_m = [mu_m, lv_m]
             dist_m = dists_out[key]
             for m_tilde, key_tilde in enumerate(self.modality_names):
                 dist_m_tilde = priors[key_tilde]
@@ -98,13 +110,6 @@ class MVMixedPriorVAE(MVVAE):
 
         ## compute reconstruction loss/ conditional log-likelihood out data
         ## given latents
-        # test for nans
-
-        # for m, key in enumerate(imgs_rec.keys()):
-        #     if torch.isnan(imgs_rec[key]).any():
-        #         print(f"imgs_rec nan {key}")
-        print("imgs_rec", imgs_rec['text'])
-        # print("imgs", imgs)
         loss_rec, loss_rec_mods, loss_rec_mods_weighted = self.compute_rec_loss(
             imgs, imgs_rec
         )

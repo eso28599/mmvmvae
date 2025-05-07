@@ -9,7 +9,7 @@ from networks.NetworksCUBimg import Encoder as EncoderCUBimg
 from networks.NetworksCUBimg import Decoder as DecoderCUBimg
 from networks.NetworksCUBsent import Encoder as EncoderCUBtext
 from networks.NetworksCUBsent import Decoder as DecoderCUBtext
-# from networks.JointPrior import CMatrix
+from networks.JointPrior import CMatrix
 # from networks.NetworksRatsspike import Encoder as RatsEncoder
 # from networks.NetworksRatsspike import Decoder as RatsDecoder
 
@@ -55,6 +55,7 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
                 DecoderText(cfg).to(cfg.model.device),
             ]
         )
+        
     elif cfg.dataset.name.startswith("CUB"):
         print("add encoders and decoder for cub...")
         encoders = nn.ModuleList(
@@ -88,5 +89,12 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
             "Unknown dataset/networks to create encoders and decoders for specified config"
         )
         
-
-    return [encoders, decoders]
+    if cfg.model.name == "jointprior":
+      C_mats = nn.ModuleList(
+          [
+            CMatrix(cfg).to(cfg.model.device) for _ in range(cfg.dataset.num_views - 1)
+          ]
+        )
+      return [encoders, decoders, C_mats]
+    else:
+      return [encoders, decoders]

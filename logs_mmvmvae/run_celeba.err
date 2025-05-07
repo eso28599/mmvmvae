@@ -5,12 +5,12 @@ TPU available: False, using: 0 TPU cores
 IPU available: False, using: 0 IPUs
 HPU available: False, using: 0 HPUs
 wandb: Tracking run with wandb version 0.19.10
-wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20250428_144403-ajzy68du
+wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20250501_094506-7z0grza0
 wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run colorful-planet-32
+wandb: Syncing run solar-valley-49
 wandb: ⭐️ View project at https://wandb.ai/eso18-imperial-college-london/multi_view_vae
-wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/multi_view_vae/runs/ajzy68du
-LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-e70f6c73-8e66-30b0-7946-3d7e596671fd]
+wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/multi_view_vae/runs/7z0grza0
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-d96951fb-d4f9-2efc-621c-d8c4a1678bd1]
 
   | Name       | Type       | Params
 ------------------------------------------
@@ -54,20 +54,210 @@ Traceback (most recent call last):
     self._run(model, ckpt_path=ckpt_path)
   File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 989, in _run
     results = self._run_stage()
-  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1033, in _run_stage
-    self._run_sanity_check()
-  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1062, in _run_sanity_check
-    val_loop.run()
-  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/utilities.py", line 182, in _decorator
-    return loop_run(self, *args, **kwargs)
-  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 134, in run
-    self._evaluation_step(batch, batch_idx, dataloader_idx, dataloader_iter)
-  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 391, in _evaluation_step
-    output = call._call_strategy_hook(trainer, hook_name, *step_args)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1035, in _run_stage
+    self.fit_loop.run()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 202, in run
+    self.advance()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 359, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 136, in run
+    self.advance(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 240, in advance
+    batch_output = self.automatic_optimization.run(trainer.optimizers[0], batch_idx, kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 187, in run
+    self._optimizer_step(batch_idx, closure)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 265, in _optimizer_step
+    call._call_lightning_module_hook(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 157, in _call_lightning_module_hook
+    output = fn(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/core/module.py", line 1291, in optimizer_step
+    optimizer.step(closure=optimizer_closure)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/core/optimizer.py", line 151, in step
+    step_output = self._strategy.optimizer_step(self._optimizer, closure, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 230, in optimizer_step
+    return self.precision_plugin.optimizer_step(optimizer, model=model, closure=closure, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/plugins/precision/precision.py", line 117, in optimizer_step
+    return optimizer.step(closure=closure, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/optim/optimizer.py", line 385, in wrapper
+    out = func(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/optim/optimizer.py", line 76, in _use_grad
+    ret = func(self, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/optim/adam.py", line 146, in step
+    loss = closure()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/plugins/precision/precision.py", line 104, in _wrap_closure
+    closure_result = closure()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 140, in __call__
+    self._result = self.closure(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 115, in decorate_context
+    return func(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 126, in closure
+    step_output = self._step_fn()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/optimization/automatic.py", line 315, in _training_step
+    training_step_output = call._call_strategy_hook(trainer, "training_step", *kwargs.values())
   File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 309, in _call_strategy_hook
     output = fn(*args, **kwargs)
-  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 403, in validation_step
-    return self.lightning_module.validation_step(*args, **kwargs)
-  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_vae.py", line 157, in validation_step
-    out = self.forward(batch)
-TypeError: MVJointVAE.forward() missing 1 required positional argument: 'resample'
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 382, in training_step
+    return self.lightning_module.training_step(*args, **kwargs)
+  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_vae.py", line 150, in training_step
+    loss, _ = self.compute_loss("train", batch, out)
+  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_joint_vae.py", line 80, in compute_loss
+    loss_rec, loss_rec_mods, loss_rec_mods_weighted = self.compute_rec_loss(
+  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_vae.py", line 671, in compute_rec_loss
+    mod_d_out_m = torch.distributions.laplace.Laplace(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/distributions/laplace.py", line 52, in __init__
+    super().__init__(batch_shape, validate_args=validate_args)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/distributions/distribution.py", line 68, in __init__
+    raise ValueError(
+ValueError: Expected parameter loc (Tensor of shape (128, 3, 64, 64)) of distribution Laplace(loc: torch.Size([128, 3, 64, 64]), scale: torch.Size([128, 3, 64, 64])) to satisfy the constraint Real(), but found invalid values:
+tensor([[[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        ...,
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]],
+
+
+        [[[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]],
+
+         [[nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          ...,
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan],
+          [nan, nan, nan,  ..., nan, nan, nan]]]], device='cuda:0',
+       grad_fn=<ConvolutionBackward0>)

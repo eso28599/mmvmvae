@@ -22,7 +22,7 @@ cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
 cs.store(name="base_config", node=MyClfConfig)
 
 
-@hydra.main(version_base=None, config_path="conf", config_name="config_clf")
+@hydra.main(version_base=None, config_path="config", config_name="config_clf")
 def run_experiment(cfg: MyClfConfig):
     print(cfg)
     pl.seed_everything(cfg.seed, workers=True)

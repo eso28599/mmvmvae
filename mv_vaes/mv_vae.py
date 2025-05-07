@@ -468,7 +468,8 @@ class MVVAE(pl.LightningModule):
                     continue
                 for m_tilde, key_tilde in enumerate(self.modality_names):
                     mod_gen_m_m_tilde = mod_gen_m[m_tilde]
-                    if key == "text" and self.cfg.dataset.name.startswith("celeba"):
+                    # replaced key with key_tilde
+                    if key_tilde == "text" and self.cfg.dataset.name.startswith("celeba"):
                         mod_gen_m_m_tilde, txt_m_m_tilde = create_txt_image(
                             self.cfg, mod_gen_m_m_tilde
                         )
@@ -625,6 +626,7 @@ class MVVAE(pl.LightningModule):
         # kld = torch.distributions.kl.kl_divergence(d1, d2).sum(dim=-1)
         kld = self.calc_kl_divergence(mu1, lv1, mu2, lv2)
         return kld
+    
 
     def calc_kl_divergence(self, mu0, logvar0, mu1=None, logvar1=None, norm_value=None):
         if mu1 is None or logvar1 is None:

@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
+#PBS -l walltime=70:00:00
+#PBS -N poly_uni
+#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_poly_uni.out
+#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_poly_uni.err
+
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+source activate mvvae
+cd mmvmvae
+
+# wandb login $WANDB_API_KEY
+export CUDA_LAUNCH_BLOCKING=1
+export TORCH_USE_CUDA_DSA=1
+export HYDRA_FULL_ERROR=1
+
+# run the classifier first
+# python main_train_clf_PM.py # needs re run with lower learning rate
+
+# run the classifier with a jointposterir
+python main_mv_wsl.py dataset="PMtranslated75" model="mixedprior" 

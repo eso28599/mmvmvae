@@ -32,12 +32,12 @@ class ClfPolyMNIST(pl.LightningModule):
         self.save_hyperparameters()
 
     def training_step(self, batch, batch_idx):
-        out = self.forward(batch)
+        out = self.forward(self.cfg, batch)
         loss, mean_acc = self.compute_loss("train", batch, out)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        out = self.forward(batch)
+        out = self.forward(self.cfg, batch)
         loss, mean_acc = self.compute_loss("val", batch, out)
         self.validation_step_outputs.append(mean_acc)
         return loss

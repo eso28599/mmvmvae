@@ -4,6 +4,10 @@ celeba_data.zip
 data_mnistsvhntext.zip
 PolyMNIST.zip
 clfs/wandb/*
+clfs/multi_view_vae/*
+logs_mmvmvae/*
+trained_classifiers/*
+pt_inception-2015-12-05-6726825d.pth
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

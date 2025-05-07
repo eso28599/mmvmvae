@@ -3,4 +3,4 @@ defaults:
     - base_config
     - model: model
     - log: log
-    - dataset: PMtranslated75
+    - dataset: CUB

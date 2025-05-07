@@ -4,9 +4,9 @@ from dataclasses import dataclass
 @dataclass
 class ModelConfig:
     device: str = "cuda"
-    batch_size: int = 128
+    batch_size: int = 256 # 128
     batch_size_eval: int = 64
-    lr: float = 5e-4
+    lr: float = 5e-6 # 5e-4
     epochs: int = 500
     temp_annealing: str = "cosine"
     
@@ -29,9 +29,9 @@ class JointModelConfig(ModelConfig):
 class MixedPriorModelConfig(ModelConfig):
     name: str = "mixedprior"
     # weight on N(0,1) in mixed prior
-    alpha_annealing: bool = True
-    init_alpha_value: float = 1.0
-    final_alpha_value: float = 0.0
+    alpha_annealing: bool = True # True
+    init_alpha_value: float = 1.0 # 1
+    final_alpha_value: float = 0 # 0
     alpha_annealing_steps: int = 150000
 
 

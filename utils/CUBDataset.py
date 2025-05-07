@@ -46,10 +46,10 @@ class CUB(Dataset):
         ])
 
         # Load idx2name mappings
-        with open(dir_data + '/idx2name.txt', 'r') as file:
-            for line in file:
-                idx, img_path = line.strip().split()
-                self.idx_to_path[int(idx) - 1] = img_path[:-4]
+        # with open(dir_data + '/idx2name.txt', 'r') as file:
+        #     for line in file:
+        #         idx, img_path = line.strip().split()
+        #         self.idx_to_path[int(idx) - 1] = img_path[:-4]
 
         # load train or test indices
         self._load_indices()

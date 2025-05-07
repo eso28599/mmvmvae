@@ -63,6 +63,8 @@ class ClfText(nn.Module):
             dilation=1,
         )
         self.dropout = nn.Dropout(p=0.5, inplace=False)
+        #changed
+        #in_features=cfg.dataset.num_layers_text * cfg.dataset.filter_dim_text,
         self.linear = nn.Linear(
             in_features=cfg.dataset.num_layers_text * cfg.dataset.filter_dim_text,
             out_features=40,

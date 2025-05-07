@@ -25,8 +25,8 @@ class PolyMNISTDataConfig(DataConfig):
 @dataclass
 class PMtranslatedData75Config(PolyMNISTDataConfig):
     name: str = "PM_translated75"
-    suffix_data_train: str = "PolyMNIST_translated_scale075/train"
-    suffix_data_test: str = "PolyMNIST_translated_scale075/test"
+    suffix_data_train: str = "MMNIST/train" # changed
+    suffix_data_test: str = "MMNIST/test" # changed
     suffix_clfs: str = "translated75_resnet"
 
 
@@ -56,6 +56,7 @@ class CelebADataConfig(DataConfig):
 
     num_features: int = 41  # len(alphabet)
     num_layers_img: int = 5
+    num_layers_text: int = 7
     filter_dim_img: int = 64
     filter_dim_text: int = 64
     beta_img: float = 1.0

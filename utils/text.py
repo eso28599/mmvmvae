@@ -27,6 +27,8 @@ def one_hot_encode(len_seq, alphabet, seq):
 
 def seq2text(alphabet, seq):
     decoded = []
+    # print("seq:", seq)  # Debugging: Print seq to check its type and values
+    # seq = seq.astype(int)
     for j in range(len(seq)):
         decoded.append(alphabet[seq[j]])
     return decoded
@@ -98,7 +100,10 @@ def create_txt_image(cfg, text_mod):
     imgs = torch.zeros(text_mod.shape[0], 3, 64, 64)
     text_samples = []
     for idx in range(text_mod.shape[0]):
-        text_sample = tensor_to_text(alphabet, text_mod[idx].unsqueeze(0))[0]
+        input_tensor = text_mod[idx].unsqueeze(0)
+        print("idx:", idx)
+        print("shape:", input_tensor.shape)
+        text_sample = tensor_to_text(alphabet, input_tensor)[0]
         text_sample = "".join(text_sample).translate({ord("*"): None})
         text_samples.append(text_sample)
         img = text_to_pil(
