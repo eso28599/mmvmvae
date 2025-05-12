@@ -33,23 +33,6 @@ class MVMixedPriorVAE(MVVAE):
 
             dist_out_m = [mu_m, lv_m]
             dists_out[key] = dist_out_m
-            print(f"mod_m {key}")
-            print(mod_hat_m[0].shape)
-            print(mu_m.shape)
-            print(lv_m.shape)
-            print(mod_m[0])
-            print(mu_m)
-            print(lv_m)
-            print("z_m")
-            print(z_m)
-            print("mod_hat_m")
-            print(mod_hat_m[0][0])
-            # if torch.isnan(mod_hat_m).any():
-            #     print(f"mod_hat_m nan {key}")
-            # if torch.isnan(mu_m).any():
-            #     print(f"mu_m nan {key}")
-            # if torch.isnan(lv_m).any():
-            #     print(f"lv_m nan {key}") 
         return (mods_rec, dists_out, dists_enc_out)
 
     def get_reconstructions(self, mods_out, key, n_samples):

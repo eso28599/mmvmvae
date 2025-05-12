@@ -1,5 +1,3 @@
-import torch
-from torch import nn
 from mv_vaes.mv_vae import MVVAE
 
 
@@ -38,9 +36,13 @@ class MVJointPriorVAE(MVVAE):
     def get_reconstructions(self, mods_out, key, n_samples):
         mod_rec = mods_out[key][0][:n_samples]
         return mod_rec
-
-    def cond_generate_samples(self, m, z):
-        mod_c_gen_m_tilde = self.decoders[m](z)
+      
+    # change occurances of cond_generate_samples
+    # check all files - or on github?
+    def cond_generate_samples(self, m_in, m_out, z):
+        initial_z = self.decoders[m_in](z)
+        cross_covar = self.C[m_in - 1] @ self.C[m_out - 1] # check m's are correct
+        mod_c_gen_m_tilde = initial_z + cross_covar  # change to conditional 
         return mod_c_gen_m_tilde
     
     # change to use C matrix
@@ -90,23 +92,19 @@ class MVJointPriorVAE(MVVAE):
           lv = torch.cat((lv, dists_out[key][1]), dim=1)
         # comput KL divergence between joint posterior and joint prior
         klds = self.calc_kl_divergence_C(mu, lv, self.C)
-        for m, key in enumerate(self.modality_names):
-            # dist_m = [mu_m, lv_m]
-            dist_m = dists_out[key]
-            for m_tilde, key_tilde in enumerate(self.modality_names):
-                dist_m_tilde = priors[key_tilde]
-                kld_m_m_tilde = self.kl_div_z_two_dists(dist_m, dist_m_tilde)
-                # KL(q_m | q_m_tilde) * (1-alpha)
-                klds.append(kld_m_m_tilde.unsqueeze(1) * (1.0 - alpha_weight))
-            # add N(0,1) as a component
-            kld_m = self.kl_div_z(dist_m)
-            # KL(q_m | N(0,1)) * alpha * M
-            klds.append(kld_m.unsqueeze(1) * alpha_weight * self.cfg.dataset.num_views)
-        # SUM_{m}:( alpha * KL(q_m|N(0,1)) + (1-alpha)/M * SUM_{m_tilde}:KL(q_m|q_m_tilde) )
-        # when alpha = 0: mixedprior
-        # when alpha = 1: unimodal
-        # when alpha = 1/(M+1): mixedpriorstdnorm
-        klds_sum = torch.cat(klds, dim=1).sum(dim=1) / self.cfg.dataset.num_views
+        # for m, key in enumerate(self.modality_names):
+        #     # dist_m = [mu_m, lv_m]
+        #     dist_m = dists_out[key]
+        #     for m_tilde, key_tilde in enumerate(self.modality_names):
+        #         dist_m_tilde = priors[key_tilde]
+        #         kld_m_m_tilde = self.kl_div_z_two_dists(dist_m, dist_m_tilde)
+        #         # KL(q_m | q_m_tilde) * (1-alpha)
+        #         klds.append(kld_m_m_tilde.unsqueeze(1) * (1.0 - alpha_weight))
+        #     # add N(0,1) as a component
+        #     kld_m = self.kl_div_z(dist_m)
+        #     # KL(q_m | N(0,1)) * alpha * M
+        #     klds.append(kld_m.unsqueeze(1) * alpha_weight * self.cfg.dataset.num_views)
+        klds_sum = torch.cat(klds, dim=1).sum(dim=1) / self.cfg.dataset.num_views # check if needs this average?
 
         ## compute reconstruction loss/ conditional log-likelihood out data
         ## given latents

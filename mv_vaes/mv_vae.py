@@ -30,7 +30,7 @@ class MVVAE(pl.LightningModule):
         super().__init__()
         self.cfg = cfg
 
-        self.encoders, self.decoders = get_networks(cfg)
+        self.encoders, self.decoders, self.C_mats = get_networks(cfg)
 
         if cfg.dataset.name.startswith("PM"):
             self.train_clf_lr = train_clf_lr_PM

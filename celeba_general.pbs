@@ -14,29 +14,9 @@ export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 
-device="cuda"  # 'cuda' if you are useing a GPU
-models=("mixedprior") # "joint" or "mixedprior" or "drpm" "mixedpriorstdnorm"
-dataset_names=("CelebA")
-seeds=(1)
-betas=(0.25 0.5 1.0 2.0 4.0)
-betas=(1.0)
-gammas=(0.0001)
-latent_dims=(128)
-drpm_prior=(False)
-alpha_annealing=(True)
-alpha_annealing_n_steps=(150000)
-n_epochs=(400)
-learning_rates=(5e-4)
-batch_sizes=(256)
-log_freq_downstream=1
-log_freq_coherence=1
-log_freq_lhood=500
-log_freq_plotting=1
-
 # run the classifier first
 # python main_train_clf_celeba.py
 
 # run the classifier with a jointposterior
-python main_mv_wsl.py  dataset="CelebA" model="mixedprior" \
-      ++model.learning_rate=5e-6 \
+python main_mv_wsl.py  dataset="CelebA" model="mixedprior" 
 
