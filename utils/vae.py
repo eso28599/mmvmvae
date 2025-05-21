@@ -1,3 +1,4 @@
+import torch
 from torch import nn
 from config.MyMVWSLConfig import MyMVWSLConfig
 
@@ -89,12 +90,12 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
         )
     
     if cfg.model.name == "jointprior":
-      C_mats = nn.ModuleList(
+      cov_mat = nn.ModuleList(
           [
             CMatrix(cfg).to(cfg.model.device) for _ in range(cfg.dataset.num_views - 1)
           ]
         )
     else:
-      C_mats = None
+      cov_mat = torch.eye(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device) 
       
-    return [encoders, decoders, C_mats]
+    return [encoders, decoders, cov_mat]

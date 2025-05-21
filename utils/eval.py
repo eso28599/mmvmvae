@@ -80,7 +80,20 @@ def conditional_generation(mvvae, dists):
         imgs_gen_dist = []
         for m in range(len(mvvae.decoders)):
             z_out = mvvae.reparametrize(mu, lv)
-            cond_gen_m = mvvae.cond_generate_samples(m, z_out)[0]
+            # cond_gen_m = mvvae.cond_generate_samples(m, z_out)[0]
+            cond_gen_m = mvvae.decoders[m](z_out)[0]
+            imgs_gen_dist.append(cond_gen_m)
+        imgs_gen.append(imgs_gen_dist)
+    return imgs_gen
+  
+def conditional_generation_cov(mvvae, dists):
+    imgs_gen = []
+    for idx, dist in enumerate(dists):
+        mu, lv = dist
+        imgs_gen_dist = []
+        for m in range(len(mvvae.decoders)):
+            z_out = mvvae.reparametrize(mu, lv)
+            cond_gen_m = mvvae.cond_generate_samples_cov(idx, m, z_out)[0]
             # cond_gen_m = mvvae.decoders[m](z_out)[0]
             imgs_gen_dist.append(cond_gen_m)
         imgs_gen.append(imgs_gen_dist)

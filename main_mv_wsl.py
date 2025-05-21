@@ -100,6 +100,7 @@ def run_experiment(cfg: MyMVWSLConfig):
     model.logger.log_metrics(
         {"final_scores/cond_rec_loss": model.final_scores_cond_rec_loss}
     )
+    
     for m, key in enumerate(model.modality_names):
         model.logger.log_metrics(
             {

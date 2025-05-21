@@ -15,6 +15,7 @@ from utils.eval import train_clf_lr_celeba, eval_clf_lr_celeba
 from utils.eval import train_clf_lr_cub, eval_clf_lr_cub
 from utils.eval import generate_samples
 from utils.eval import conditional_generation
+from utils.eval import conditional_generation_cov
 from utils.eval import calc_coherence_acc, calc_coherence_ap
 from utils.eval import load_modality_clfs
 from utils.eval import from_preds_to_acc
@@ -30,7 +31,7 @@ class MVVAE(pl.LightningModule):
         super().__init__()
         self.cfg = cfg
 
-        self.encoders, self.decoders, self.C_mats = get_networks(cfg)
+        self.encoders, self.decoders, self.cov_mat = get_networks(cfg)
 
         if cfg.dataset.name.startswith("PM"):
             self.train_clf_lr = train_clf_lr_PM
@@ -113,6 +114,7 @@ class MVVAE(pl.LightningModule):
         # buffer for final scores
         self.register_buffer("final_scores_rec_loss", torch.zeros(1))
         self.register_buffer("final_scores_cond_rec_loss", torch.zeros(1))
+        self.register_buffer("final_scores_cond_rec_loss_cov", torch.zeros(1))
         self.register_buffer(
             "final_scores_lr_unimodal", torch.zeros(cfg.dataset.num_views)
         )
@@ -133,6 +135,12 @@ class MVVAE(pl.LightningModule):
                 (cfg.dataset.num_views, cfg.dataset.num_views, cfg.dataset.num_labels)
             ),
         )
+        self.register_buffer(
+            "final_scores_coh_cov",
+            torch.zeros(
+                (cfg.dataset.num_views, cfg.dataset.num_views, cfg.dataset.num_labels)
+            ),
+        )
 
     def initialize_fid_scores(self):
         self.fid_scores = {}
@@ -144,6 +152,11 @@ class MVVAE(pl.LightningModule):
                     compute_on_cpu=True,
                     path_inception_weights=self.cfg.eval.path_inception_weights,
                 ).to(self.cfg.model.device)
+                # storage of results using covariance matrix
+                self.fid_scores[key + "_to_" + key_tilde + "_cov"] = FrechetInceptionDistance(
+                    compute_on_cpu=True,
+                    path_inception_weights=self.cfg.eval.path_inception_weights,
+                ).to(self.cfg.model.device)
 
     def training_step(self, batch, batch_idx):
         out = self.forward(batch)
@@ -152,6 +165,81 @@ class MVVAE(pl.LightningModule):
         if len(self.training_step_outputs) * bs < self.cfg.eval.num_samples_train:
             self.training_step_outputs.append([out[1:], batch])
         return loss
+      
+      
+    def on_train_epoch_end(self):
+        self.eval()  # set to eval mode
+       
+          
+        # dataloader = self.trainer.train_dataloader() # not callable
+        dataloader = self.trainer.train_dataloader # doesn't work
+        # dataloader = self.train_dataloader # doesn't work 
+        # device = self.device  # current device (CPU or GPU)
+        # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = self.cfg.model.device
+        # find number of 
+        # latent_dim = self.cfg.model.latent_dim
+        # outputs = []
+        # outputs_T = []
+        total_num_latents = self.cfg.model.latent_dim * self.cfg.dataset.num_views# get correct dim
+        mu = torch.zeros(total_num_latents).to(self.cfg.model.device)
+        cov = torch.zeros(total_num_latents, total_num_latents).to(self.cfg.model.device)
+        # move everything under the if statement
+        if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
+          a = 1
+        cov = torch.zeros(self.cfg.model.latent_dim).to(self.cfg.model.device) # get correct dim
+        with torch.no_grad():
+            for batch in dataloader:
+                # batch_outputs = []
+                if isinstance(batch, (tuple, list)):
+                    x = batch[0]  # assumes first item is input
+                else:
+                    x = batch
+                x = {key: value.to(device) for key, value in x.items()}
+                out = self.get_latent_representations(x).to(self.cfg.model.device)
+                # concatenate the outputs
+                batch_mu = out.sum(dim=0).to(self.cfg.model.device)
+                # mu.append(batch_mu)
+                mu += batch_mu
+                # outputs.append(out)
+                batch_cov = torch.mm(out.T, out)
+                cov += batch_cov
+                # transpose the output
+                # cov.append(batch_cov)
+                # outputs.append(out)  # store outputs on CPU
+                # batch_outputs.append(out)
+                # for key in out.keys():
+                #     outputs[key].append(out[key])
+                
+            num_samples = self.cfg.eval.num_samples_train
+            print("num_samples correct")
+            print(num_samples - len(dataloader) * self.cfg.model.batch_size)
+            mu *= num_samples / (num_samples - 1)
+            cov /= num_samples - 1
+            cov_est = cov - torch.outer(mu, mu)  # empirical covariance
+            # separate = [[out[key] for out in batch_outputs] for key in batch_outputs[0].keys()]
+            # joined_out = [torch.cat(out, dim=0) for out in separate]
+            # outputs = []
+            # # make outputs into a 3d tensor
+            # outputs = torch.stack(outputs, dim=0)  # stack along a new dimension
+            # outputs_T = torch.stack(outputs_T, dim=0)  # stack along a new dimension
+            # torch.bmm(outputs, outputs_T)  # batch matrix multiplication
+            
+            
+            # combinee here
+
+        # to calculate the empirical covariance matrix
+        # see if it works at this point
+        # separate_outputs = [[out[key] for out in outputs] for key in outputs[0].keys()]
+        # all_outputs = [torch.cat(out, dim=0) for out in separate_outputs]
+        # all_out = torch.cat(all_outputs, dim=1)
+        # # print("Epoch-end outputs shape:", all_outputs[0].shape)
+        # cov = torch.cov(all_out)
+        # print(cov.shape)
+        print(cov_est)
+        print(cov_est.shape)
+        self.cov_mat = cov_est.to(self.cfg.model.device)
+        self.train()  # reset to training mode
 
     def validation_step(self, batch, batch_idx):
         out = self.forward(batch)
@@ -159,13 +247,13 @@ class MVVAE(pl.LightningModule):
 
         if (self.current_epoch + 1) % self.cfg.log.coherence_logging_frequency == 0:
             if self.cfg.eval.coherence:
-                pred_coh, cond_rec_loss = self.evaluate_conditional_generation(
+                pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov,  = self.evaluate_conditional_generation(
                     out, batch
                 )
             else:
-                pred_coh, cond_rec_loss = None, None
+                pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov = None, None, None, None
         else:
-            pred_coh, cond_rec_loss = None, None
+            pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov = None, None, None, None
 
         if (self.current_epoch + 1) % self.cfg.log.fid_logging_frequency == 0:
             if batch_idx == 0:
@@ -174,7 +262,7 @@ class MVVAE(pl.LightningModule):
 
         self.last_val_batch = batch
         self.validation_step_outputs.append(
-            [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss]
+            [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss, pred_coh_cov, cond_rec_loss_cov]
         )
 
         if (self.current_epoch + 1) % self.cfg.log.img_plotting_frequency == 0:
@@ -223,36 +311,75 @@ class MVVAE(pl.LightningModule):
             ),
             device=self.cfg.model.device,
         )
+        preds_cov = torch.zeros(
+            (
+                self.cfg.model.batch_size_eval,
+                n_views,
+                n_views,
+                self.cfg.dataset.n_clfs_outputs,
+            ),
+            device=self.cfg.model.device,
+        )
         # for m in range(n_views):
         cond_rec = {}
+        cond_rec_cov = {}
         for m, key in enumerate(self.modality_names):
             mu_m, lv_m = dists_enc_out[key]
             mods_m_gen = {}
+            mods_m_cov_gen = {}
             # for m_tilde in range(n_views):
             for m_tilde, key_tilde in enumerate(self.modality_names):
                 z_m = self.reparametrize(mu_m, lv_m)
                 mod_c_gen_m_tilde = self.cond_generate_samples(m_tilde, z_m)
+                mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(self, m, m_tilde, z_m)
                 if self.cfg.dataset.name.startswith("CUB") and key_tilde == "text":
                     mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0].argmax(dim=-1)
                 else:
                     mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0]
+                    mods_m_cov_gen[key_tilde] = mod_c_cor_gen_m_tilde[0]
                 if m_tilde == m:
                     cond_rec[key] = mod_c_gen_m_tilde
+                    cond_rec_cov[key] = mod_c_cor_gen_m_tilde
             preds_m = self.calc_coherence(self.cfg, clfs_coherence, mods_m_gen, labels)
+            preds_m_cov = self.calc_coherence(self.cfg, clfs_coherence, mods_m_cov_gen, labels)
             preds[:, m] = preds_m
+            preds_cov[:, m] = preds_m_cov
         cond_rec_loss, _, _ = self.compute_rec_loss(data, cond_rec)
-        return preds, cond_rec_loss
+        cond_rec_loss_cov, _, _ = self.compute_rec_loss(data, cond_rec_cov)
+        return preds, cond_rec_loss, preds_cov, cond_rec_loss_cov
 
     def get_reconstructions(self, mods_out, key, n_samples):
         raise NotImplementedError
 
     def cond_generate_samples(self, m, z):
         raise NotImplementedError
+    def cond_generate_samples_cov(self, m_in, m_out, z):
+        raise NotImplementedError
+      
+    def extract_relevant_cov(self, m_in, m_out):
+        # extract the covariance matrix for the two modalities
+        # C_m_in_m_out = self.C[m_in - 1][m_out - 1]
+        row_start = m_in * self.cfg.model.latent_dim
+        row_end = (m_in + 1) * self.cfg.model.latent_dim
+        col_start = m_out * self.cfg.model.latent_dim
+        col_end = (m_out + 1) * self.cfg.model.latent_dim
+        C_m_in_m_out = self.cov_mat[row_start:row_end, col_start:col_end]
+        return C_m_in_m_out
+
+    def conditional_z(self, m_in, m_out, z_in):
+        C_m_in_m_out = self.extract_relevant_cov(m_in, m_out)
+        # C_m_in_m_out = self.C_mats[m_in - 1][m_out - 1]
+        # assuming mu=0
+        C_m_in_m_in = self.extract_relevant_cov(m_in, m_in)
+        z_med = torch.mm(torch.mm(C_m_in_m_out, C_m_in_m_in.inverse()), torch.transpose(z_in, 0, 1))
+        z_out = torch.transpose(z_med, 0, 1)
+        return z_out
+      
 
     def update_fid_scores(self, out, batch):
         dists_enc_out = out[2]
         imgs = batch[0]
-        for _, key in enumerate(self.modality_names):
+        for m, key in enumerate(self.modality_names):
             mu_m, lv_m = dists_enc_out[key]
             for m_tilde, key_tilde in enumerate(self.modality_names):
                 if key_tilde == "text":
@@ -267,6 +394,13 @@ class MVVAE(pl.LightningModule):
                 fid.update(self.transforms(imgs_m_tilde), real=True)
                 fid.update(self.transforms(mod_c_gen_m_tilde[0]), real=False)
                 self.fid_scores[key + "_to_" + key_tilde]
+                # conditional generation using covaraince matrix
+                mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
+
+                
+                fid.update(self.transforms(imgs_m_tilde), real=True)
+                fid.update(self.transforms(mod_c_cor_gen_m_tilde[0]), real=False)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov"]
 
     def on_validation_epoch_end(self):
         enc_mu_out_train = {key: [] for key in self.modality_names}
@@ -334,6 +468,8 @@ class MVVAE(pl.LightningModule):
         labels_val = []
         preds_coherence = []
         cond_rec_loss = []
+        preds_coherence_cov = []
+        cond_rec_loss_cov = []
         rec_loss = []
         for idx, val_out in enumerate(self.validation_step_outputs):
             (
@@ -342,6 +478,8 @@ class MVVAE(pl.LightningModule):
                 pred_coh,
                 cond_rec_loss_batch,
                 rec_loss_batch,
+                pred_coh_cov,
+                cond_rec_loss_batch_cov,
             ) = val_out
             # imgs, labels = batch
             dists_out = out[0]
@@ -365,6 +503,8 @@ class MVVAE(pl.LightningModule):
             preds_coherence.append(pred_coh)
             cond_rec_loss.append(cond_rec_loss_batch)
             rec_loss.append(rec_loss_batch)
+            preds_coherence_cov.append(pred_coh_cov)
+            cond_rec_loss_cov.append(cond_rec_loss_batch_cov)
         self.log_additional_values_val()
         self.validation_step_outputs.clear()  # free memory
 
@@ -394,6 +534,11 @@ class MVVAE(pl.LightningModule):
                     pred_coherence, labels_val, self.modality_names
                 )
                 self.final_scores_coh = acc_coh
+                preds_coherence_cov = torch.cat(preds_coherence_cov)
+                acc_coh_cov = self.from_preds_to_clf_metric(
+                    preds_coherence_cov, labels_val, self.modality_names
+                )
+                self.final_scores_coh_cov = acc_coh_cov
                 for m, key in enumerate(self.modality_names):
                     for m_tilde, key_tilde in enumerate(self.modality_names):
                         accs_m_m_tilde = acc_coh[m, m_tilde, :].mean()
@@ -401,13 +546,25 @@ class MVVAE(pl.LightningModule):
                             "val/coherence/" + key + "_to_" + key_tilde,
                             accs_m_m_tilde,
                         )
+                        accs_m_m_tilde_cov = acc_coh_cov[m, m_tilde, :].mean()
+                        self.log(
+                            "val/coherence_cov/" + key + "_to_" + key_tilde,
+                            accs_m_m_tilde_cov,
+                        )
+                        
                 if self.cfg.dataset.name == "celeba":
                     self.coherence_plot_all_labels_celeba(acc_coh)
+                    # do we want this?
                 self.log(
                     "val/condition_generation/avg_rec_loss",
                     torch.cat(cond_rec_loss).mean(),
                 )
+                self.log(
+                    "val/condition_generation_cov/avg_rec_loss",
+                    torch.cat(cond_rec_loss_cov).mean(),
+                )
                 self.final_scores_cond_rec_loss = torch.cat(cond_rec_loss).mean()
+                self.final_scores_cond_rec_loss_cov = torch.cat(cond_rec_loss_cov).mean()
 
         if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
             if self.cfg.eval.eval_downstream_task:

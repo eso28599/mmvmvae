@@ -34,6 +34,21 @@ class MVMixedPriorVAE(MVVAE):
             dist_out_m = [mu_m, lv_m]
             dists_out[key] = dist_out_m
         return (mods_rec, dists_out, dists_enc_out)
+      
+    def get_latent_representations(self, batch):
+        data = batch
+        # z_ms = {}
+        z_ms = []
+        for m, key in enumerate(data.keys()):
+            # encode views: img_m -> z_m
+            mod_m = data[key]
+            mu_m, lv_m = self.encoders[m](mod_m)
+            # dists_enc_out[key] = [mu_m, lv_m]
+            z_m = self.reparametrize(mu_m, lv_m)
+            # z_ms[key] = z_m
+            z_ms.append(z_m)
+        z = torch.cat(z_ms, dim=1) # [z_m1, z_m2, ...]
+        return (z)
 
     def get_reconstructions(self, mods_out, key, n_samples):
         mod_rec = mods_out[key][0][:n_samples]
@@ -41,6 +56,12 @@ class MVMixedPriorVAE(MVVAE):
 
     def cond_generate_samples(self, m, z):
         mod_c_gen_m_tilde = self.decoders[m](z)
+        return mod_c_gen_m_tilde
+      
+    
+    def cond_generate_samples_cov(self, m_in, m_out, z_in):
+        z_out = self.conditional_z(m_in, m_out, z_in)
+        mod_c_gen_m_tilde = self.decoders[m_out](z_out)
         return mod_c_gen_m_tilde
 
     def compute_loss(self, str_set, batch, forward_out):
@@ -81,13 +102,6 @@ class MVMixedPriorVAE(MVVAE):
 
         ## compute reconstruction loss/ conditional log-likelihood out data
         ## given latents
-        # test for nans
-
-        # for m, key in enumerate(imgs_rec.keys()):
-        #     if torch.isnan(imgs_rec[key]).any():
-        #         print(f"imgs_rec nan {key}")
-        print("imgs_rec", imgs_rec['text'])
-        # print("imgs", imgs)
         loss_rec, loss_rec_mods, loss_rec_mods_weighted = self.compute_rec_loss(
             imgs, imgs_rec
         )

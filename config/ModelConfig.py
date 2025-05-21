@@ -7,7 +7,7 @@ class ModelConfig:
     batch_size: int = 256 # 128
     batch_size_eval: int = 64
     lr: float = 5e-6 # 5e-4
-    epochs: int = 500
+    epochs: int = 350 #500
     temp_annealing: str = "cosine"
     
     latent_dim: int = 256
