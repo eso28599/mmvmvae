@@ -101,8 +101,6 @@ def create_txt_image(cfg, text_mod):
     text_samples = []
     for idx in range(text_mod.shape[0]):
         input_tensor = text_mod[idx].unsqueeze(0)
-        print("idx:", idx)
-        print("shape:", input_tensor.shape)
         text_sample = tensor_to_text(alphabet, input_tensor)[0]
         text_sample = "".join(text_sample).translate({ord("*"): None})
         text_samples.append(text_sample)

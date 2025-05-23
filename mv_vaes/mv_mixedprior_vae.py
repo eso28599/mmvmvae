@@ -61,9 +61,9 @@ class MVMixedPriorVAE(MVVAE):
     
     def cond_generate_samples_cov(self, m_in, m_out, z_in):
         z_out = self.conditional_z(m_in, m_out, z_in)
-        print("Z_s")
-        print(z_in)
-        print(z_out)
+        # print("Z_s")
+        # print(z_in)
+        # print(z_out)
         mod_c_gen_m_tilde = self.decoders[m_out](z_out)
         return mod_c_gen_m_tilde
 

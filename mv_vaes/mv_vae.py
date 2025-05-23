@@ -206,45 +206,13 @@ class MVVAE(pl.LightningModule):
                 # outputs.append(out)
                 batch_cov = torch.mm(out.T, out)
                 cov += batch_cov
-                # transpose the output
-                # cov.append(batch_cov)
-                # outputs.append(out)  # store outputs on CPU
-                # batch_outputs.append(out)
-                # for key in out.keys():
-                #     outputs[key].append(out[key])
-                
-            # num_samples = self.cfg.eval.num_samples_train
-            # num_samples = len(dataloader) * self.cfg.model.batch_size
-            print("num_samples correct")
-            print(num_samples - len(dataloader) * self.cfg.model.batch_size)
-            # mu *= num_samples / (num_samples - 1)
-            # mu /= ((num_samples - 1) * num_samples)
-            
-            # mu *= 1 / (num_samples - 1)
             
             cov /= num_samples - 1
             cov_est = cov - 1 / ((num_samples - 1) * num_samples) * torch.outer(mu, mu)  # empirical covariance
-            # separate = [[out[key] for out in batch_outputs] for key in batch_outputs[0].keys()]
-            # joined_out = [torch.cat(out, dim=0) for out in separate]
-            # outputs = []
-            # # make outputs into a 3d tensor
-            # outputs = torch.stack(outputs, dim=0)  # stack along a new dimension
-            # outputs_T = torch.stack(outputs_T, dim=0)  # stack along a new dimension
-            # torch.bmm(outputs, outputs_T)  # batch matrix multiplication
-            
-            
-            # combinee here
 
         # to calculate the empirical covariance matrix
         # see if it works at this point
-        # separate_outputs = [[out[key] for out in outputs] for key in outputs[0].keys()]
-        # all_outputs = [torch.cat(out, dim=0) for out in separate_outputs]
-        # all_out = torch.cat(all_outputs, dim=1)
-        # # print("Epoch-end outputs shape:", all_outputs[0].shape)
-        # cov = torch.cov(all_out)
-        # print(cov.shape)
         print(cov_est)
-        print(cov_est.shape)
         print(mu)
         self.cov_mat = cov_est.to(self.cfg.model.device)
         mu = mu / num_samples
@@ -373,12 +341,6 @@ class MVVAE(pl.LightningModule):
         row_end = (m_in + 1) * self.cfg.model.latent_dim
         col_start = m_out * self.cfg.model.latent_dim
         col_end = (m_out + 1) * self.cfg.model.latent_dim
-        # print("m_in", m_in)
-        # print("m_out", m_out)
-        # print("row_start", row_start)
-        # print("row_end", row_end)
-        # print("col_start", col_start)
-        # print("col_end", col_end)
         C_m_in_m_out = self.cov_mat[row_start:row_end, col_start:col_end]
         return C_m_in_m_out
 
