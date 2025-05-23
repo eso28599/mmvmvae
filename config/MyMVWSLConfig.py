@@ -21,9 +21,9 @@ class LogConfig:
     dir_logs: str = "/rds/general/user/eso18/home/mmvmvae/clfs"
 
     # logging frequencies
-    downstream_logging_frequency: int = 50
-    coherence_logging_frequency: int = 50
-    img_plotting_frequency: int = 50
+    downstream_logging_frequency: int = 2
+    coherence_logging_frequency: int = 2
+    img_plotting_frequency: int = 2
     fid_logging_frequency: int = 1
 
     # debug level wandb

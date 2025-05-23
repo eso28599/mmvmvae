@@ -100,6 +100,10 @@ def run_experiment(cfg: MyMVWSLConfig):
     model.logger.log_metrics(
         {"final_scores/cond_rec_loss": model.final_scores_cond_rec_loss}
     )
+    model.logger.log_metrics(
+      {"final_scores/cond_rec_loss_cov": model.final_scores_cond_rec_loss_cov }
+    )
+      
     
     for m, key in enumerate(model.modality_names):
         model.logger.log_metrics(
@@ -138,6 +142,13 @@ def run_experiment(cfg: MyMVWSLConfig):
             model.logger.log_metrics(
                 {
                     f"final_scores/coherence/{key}_to_{key_tilde}": model.final_scores_coh[
+                        m, m_tilde, :
+                    ].mean()
+                }
+            )
+            model.logger.log_metrics(
+                {
+                    f"final_scores/coherence/{key}_to_{key_tilde}_cov": model.final_scores_coh_cov[
                         m, m_tilde, :
                     ].mean()
                 }

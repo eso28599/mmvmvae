@@ -95,7 +95,9 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
             CMatrix(cfg).to(cfg.model.device) for _ in range(cfg.dataset.num_views - 1)
           ]
         )
+      mu = torch.zeros(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device)
     else:
       cov_mat = torch.eye(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device) 
+      mu = torch.zeros(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device)
       
-    return [encoders, decoders, cov_mat]
+    return [encoders, decoders, cov_mat, mu]

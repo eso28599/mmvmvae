@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
 #PBS -l walltime=00:30:00
-#PBS -N full_run
+#PBS -N mean_corrected
 #PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/full_celeba_mixedp_run.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/full_celeba_mixedp__run.err
 

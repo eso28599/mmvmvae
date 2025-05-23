@@ -31,7 +31,7 @@ class MVVAE(pl.LightningModule):
         super().__init__()
         self.cfg = cfg
 
-        self.encoders, self.decoders, self.cov_mat = get_networks(cfg)
+        self.encoders, self.decoders, self.cov_mat, self.mu = get_networks(cfg)
 
         if cfg.dataset.name.startswith("PM"):
             self.train_clf_lr = train_clf_lr_PM
@@ -184,10 +184,10 @@ class MVVAE(pl.LightningModule):
         total_num_latents = self.cfg.model.latent_dim * self.cfg.dataset.num_views# get correct dim
         mu = torch.zeros(total_num_latents).to(self.cfg.model.device)
         cov = torch.zeros(total_num_latents, total_num_latents).to(self.cfg.model.device)
+        num_samples = torch.zeros(1).to(self.cfg.model.device)
         # move everything under the if statement
         if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
           a = 1
-        cov = torch.zeros(self.cfg.model.latent_dim).to(self.cfg.model.device) # get correct dim
         with torch.no_grad():
             for batch in dataloader:
                 # batch_outputs = []
@@ -197,6 +197,8 @@ class MVVAE(pl.LightningModule):
                     x = batch
                 x = {key: value.to(device) for key, value in x.items()}
                 out = self.get_latent_representations(x).to(self.cfg.model.device)
+                num_batch = out.shape[0]
+                num_samples += num_batch
                 # concatenate the outputs
                 batch_mu = out.sum(dim=0).to(self.cfg.model.device)
                 # mu.append(batch_mu)
@@ -211,12 +213,17 @@ class MVVAE(pl.LightningModule):
                 # for key in out.keys():
                 #     outputs[key].append(out[key])
                 
-            num_samples = self.cfg.eval.num_samples_train
+            # num_samples = self.cfg.eval.num_samples_train
+            # num_samples = len(dataloader) * self.cfg.model.batch_size
             print("num_samples correct")
             print(num_samples - len(dataloader) * self.cfg.model.batch_size)
-            mu *= num_samples / (num_samples - 1)
+            # mu *= num_samples / (num_samples - 1)
+            # mu /= ((num_samples - 1) * num_samples)
+            
+            # mu *= 1 / (num_samples - 1)
+            
             cov /= num_samples - 1
-            cov_est = cov - torch.outer(mu, mu)  # empirical covariance
+            cov_est = cov - 1 / ((num_samples - 1) * num_samples) * torch.outer(mu, mu)  # empirical covariance
             # separate = [[out[key] for out in batch_outputs] for key in batch_outputs[0].keys()]
             # joined_out = [torch.cat(out, dim=0) for out in separate]
             # outputs = []
@@ -238,7 +245,10 @@ class MVVAE(pl.LightningModule):
         # print(cov.shape)
         print(cov_est)
         print(cov_est.shape)
+        print(mu)
         self.cov_mat = cov_est.to(self.cfg.model.device)
+        mu = mu / num_samples
+        self.mu = mu.to(self.cfg.model.device)
         self.train()  # reset to training mode
 
     def validation_step(self, batch, batch_idx):
@@ -331,7 +341,7 @@ class MVVAE(pl.LightningModule):
             for m_tilde, key_tilde in enumerate(self.modality_names):
                 z_m = self.reparametrize(mu_m, lv_m)
                 mod_c_gen_m_tilde = self.cond_generate_samples(m_tilde, z_m)
-                mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(self, m, m_tilde, z_m)
+                mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
                 if self.cfg.dataset.name.startswith("CUB") and key_tilde == "text":
                     mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0].argmax(dim=-1)
                 else:
@@ -363,6 +373,12 @@ class MVVAE(pl.LightningModule):
         row_end = (m_in + 1) * self.cfg.model.latent_dim
         col_start = m_out * self.cfg.model.latent_dim
         col_end = (m_out + 1) * self.cfg.model.latent_dim
+        # print("m_in", m_in)
+        # print("m_out", m_out)
+        # print("row_start", row_start)
+        # print("row_end", row_end)
+        # print("col_start", col_start)
+        # print("col_end", col_end)
         C_m_in_m_out = self.cov_mat[row_start:row_end, col_start:col_end]
         return C_m_in_m_out
 
@@ -396,10 +412,10 @@ class MVVAE(pl.LightningModule):
                 self.fid_scores[key + "_to_" + key_tilde]
                 # conditional generation using covaraince matrix
                 mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
-
-                
-                fid.update(self.transforms(imgs_m_tilde), real=True)
-                fid.update(self.transforms(mod_c_cor_gen_m_tilde[0]), real=False)
+                # fid.reset()
+                fid_cov = self.fid_scores[key + "_to_" + key_tilde + "_cov"]
+                fid_cov.update(self.transforms(imgs_m_tilde), real=True)
+                fid_cov.update(self.transforms(mod_c_cor_gen_m_tilde[0]), real=False)
                 self.fid_scores[key + "_to_" + key_tilde + "_cov"]
 
     def on_validation_epoch_end(self):
@@ -548,12 +564,14 @@ class MVVAE(pl.LightningModule):
                         )
                         accs_m_m_tilde_cov = acc_coh_cov[m, m_tilde, :].mean()
                         self.log(
-                            "val/coherence_cov/" + key + "_to_" + key_tilde,
+                            "val/coherence/" + key + "_to_" + key_tilde + "_cov",
                             accs_m_m_tilde_cov,
                         )
                         
                 if self.cfg.dataset.name == "celeba":
                     self.coherence_plot_all_labels_celeba(acc_coh)
+                    self.coherence_plot_all_labels_celeba(acc_coh_cov, True)
+                    
                     # do we want this?
                 self.log(
                     "val/condition_generation/avg_rec_loss",
@@ -619,12 +637,14 @@ class MVVAE(pl.LightningModule):
                 lv_m_val = enc_lv_enc_val[key][-n_samples_plot:]
                 dist_m = [mu_m_val, lv_m_val]
                 mod_gen_m = conditional_generation(self, [dist_m])[0]
+                mod_gen_m_cov = conditional_generation_cov(self, [dist_m])[0]
                 if key == "text" and self.cfg.dataset.name.startswith("celeba"):
                     mod_m, _ = create_txt_image(self.cfg, mod_m)
                 elif key == "text":
                     continue
                 for m_tilde, key_tilde in enumerate(self.modality_names):
                     mod_gen_m_m_tilde = mod_gen_m[m_tilde]
+                    mod_gen_m_m_tilde_cov = mod_gen_m_cov[m_tilde]
                     # replaced key with key_tilde
                     if key_tilde == "text" and self.cfg.dataset.name.startswith("celeba"):
                         mod_gen_m_m_tilde, txt_m_m_tilde = create_txt_image(
@@ -635,6 +655,17 @@ class MVVAE(pl.LightningModule):
                             txt_m_m_tilde,
                             "val/txt_samples",
                             f"cond_gen_{key}_{key_tilde}",
+                        )
+                        mod_gen_m_m_tilde_cov, txt_m_m_tilde_cov = create_txt_image(
+                            self.cfg, mod_gen_m_m_tilde_cov
+                        )
+                        mod_gen_m_m_tilde_cov = mod_gen_m_m_tilde_cov.to(
+                            self.cfg.model.device
+                        )
+                        self.log_txt_samples(
+                            txt_m_m_tilde_cov,
+                            "val/txt_samples",
+                            f"cond_gen_cov_{key}_{key_tilde}",
                         )
                     elif key_tilde == "text":
                         continue
@@ -649,6 +680,19 @@ class MVVAE(pl.LightningModule):
                         key="cond_gen_" + key + "_to_" + key_tilde,
                         images=[wandb.Image(mod_grid_m_m_tilde)],
                     )
+                    mod_grid_m_m_tilde_cov = make_grid(
+                        torch.cat(
+                            [mod_m.to(self.cfg.model.device), mod_gen_m_m_tilde_cov],
+                            dim=0,
+                        ),
+                        nrow=n_samples_row,
+                    )
+                    mod_grid_m_m_tilde_cov = t_f.to_pil_image(mod_grid_m_m_tilde_cov)
+                    self.logger.log_image(
+                        key="cond_gen_cov_" + key + "_to_" + key_tilde,
+                        images=[wandb.Image(mod_grid_m_m_tilde_cov)],
+                    )
+                    # log the images
 
         if (self.current_epoch + 1) % self.cfg.log.fid_logging_frequency == 0:
             for m, key in enumerate(self.modality_names):
@@ -661,6 +705,13 @@ class MVVAE(pl.LightningModule):
                         f"val/fid/{key}_to_{key_tilde}",
                         score_m_m_tilde,
                     )
+                    fid_cov = self.fid_scores[key + "_to_" + key_tilde + "_cov"]
+                    score_m_m_tilde_cov = fid_cov.compute()
+                    self.log(
+                        f"val/fid/{key}_to_{key_tilde}_cov",
+                        score_m_m_tilde_cov,
+                    )
+                    
 
     def log_txt_samples(self, txt_samples, str_txt, str_title):
         sample_ids = range(0, len(txt_samples))
@@ -677,7 +728,7 @@ class MVVAE(pl.LightningModule):
             }
         )
 
-    def coherence_plot_all_labels_celeba(self, scores):
+    def coherence_plot_all_labels_celeba(self, scores, cov=False):
         for m, key in enumerate(self.modality_names):
             for m_tilde, tilde_key in enumerate(self.modality_names):
                 data = [
@@ -685,22 +736,41 @@ class MVVAE(pl.LightningModule):
                     for (label, val) in zip(self.label_names, scores[m, m_tilde, :])
                 ]
                 table = wandb.Table(data=data, columns=["label", "AP"])
-                wandb.log(
-                    {
-                        "val/coherence/all_labels_"
-                        + key: wandb.plot.bar(
-                            table,
-                            "label",
-                            "AP",
-                            title="Coherence " + key + " to " + tilde_key,
-                        )
-                    }
-                )
-                for k, l_name in enumerate(self.label_names):
-                    self.log(
-                        f"val/coherence/{key}_{tilde_key}/{l_name}",
-                        scores[m, m_tilde, k],
-                    )
+                if cov:
+                  wandb.log(
+                      {
+                          "val/coherence/all_labels_"
+                          + key: wandb.plot.bar(
+                              table,
+                              "label",
+                              "AP",
+                              title="Coherence " + key + " to " + tilde_key,
+                          )
+                      }
+                  )
+                  for k, l_name in enumerate(self.label_names):
+                      self.log(
+                          f"val/coherence/{key}_{tilde_key}/{l_name}",
+                          scores[m, m_tilde, k],
+                      )
+                else:
+                  wandb.log(
+                      {
+                          "val/coherence/all_labels_"
+                          + key: wandb.plot.bar(
+                              table,
+                              "label",
+                              "AP",
+                              title="Coherence " + key + " to " + tilde_key + "_cov",
+                          )
+                      }
+                  )
+                  for k, l_name in enumerate(self.label_names):
+                      self.log(
+                          f"val/coherence/{key}_{tilde_key}_cov/{l_name}",
+                          scores[m, m_tilde, k],
+                   )                  
+                   
 
     def eval_downstream_task_PM(self, str_ds, clfs, enc_mu_val, labels_val):
         scores = torch.zeros((self.cfg.dataset.num_views, 1))
@@ -744,8 +814,10 @@ class MVVAE(pl.LightningModule):
                     )
                 }
             )
-            for k, l_name in enumerate(self.label_names):
-                self.log(f"val/downstream/{str_ds}/{key}/{l_name}", scores_m[k])
+            # remove saving all labels
+            # for k, l_name in enumerate(self.label_names):
+            #     # self.log(f"val/downstream/{str_ds}/{key}/{l_name}", scores_m[k])
+                
         return scores
 
     def eval_downstream_task_cub(self, str_ds, clfs, enc_mu_val, labels_val):
