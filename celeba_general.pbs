@@ -1,9 +1,9 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=00:30:00
-#PBS -N mean_corrected
-#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/full_celeba_mixedp_run.log
-#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/full_celeba_mixedp__run.err
+#PBS -l walltime=48:00:00
+#PBS -N jointprior
+#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/full_celeba_jointprior_run.log
+#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/full_celeba_jointprior_run.err
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
@@ -18,5 +18,5 @@ export HYDRA_FULL_ERROR=1
 # python main_train_clf_celeba.py
 
 # run the classifier with a jointposterior
-python main_mv_wsl.py  dataset="CelebA" model="mixedprior" 
+python main_mv_wsl.py  dataset="CelebA" model="jointprior" 
 

@@ -10,7 +10,7 @@ from networks.NetworksCUBimg import Encoder as EncoderCUBimg
 from networks.NetworksCUBimg import Decoder as DecoderCUBimg
 from networks.NetworksCUBsent import Encoder as EncoderCUBtext
 from networks.NetworksCUBsent import Decoder as DecoderCUBtext
-# from networks.JointPrior import CMatrix
+from networks.JointPrior import OrthogMat
 # from networks.NetworksRatsspike import Encoder as RatsEncoder
 # from networks.NetworksRatsspike import Decoder as RatsDecoder
 
@@ -92,12 +92,13 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
     if cfg.model.name == "jointprior":
       cov_mat = nn.ModuleList(
           [
-            CMatrix(cfg).to(cfg.model.device) for _ in range(cfg.dataset.num_views - 1)
+            OrthogMat(cfg).to(cfg.model.device) for _ in range(cfg.dataset.num_views - 1)
           ]
         )
-      mu = torch.zeros(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device)
     else:
       cov_mat = torch.eye(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device) 
-      mu = torch.zeros(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device)
       
-    return [encoders, decoders, cov_mat, mu]
+    covariance = torch.eye(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device) 
+    mu = torch.zeros(cfg.model.latent_dim * cfg.dataset.num_views).to(cfg.model.device)
+      
+    return [encoders, decoders, cov_mat, covariance, mu]

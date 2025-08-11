@@ -31,7 +31,7 @@ class MVVAE(pl.LightningModule):
         super().__init__()
         self.cfg = cfg
 
-        self.encoders, self.decoders, self.cov_mat, self.mu = get_networks(cfg)
+        self.encoders, self.decoders, self.cov_mat, self.covariance, self.mu = get_networks(cfg)
 
         if cfg.dataset.name.startswith("PM"):
             self.train_clf_lr = train_clf_lr_PM
@@ -212,9 +212,10 @@ class MVVAE(pl.LightningModule):
 
         # to calculate the empirical covariance matrix
         # see if it works at this point
-        print(cov_est)
-        print(mu)
-        self.cov_mat = cov_est.to(self.cfg.model.device)
+        print((cov_est[256:512, 256:512] > 2e-01).sum())
+        print((cov_est[0:256, 0:256] > 2e-01).sum())
+        print((cov_est[0:256, 256:512] > 2e-01).sum())
+        self.covariance = cov_est.to(self.cfg.model.device)
         mu = mu / num_samples
         self.mu = mu.to(self.cfg.model.device)
         self.train()  # reset to training mode
@@ -331,28 +332,47 @@ class MVVAE(pl.LightningModule):
 
     def cond_generate_samples(self, m, z):
         raise NotImplementedError
-    def cond_generate_samples_cov(self, m_in, m_out, z):
-        raise NotImplementedError
+    # def cond_generate_samples_cov(self, m_in, m_out, z):
+    #     raise NotImplementedError
+    
+    def get_latent_representations(self, batch):
+        data = batch
+        # z_ms = {}
+        z_ms = []
+        for m, key in enumerate(data.keys()):
+            # encode views: img_m -> z_m
+            mod_m = data[key]
+            mu_m, lv_m = self.encoders[m](mod_m)
+            # dists_enc_out[key] = [mu_m, lv_m]
+            z_m = self.reparametrize(mu_m, lv_m)
+            # z_ms[key] = z_m
+            z_ms.append(z_m)
+        z = torch.cat(z_ms, dim=1) # [z_m1, z_m2, ...]
+        return (z)
       
     def extract_relevant_cov(self, m_in, m_out):
         # extract the covariance matrix for the two modalities
         # C_m_in_m_out = self.C[m_in - 1][m_out - 1]
-        row_start = m_in * self.cfg.model.latent_dim
-        row_end = (m_in + 1) * self.cfg.model.latent_dim
-        col_start = m_out * self.cfg.model.latent_dim
-        col_end = (m_out + 1) * self.cfg.model.latent_dim
-        C_m_in_m_out = self.cov_mat[row_start:row_end, col_start:col_end]
+        col_start = m_in * self.cfg.model.latent_dim
+        col_end = (m_in + 1) * self.cfg.model.latent_dim
+        row_start = m_out * self.cfg.model.latent_dim
+        row_end = (m_out + 1) * self.cfg.model.latent_dim
+        C_m_in_m_out = self.covariance[row_start:row_end, col_start:col_end]
         return C_m_in_m_out
 
     def conditional_z(self, m_in, m_out, z_in):
         C_m_in_m_out = self.extract_relevant_cov(m_in, m_out)
-        # C_m_in_m_out = self.C_mats[m_in - 1][m_out - 1]
         # assuming mu=0
         C_m_in_m_in = self.extract_relevant_cov(m_in, m_in)
-        z_med = torch.mm(torch.mm(C_m_in_m_out, C_m_in_m_in.inverse()), torch.transpose(z_in, 0, 1))
-        z_out = torch.transpose(z_med, 0, 1)
+        z_shift = z_in - self.mu[m_in * self.cfg.model.latent_dim : (m_in + 1) * self.cfg.model.latent_dim]
+        z_med = torch.mm(torch.mm(C_m_in_m_out, C_m_in_m_in.inverse()), torch.transpose(z_shift, 0, 1))
+        z_out = torch.transpose(z_med, 0, 1) + self.mu[m_out * self.cfg.model.latent_dim : (m_out + 1) * self.cfg.model.latent_dim]
         return z_out
       
+    def cond_generate_samples_cov(self, m_in, m_out, z_in):
+        z_out = self.conditional_z(m_in, m_out, z_in)
+        mod_c_gen_m_tilde = self.decoders[m_out](z_out)
+        return mod_c_gen_m_tilde
 
     def update_fid_scores(self, out, batch):
         dists_enc_out = out[2]
@@ -798,6 +818,18 @@ class MVVAE(pl.LightningModule):
             for k, l_name in enumerate(self.label_names):
                 self.log(f"val/downstream/{str_ds}/{key}/{l_name}", scores_m[k])
         return scores
+      
+    def kl_div_cov(self, dist, cov_inv):
+        mu, lv = dist
+        # Compute the KL divergence between the two distributions
+        kld = self.calc_kl_divergence_cov(mu, lv, cov_inv)
+        return kld
+      
+    def kl_div_orthog(self, dist, cov_scalar):
+        mu, lv = dist
+        # Compute the KL divergence between the two distributions
+        kld = self.calc_kl_divergence_orthog(mu, lv, cov_scalar)
+        return kld
 
     def kl_div_z(self, dist):
         mu, lv = dist
@@ -836,6 +868,39 @@ class MVVAE(pl.LightningModule):
         if norm_value is not None:
             kld = kld / float(norm_value)
         return kld
+    
+    def calc_kl_divergence_orthog(self, mu0, logvar0, cov_scalar,           
+                                  norm_value=None):
+        if cov_scalar is None:
+            kld = -0.5 * torch.sum(1 - logvar0.exp() - mu0.pow(2) + logvar0, dim=-1)
+        else:
+            kld = -0.5 * (
+                torch.sum(
+                    1
+                    - logvar0.exp() / (cov_scalar)
+                    - (mu0).pow(2) / (cov_scalar)
+                    + logvar0
+                    - math.exp(cov_scalar),
+                    dim=-1,
+                )
+            )
+        if norm_value is not None:
+            kld = kld / float(norm_value)
+        return kld
+    
+    def calc_kl_divergence_cov(self, mu0, logvar0, cov_inv=None,
+                               norm_value=None):
+       
+       cov_inv_device = cov_inv.to(self.device)
+       mu0_device = mu0.to(self.device)
+       mu_term =  torch.matmul(torch.matmul(mu0_device, cov_inv_device), mu0_device)
+       kld_sum_term = -0.5 * torch.sum(1 + logvar0, dim=-1)
+       det_term = torch.linalg.slogdet(cov_inv)
+       trace_term = torch.einsum('ii,i->', cov_inv_device, logvar0.exp())
+       kld = - det_term + kld_sum_term + mu_term + trace_term 
+       if norm_value is not None:
+          kld = kld / float(norm_value)
+       return kld
 
     def compute_rec_loss(self, data, data_rec):
         rec_loss_all = []

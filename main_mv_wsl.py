@@ -17,6 +17,7 @@ from config.ModelConfig import JointModelConfig
 from config.ModelConfig import MixedPriorModelConfig
 from config.ModelConfig import UnimodalModelConfig
 from config.ModelConfig import SplitModelConfig
+from config.ModelConfig import JointPriorModelConfig
 from config.DatasetConfig import PMtranslatedData75Config
 from config.DatasetConfig import CelebADataConfig
 from config.DatasetConfig import CUBDataConfig
@@ -26,12 +27,14 @@ from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
 from mv_vaes.mv_split_vae import MVSplitVAE as MVSplitVAE
 from mv_vaes.mv_unimodal_vae import MVunimodalVAE as MVunimodalVAE
 from mv_vaes.mv_mixedprior_vae import MVMixedPriorVAE as MVMixedPriorVAE
+from mv_vaes.mv_jointprior_vae import MVJointPriorVAE as MVJointPriorVAE
 
 cs = ConfigStore.instance()
 # Registering the Config class with the name 'config'.
 cs.store(group="log", name="log", node=LogConfig)
 cs.store(group="model", name="joint", node=JointModelConfig)
 cs.store(group="model", name="mixedprior", node=MixedPriorModelConfig)
+cs.store(group="model", name="jointprior", node=JointPriorModelConfig)
 cs.store(group="model", name="unimodal", node=UnimodalModelConfig)
 cs.store(group="model", name="split", node=SplitModelConfig)
 cs.store(group="eval", name="eval", node=EvalConfig)
@@ -69,6 +72,8 @@ def run_experiment(cfg: MyMVWSLConfig):
         model = MVunimodalVAE(cfg)
     elif cfg.model.name == "split":
         model = MVSplitVAE(cfg)
+    elif cfg.model.name == "jointprior":
+        model = MVJointPriorVAE(cfg)
     assert model is not None
     model.assign_label_names(label_names)
     summary = ModelSummary(model, max_depth=2)
