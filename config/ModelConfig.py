@@ -4,10 +4,10 @@ from dataclasses import dataclass
 @dataclass
 class ModelConfig:
     device: str = "cuda"
-    batch_size: int = 256 # 128
+    batch_size: int = 128 # 128, I had 256
     batch_size_eval: int = 64
     lr: float = 5e-4 # 5e-4
-    epochs: int = 350 #500
+    epochs: int = 500 #500
     temp_annealing: str = "cosine"
     
     latent_dim: int = 256
@@ -42,8 +42,8 @@ class JointPriorModelConfig(ModelConfig):
     init_alpha_value: float = 1.0 # 1
     final_alpha_value: float = 0 # 0
     alpha_annealing_steps: int = 150000
-    cov_scalar: float =  1 - 0.95 ** 2 # 1 - alpha^2
-    alpha_scalar: float = 0.95
+    cov_scalar: float =  1 - 0.2 ** 2 # 1 - alpha^2
+    alpha_scalar: float = 0.2
 
 
 @dataclass

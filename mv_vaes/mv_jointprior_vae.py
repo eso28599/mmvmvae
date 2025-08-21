@@ -60,13 +60,6 @@ class MVJointPriorVAE(MVVAE):
         return mod_c_gen_m_tilde
       
     
-    def cond_generate_samples_cov(self, m_in, m_out, z_in):
-        z_out = self.conditional_z(m_in, m_out, z_in)
-        # print("Z_s")
-        # print(z_in)
-        # print(z_out)
-        mod_c_gen_m_tilde = self.decoders[m_out](z_out)
-        return mod_c_gen_m_tilde
 
     def compute_loss(self, str_set, batch, forward_out):
         imgs, labels = batch
@@ -86,7 +79,6 @@ class MVJointPriorVAE(MVVAE):
         klds = []
         # m = 0
         scalar = 1 + (self.cfg.dataset.num_views - 1) * (1 - self.cfg.model.cov_scalar) / self.cfg.model.cov_scalar
-        print("scalar", scalar)
         key_m = self.modality_names[0]
         kld_m = self.kl_div_orthog(dists_out[key_m], 1 / scalar)
         klds.append(kld_m.unsqueeze(1))

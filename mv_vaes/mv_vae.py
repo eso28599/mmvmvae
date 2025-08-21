@@ -157,6 +157,23 @@ class MVVAE(pl.LightningModule):
                     compute_on_cpu=True,
                     path_inception_weights=self.cfg.eval.path_inception_weights,
                 ).to(self.cfg.model.device)
+                # extra ones 
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_zero"] = FrechetInceptionDistance(
+                    compute_on_cpu=True,
+                    path_inception_weights=self.cfg.eval.path_inception_weights,
+                ).to(self.cfg.model.device)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_identity"] = FrechetInceptionDistance(
+                    compute_on_cpu=True,
+                    path_inception_weights=self.cfg.eval.path_inception_weights,
+                ).to(self.cfg.model.device)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_identity_zero"] = FrechetInceptionDistance(
+                    compute_on_cpu=True,
+                    path_inception_weights=self.cfg.eval.path_inception_weights,
+                ).to(self.cfg.model.device)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_z_in"] = FrechetInceptionDistance(
+                    compute_on_cpu=True,
+                    path_inception_weights=self.cfg.eval.path_inception_weights,
+                ).to(self.cfg.model.device)
 
     def training_step(self, batch, batch_idx):
         out = self.forward(batch)
@@ -226,13 +243,13 @@ class MVVAE(pl.LightningModule):
 
         if (self.current_epoch + 1) % self.cfg.log.coherence_logging_frequency == 0:
             if self.cfg.eval.coherence:
-                pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov,  = self.evaluate_conditional_generation(
+                pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov, preds_cov_zero, cond_rec_loss_zero, preds_cov_id, cond_rec_loss_identity, preds_cov_id_zero, cond_rec_loss_id_zero, preds_cov_z_in, cond_rec_loss_z_in = self.evaluate_conditional_generation(
                     out, batch
                 )
             else:
-                pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov = None, None, None, None
+                pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov, preds_cov_zero, cond_rec_loss_zero, preds_cov_id, cond_rec_loss_identity, preds_cov_id_zero, cond_rec_loss_id_zero, preds_cov_z_in, cond_rec_loss_z_in = None, None, None, None, None, None, None, None, None, None, None, None
         else:
-            pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov = None, None, None, None
+            pred_coh, cond_rec_loss, pred_coh_cov, cond_rec_loss_cov, preds_cov_zero, cond_rec_loss_zero, preds_cov_id, cond_rec_loss_identity, preds_cov_id_zero, cond_rec_loss_id_zero, preds_cov_z_in, cond_rec_loss_z_in = None, None, None, None, None, None, None, None, None, None, None, None
 
         if (self.current_epoch + 1) % self.cfg.log.fid_logging_frequency == 0:
             if batch_idx == 0:
@@ -240,8 +257,11 @@ class MVVAE(pl.LightningModule):
             self.update_fid_scores(out, batch)
 
         self.last_val_batch = batch
+        # self.validation_step_outputs.append(
+        #     [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss, pred_coh_cov, cond_rec_loss_cov]
+        # )
         self.validation_step_outputs.append(
-            [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss, pred_coh_cov, cond_rec_loss_cov]
+            [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss, pred_coh_cov, cond_rec_loss_cov, preds_cov_zero, cond_rec_loss_zero, preds_cov_id, cond_rec_loss_identity, preds_cov_id_zero, cond_rec_loss_id_zero, preds_cov_z_in, cond_rec_loss_z_in]
         )
 
         if (self.current_epoch + 1) % self.cfg.log.img_plotting_frequency == 0:
@@ -299,33 +319,97 @@ class MVVAE(pl.LightningModule):
             ),
             device=self.cfg.model.device,
         )
+        preds_cov_zero = torch.zeros(
+            (
+                self.cfg.model.batch_size_eval,
+                n_views,
+                n_views,
+                self.cfg.dataset.n_clfs_outputs,
+            ),
+            device=self.cfg.model.device,
+        )
+        preds_cov_id = torch.zeros(
+            (
+                self.cfg.model.batch_size_eval,
+                n_views,
+                n_views,
+                self.cfg.dataset.n_clfs_outputs,
+            ),
+            device=self.cfg.model.device,
+        )
+        preds_cov_id_zero = torch.zeros(
+            (
+                self.cfg.model.batch_size_eval,
+                n_views,
+                n_views,
+                self.cfg.dataset.n_clfs_outputs,
+            ),
+            device=self.cfg.model.device,
+        )
+        preds_cov_z_in = torch.zeros(
+          (
+                self.cfg.model.batch_size_eval,
+                n_views,
+                n_views,
+                self.cfg.dataset.n_clfs_outputs,
+            ),
+            device=self.cfg.model.device,
+        )
         # for m in range(n_views):
         cond_rec = {}
         cond_rec_cov = {}
+        cond_rec_zero = {}
+        cond_rec_id = {}
+        cond_rec_zero_id = {}
+        cond_rec_z_in = {}
         for m, key in enumerate(self.modality_names):
             mu_m, lv_m = dists_enc_out[key]
             mods_m_gen = {}
             mods_m_cov_gen = {}
+            mods_m_cov_gen_zero = {}
+            mods_m_cov_identity = {}
+            mods_m_cov_id_zero = {}
+            mods_m_cov_z_in = {}
             # for m_tilde in range(n_views):
             for m_tilde, key_tilde in enumerate(self.modality_names):
                 z_m = self.reparametrize(mu_m, lv_m)
                 mod_c_gen_m_tilde = self.cond_generate_samples(m_tilde, z_m)
-                mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
+                mod_c_cor_gen_m_tilde, mod_c_gen_m_tilde_zero, mod_c_gen_m_tilde_identity, mod_c_gen_m_tilde_id_zero, mod_c_gen_m_tilde_z_in = self.cond_generate_samples_cov(m, m_tilde, z_m)
                 if self.cfg.dataset.name.startswith("CUB") and key_tilde == "text":
                     mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0].argmax(dim=-1)
                 else:
                     mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0]
                     mods_m_cov_gen[key_tilde] = mod_c_cor_gen_m_tilde[0]
+                    mods_m_cov_gen_zero[key_tilde] = mod_c_gen_m_tilde_zero[0]
+                    mods_m_cov_identity[key_tilde] = mod_c_gen_m_tilde_identity[0]
+                    mods_m_cov_id_zero[key_tilde] = mod_c_gen_m_tilde_id_zero[0]
+                    mods_m_cov_z_in[key_tilde] = mod_c_gen_m_tilde_z_in[0]
                 if m_tilde == m:
                     cond_rec[key] = mod_c_gen_m_tilde
                     cond_rec_cov[key] = mod_c_cor_gen_m_tilde
+                    cond_rec_zero[key] = mod_c_gen_m_tilde_zero
+                    cond_rec_id[key] = mod_c_gen_m_tilde_identity
+                    cond_rec_zero_id[key] = mod_c_gen_m_tilde_id_zero
+                    cond_rec_z_in[key] = mod_c_gen_m_tilde_z_in
             preds_m = self.calc_coherence(self.cfg, clfs_coherence, mods_m_gen, labels)
             preds_m_cov = self.calc_coherence(self.cfg, clfs_coherence, mods_m_cov_gen, labels)
+            preds_m_cov_zero = self.calc_coherence(self.cfg, clfs_coherence, mods_m_cov_gen_zero, labels)
+            preds_m_cov_id = self.calc_coherence(self.cfg, clfs_coherence, mods_m_cov_identity, labels)
+            preds_m_cov_id_zero = self.calc_coherence(self.cfg, clfs_coherence, mods_m_cov_id_zero, labels)
+            preds_m_cov_z_in = self.calc_coherence(self.cfg, clfs_coherence, mods_m_cov_z_in, labels)
             preds[:, m] = preds_m
             preds_cov[:, m] = preds_m_cov
+            preds_cov_zero[:, m] = preds_m_cov_zero
+            preds_cov_id[:, m] = preds_m_cov_id
+            preds_cov_id_zero[:, m] = preds_m_cov_id_zero
+            preds_cov_z_in[:, m] = preds_m_cov_z_in
         cond_rec_loss, _, _ = self.compute_rec_loss(data, cond_rec)
         cond_rec_loss_cov, _, _ = self.compute_rec_loss(data, cond_rec_cov)
-        return preds, cond_rec_loss, preds_cov, cond_rec_loss_cov
+        cond_rec_loss_zero, _, _ = self.compute_rec_loss(data, cond_rec_zero)
+        cond_rec_loss_identity, _, _ = self.compute_rec_loss(data, cond_rec_id)
+        cond_rec_loss_id_zero, _, _ = self.compute_rec_loss(data, cond_rec_zero_id)
+        cond_rec_loss_z_in, _, _ = self.compute_rec_loss(data, cond_rec_z_in)
+        return preds, cond_rec_loss, preds_cov, cond_rec_loss_cov, preds_cov_zero, cond_rec_loss_zero, preds_cov_id, cond_rec_loss_identity, preds_cov_id_zero, cond_rec_loss_id_zero, preds_cov_z_in, cond_rec_loss_z_in
 
     def get_reconstructions(self, mods_out, key, n_samples):
         raise NotImplementedError
@@ -353,6 +437,7 @@ class MVVAE(pl.LightningModule):
     def extract_relevant_cov(self, m_in, m_out):
         # extract the covariance matrix for the two modalities
         # C_m_in_m_out = self.C[m_in - 1][m_out - 1]
+        # wrong way around
         col_start = m_in * self.cfg.model.latent_dim
         col_end = (m_in + 1) * self.cfg.model.latent_dim
         row_start = m_out * self.cfg.model.latent_dim
@@ -367,12 +452,20 @@ class MVVAE(pl.LightningModule):
         z_shift = z_in - self.mu[m_in * self.cfg.model.latent_dim : (m_in + 1) * self.cfg.model.latent_dim]
         z_med = torch.mm(torch.mm(C_m_in_m_out, C_m_in_m_in.inverse()), torch.transpose(z_shift, 0, 1))
         z_out = torch.transpose(z_med, 0, 1) + self.mu[m_out * self.cfg.model.latent_dim : (m_out + 1) * self.cfg.model.latent_dim]
-        return z_out
-      
+        z_out_zero_mean = torch.transpose(torch.mm(torch.mm(C_m_in_m_out, C_m_in_m_in.inverse()), torch.transpose(z_in, 0, 1)), 0, 1)
+        z_out_identity = torch.transpose(torch.mm(C_m_in_m_out, torch.transpose(z_shift, 0, 1)), 0, 1) + self.mu[m_out * self.cfg.model.latent_dim : (m_out + 1) * self.cfg.model.latent_dim]
+        z_out_id_zero = torch.transpose(torch.mm(C_m_in_m_out, torch.transpose(z_in, 0, 1)), 0, 1)
+        z_out_z_in = torch.transpose(torch.mm(C_m_in_m_out, torch.transpose(z_shift, 0, 1)), 0, 1) + z_in
+        return z_out, z_out_zero_mean, z_out_identity, z_out_id_zero, z_out_z_in
+
     def cond_generate_samples_cov(self, m_in, m_out, z_in):
-        z_out = self.conditional_z(m_in, m_out, z_in)
+        z_out, z_out_zero_mean, z_out_identity, z_out_id_zero, z_out_z_in = self.conditional_z(m_in, m_out, z_in)
         mod_c_gen_m_tilde = self.decoders[m_out](z_out)
-        return mod_c_gen_m_tilde
+        mod_c_gen_m_tilde_zero = self.decoders[m_out](z_out_zero_mean)
+        mod_c_gen_m_tilde_identity = self.decoders[m_out](z_out_identity)
+        mod_c_gen_m_tilde_id_zero = self.decoders[m_out](z_out_id_zero)
+        mod_c_gen_m_tilde_z_in = self.decoders[m_out](z_out_z_in)
+        return mod_c_gen_m_tilde, mod_c_gen_m_tilde_zero, mod_c_gen_m_tilde_identity, mod_c_gen_m_tilde_id_zero, mod_c_gen_m_tilde_z_in
 
     def update_fid_scores(self, out, batch):
         dists_enc_out = out[2]
@@ -393,12 +486,38 @@ class MVVAE(pl.LightningModule):
                 fid.update(self.transforms(mod_c_gen_m_tilde[0]), real=False)
                 self.fid_scores[key + "_to_" + key_tilde]
                 # conditional generation using covaraince matrix
-                mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
-                # fid.reset()
+                # mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
+                # # fid.reset()
+                # fid_cov = self.fid_scores[key + "_to_" + key_tilde + "_cov"]
+                # fid_cov.update(self.transforms(imgs_m_tilde), real=True)
+                # fid_cov.update(self.transforms(mod_c_cor_gen_m_tilde[0]), real=False)
+                # self.fid_scores[key + "_to_" + key_tilde + "_cov"]
+                mod_c_cor_gen_m_tilde, mod_c_gen_m_tilde_zero, mod_c_gen_m_tilde_identity, mod_c_gen_m_tilde_id_zero, mod_c_gen_m_tilde_z_in = self.cond_generate_samples_cov(m, m_tilde, z_m)
+                # standard
                 fid_cov = self.fid_scores[key + "_to_" + key_tilde + "_cov"]
                 fid_cov.update(self.transforms(imgs_m_tilde), real=True)
                 fid_cov.update(self.transforms(mod_c_cor_gen_m_tilde[0]), real=False)
+                # zero means
                 self.fid_scores[key + "_to_" + key_tilde + "_cov"]
+                fid_cov_zero = self.fid_scores[key + "_to_" + key_tilde + "_cov_zero"]
+                fid_cov_zero.update(self.transforms(imgs_m_tilde), real=True)
+                fid_cov_zero.update(self.transforms(mod_c_gen_m_tilde_zero[0]), real=False)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov"]
+                # identity
+                fid_cov_identity = self.fid_scores[key + "_to_" + key_tilde + "_cov_identity"]
+                fid_cov_identity.update(self.transforms(imgs_m_tilde), real=True)
+                fid_cov_identity.update(self.transforms(mod_c_gen_m_tilde_identity[0]), real=False)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_identity"]
+                # identity and zero
+                fid_cov_identity_zero = self.fid_scores[key + "_to_" + key_tilde + "_cov_identity_zero"]
+                fid_cov_identity_zero.update(self.transforms(imgs_m_tilde), real=True)
+                fid_cov_identity_zero.update(self.transforms(mod_c_gen_m_tilde_id_zero[0]), real=False)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_identity_zero"]
+                # z in 
+                fid_cov_z_in = self.fid_scores[key + "_to_" + key_tilde + "_cov_z_in"]
+                fid_cov_z_in.update(self.transforms(imgs_m_tilde), real=True)
+                fid_cov_z_in.update(self.transforms(mod_c_gen_m_tilde_z_in[0]), real=False)
+                self.fid_scores[key + "_to_" + key_tilde + "_cov_z_in"]
 
     def on_validation_epoch_end(self):
         enc_mu_out_train = {key: [] for key in self.modality_names}
@@ -467,9 +586,27 @@ class MVVAE(pl.LightningModule):
         preds_coherence = []
         cond_rec_loss = []
         preds_coherence_cov = []
+        preds_coherence_cov = []
+        preds_coherence_cov_zero = []
+        preds_coherence_id = []
+        preds_coherence_id_zero = []
+        preds_coherence_z_in = []
         cond_rec_loss_cov = []
+        cond_rec_loss_cov_zero = []
+        cond_rec_loss_id = []
+        cond_rec_loss_id_zero = []
+        cond_rec_loss_z_in = []
         rec_loss = []
         for idx, val_out in enumerate(self.validation_step_outputs):
+            # (
+            #     out,
+            #     labels,
+            #     pred_coh,
+            #     cond_rec_loss_batch,
+            #     rec_loss_batch,
+            #     pred_coh_cov,
+            #     cond_rec_loss_batch_cov,
+            # ) = val_out
             (
                 out,
                 labels,
@@ -478,6 +615,14 @@ class MVVAE(pl.LightningModule):
                 rec_loss_batch,
                 pred_coh_cov,
                 cond_rec_loss_batch_cov,
+                pred_cov_zero,
+                cond_rec_loss_batch_zero,
+                pred_cov_id,
+                cond_rec_loss_batch_id,
+                pred_cov_id_zero,
+                cond_rec_loss_batch_id_zero,
+                pred_cov_z_in,
+                cond_rec_loss_batch_z_in
             ) = val_out
             # imgs, labels = batch
             dists_out = out[0]
@@ -503,6 +648,14 @@ class MVVAE(pl.LightningModule):
             rec_loss.append(rec_loss_batch)
             preds_coherence_cov.append(pred_coh_cov)
             cond_rec_loss_cov.append(cond_rec_loss_batch_cov)
+            preds_coherence_cov_zero.append(pred_cov_zero)
+            cond_rec_loss_cov_zero.append(cond_rec_loss_batch_zero)
+            preds_coherence_id.append(pred_cov_id)
+            cond_rec_loss_id.append(cond_rec_loss_batch_id)
+            preds_coherence_id_zero.append(pred_cov_id_zero)
+            cond_rec_loss_id_zero.append(cond_rec_loss_batch_id_zero)
+            preds_coherence_z_in.append(pred_cov_z_in)
+            cond_rec_loss_z_in.append(cond_rec_loss_batch_z_in)
         self.log_additional_values_val()
         self.validation_step_outputs.clear()  # free memory
 
@@ -536,7 +689,24 @@ class MVVAE(pl.LightningModule):
                 acc_coh_cov = self.from_preds_to_clf_metric(
                     preds_coherence_cov, labels_val, self.modality_names
                 )
-                self.final_scores_coh_cov = acc_coh_cov
+                # coherence of other ways
+                preds_coherence_cov_zero = torch.cat(preds_coherence_cov_zero)
+                acc_coh_cov_zero = self.from_preds_to_clf_metric(
+                    preds_coherence_cov_zero, labels_val, self.modality_names
+                )
+                preds_coherence_id = torch.cat(preds_coherence_id)
+                acc_coh_cov_id = self.from_preds_to_clf_metric(
+                    preds_coherence_id, labels_val, self.modality_names
+                )
+                preds_coherence_id_zero = torch.cat(preds_coherence_id_zero)
+                acc_coh_cov_zero_id = self.from_preds_to_clf_metric(
+                    preds_coherence_id_zero, labels_val, self.modality_names
+                )
+                preds_coherence_z_in = torch.cat(preds_coherence_z_in)
+                acc_coh_cov_z_in = self.from_preds_to_clf_metric(
+                    preds_coherence_z_in, labels_val, self.modality_names
+                )
+                self.final_scores_coh_cov_zero = acc_coh_cov_zero
                 for m, key in enumerate(self.modality_names):
                     for m_tilde, key_tilde in enumerate(self.modality_names):
                         accs_m_m_tilde = acc_coh[m, m_tilde, :].mean()
@@ -549,7 +719,27 @@ class MVVAE(pl.LightningModule):
                             "val/coherence/" + key + "_to_" + key_tilde + "_cov",
                             accs_m_m_tilde_cov,
                         )
-                        
+                        accs_m_m_tilde_cov_zero = acc_coh_cov_zero[m, m_tilde, :].mean()
+                        self.log(
+                            "val/coherence/" + key + "_to_" + key_tilde + "_cov_zero",
+                            accs_m_m_tilde_cov_zero,
+                        )
+                        accs_m_m_tilde_cov_id = acc_coh_cov_id[m, m_tilde, :].mean()
+                        self.log(
+                            "val/coherence/" + key + "_to_" + key_tilde + "_cov_id",
+                            accs_m_m_tilde_cov_id,
+                        )
+                        accs_m_m_tilde_cov_zero_id = acc_coh_cov_zero_id[m, m_tilde, :].mean()
+                        self.log(
+                            "val/coherence/" + key + "_to_" + key_tilde + "_cov_zero_id",
+                            accs_m_m_tilde_cov_zero_id,
+                        )
+                        accs_m_m_tilde_cov_z_in = acc_coh_cov_z_in[m, m_tilde, :].mean()
+                        self.log(
+                            "val/coherence/" + key + "_to_" + key_tilde + "_cov_z_in",
+                            accs_m_m_tilde_cov_z_in,
+                        )
+
                 if self.cfg.dataset.name == "celeba":
                     self.coherence_plot_all_labels_celeba(acc_coh)
                     self.coherence_plot_all_labels_celeba(acc_coh_cov, True)
@@ -693,7 +883,31 @@ class MVVAE(pl.LightningModule):
                         f"val/fid/{key}_to_{key_tilde}_cov",
                         score_m_m_tilde_cov,
                     )
-                    
+                    # extra ones 
+                    fid_cov_zero = self.fid_scores[key + "_to_" + key_tilde + "_cov_zero"]
+                    score_m_m_tilde_cov_zero = fid_cov_zero.compute()
+                    self.log(
+                        f"val/fid/{key}_to_{key_tilde}_cov_zero",
+                        score_m_m_tilde_cov_zero,
+                    ) 
+                    fid_cov_identity = self.fid_scores[key + "_to_" + key_tilde + "_cov_identity"] 
+                    score_m_m_tilde_cov_identity = fid_cov_identity.compute()
+                    self.log(
+                        f"val/fid/{key}_to_{key_tilde}_cov_identity",
+                        score_m_m_tilde_cov_identity,
+                    )
+                    fid_cov_identity_zero = self.fid_scores[key + "_to_" + key_tilde + "_cov_identity_zero"]
+                    score_m_m_tilde_cov_identity_zero = fid_cov_identity_zero.compute()
+                    self.log(
+                        f"val/fid/{key}_to_{key_tilde}_cov_identity_zero",
+                        score_m_m_tilde_cov_identity_zero,
+                    )
+                    fid_cov_z_in = self.fid_scores[key + "_to_" + key_tilde + "_cov_z_in"]
+                    score_m_m_tilde_cov_z_in = fid_cov_z_in.compute()
+                    self.log(
+                        f"val/fid/{key}_to_{key_tilde}_cov_z_in",
+                        score_m_m_tilde_cov_z_in,
+                    )
 
     def log_txt_samples(self, txt_samples, str_txt, str_title):
         sample_ids = range(0, len(txt_samples))

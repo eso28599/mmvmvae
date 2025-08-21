@@ -12,7 +12,7 @@ class LogConfig:
     wandb_group: str = ""
     wandb_run_name: str = ""
     wandb_project_name: str = "mvvae_clf"
-    wandb_log_freq: int = 2
+    wandb_log_freq: int = 50
     wandb_offline: bool = False
 
     # logs
@@ -22,8 +22,8 @@ class LogConfig:
 @dataclass
 class ModelConfig:
     device: str = "cuda"
-    batch_size: int = 32 # 256
-    batch_size_eval: int = 32 # 256
+    batch_size: int = 256 # 256, had 32
+    batch_size_eval: int = 256 # 256, had 32
     lr: float = 1e-3
     epochs: int = 10
 

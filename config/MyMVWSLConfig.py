@@ -13,7 +13,7 @@ class LogConfig:
     wandb_group: str = ""
     wandb_run_name: str = ""
     wandb_project_name: str = "multi_view_vae"
-    wandb_log_freq: int = 2
+    wandb_log_freq: int = 50 # 50
     wandb_offline: bool = False
     wandb_local_instance: bool = False
 
@@ -21,10 +21,10 @@ class LogConfig:
     dir_logs: str = "/rds/general/user/eso18/home/mmvmvae/clfs"
 
     # logging frequencies
-    downstream_logging_frequency: int = 2
-    coherence_logging_frequency: int = 2
-    img_plotting_frequency: int = 2
-    fid_logging_frequency: int = 1
+    downstream_logging_frequency: int = 50 #50
+    coherence_logging_frequency: int = 50 #50
+    img_plotting_frequency: int = 50 #50
+    fid_logging_frequency: int = 50
 
     # debug level wandb
     debug: bool = False
