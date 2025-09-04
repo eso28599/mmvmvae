@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
-#PBS -l walltime=10:00:00
+#PBS -l walltime=20:00:00
 #PBS -N poly_joint
 #PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_poly_joint.out
 #PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_poly_joint.err

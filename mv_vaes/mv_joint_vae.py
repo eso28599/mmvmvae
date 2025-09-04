@@ -66,7 +66,20 @@ class MVJointVAE(MVVAE):
         data, _ = batch
         data_rec = forward_out[0]
         dists_out = forward_out[1]
-
+        
+        if self.cfg.model.beta_annealing:
+            init_temp = self.cfg.model.init_beta_value
+            final_temp = self.cfg.model.final_beta_value
+            annealing_steps = self.cfg.model.beta_annealing_steps
+            M = self.cfg.model.beta_M
+            R = self.cfg.model.beta_R
+            beta_weight = self.compute_current_beta(
+                init_temp, final_temp, annealing_steps, M, R
+            )
+        else:
+            beta_weight = self.cfg.model.final_beta_value
+        self.log("beta annealing", beta_weight)
+        
         # kl divergence of latent distribution
         klds = []
         for m, key in enumerate(self.modality_names):
@@ -90,8 +103,7 @@ class MVJointVAE(MVVAE):
                 loss_rec_mods[key],
             )
 
-        beta = self.cfg.model.beta
-        loss_mv_vae = (loss_rec + beta * klds_sum).mean(dim=0)
+        loss_mv_vae = (loss_rec + beta_weight * klds_sum).mean(dim=0)
         total_loss = loss_mv_vae
         # logging
         self.log(str_set + "/loss/klds_avg", klds_sum.mean(dim=0))

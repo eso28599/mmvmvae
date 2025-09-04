@@ -14,6 +14,13 @@ class ModelConfig:
 
     # loss hyperparameters
     beta: float = 1.0
+    beta_annealing: bool = True # True
+    init_beta_value: float = 0 # 1
+    final_beta_value: float = 1.0 # 0
+    schedule: str = "cyclical"
+    beta_annealing_steps: int = 250000
+    beta_M: int = 4
+    beta_R: float = 0.5
 
     # network architectures
     use_resnets: bool = True
@@ -42,8 +49,8 @@ class JointPriorModelConfig(ModelConfig):
     init_alpha_value: float = 1.0 # 1
     final_alpha_value: float = 0 # 0
     alpha_annealing_steps: int = 150000
-    cov_scalar: float =  1 - 0.2 ** 2 # 1 - alpha^2
-    alpha_scalar: float = 0.2
+    cov_scalar: float =  1 - 0.9 ** 2 # 1 - alpha^2
+    alpha_scalar: float = 0.9
 
 
 @dataclass

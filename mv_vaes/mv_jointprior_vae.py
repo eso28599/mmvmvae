@@ -66,16 +66,18 @@ class MVJointPriorVAE(MVVAE):
         imgs_rec = forward_out[0]
         dists_out = forward_out[1]
 
-        if self.cfg.model.alpha_annealing:
-            init_temp = self.cfg.model.init_alpha_value
-            final_temp = self.cfg.model.final_alpha_value
-            annealing_steps = self.cfg.model.alpha_annealing_steps
-            alpha_weight = self.compute_current_temperature(
-                init_temp, final_temp, annealing_steps
+        if self.cfg.model.beta_annealing:
+            init_temp = self.cfg.model.init_beta_value
+            final_temp = self.cfg.model.final_beta_value
+            annealing_steps = self.cfg.model.beta_annealing_steps
+            M = self.cfg.model.beta_M
+            R = self.cfg.model.beta_R
+            beta_weight = self.compute_current_beta(
+                init_temp, final_temp, annealing_steps, M, R
             )
         else:
-            alpha_weight = self.cfg.model.final_alpha_value
-        self.log("alpha annealing", alpha_weight)
+            beta_weight = self.cfg.model.final_beta_value
+        self.log("beta annealing", beta_weight)
         klds = []
         # m = 0
         scalar = 1 + (self.cfg.dataset.num_views - 1) * (1 - self.cfg.model.cov_scalar) / self.cfg.model.cov_scalar
@@ -120,8 +122,7 @@ class MVJointPriorVAE(MVVAE):
                 loss_rec_mods[key],
             )
 
-        beta = self.cfg.model.beta
-        loss_mv_vae = (loss_rec + beta * klds_term).mean(dim=0)
+        loss_mv_vae = (loss_rec + beta_weight * klds_term).mean(dim=0)
         total_loss = loss_mv_vae
         # logging
         self.log(str_set + "/loss/klds_avg", klds_term.mean(dim=0))
