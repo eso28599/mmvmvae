@@ -98,7 +98,7 @@ class MVVAE(pl.LightningModule):
         
         if cfg.model.schedule == "cyclical":
             self.compute_current_beta = self.beta_cyc_annealing
-        elif cfg.model.temp_annealing == "cosine":
+        if cfg.model.temp_annealing == "cosine":
             self.compute_current_temperature = self.cos_annealing
         elif cfg.model.temp_annealing == "linear":
             self.compute_current_temperature = self.linear_annealing

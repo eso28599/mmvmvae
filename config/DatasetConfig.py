@@ -13,7 +13,7 @@ class DataConfig:
 
 @dataclass
 class PolyMNISTDataConfig(DataConfig):
-    num_views: int = 3
+    num_views: int = 5
     dir_data_base: str = "/rds/general/user/eso18/home/mmvmvae/data"
     dir_clfs_base: str = (
         "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_polyMNIST"
@@ -83,6 +83,27 @@ class CUBDataConfig(DataConfig):
     beta_text: float = 1.0
     len_sequence: int = 32
     img_size: int = 64
+    n_clfs_outputs: int = 6
+    label_names: List[str] = field(
+        default_factory=lambda: [
+            "blue2red",
+            "brown",
+            "grey",
+            "yellow",
+            "black",
+            "white",
+        ]
+    )
+    
+@dataclass
+class scMNCDataConfig(DataConfig):
+    name: str = "scMNC"
+    num_views: int = 2
+    dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/scMNC"
+    num_labels: int = 6
+    dir_clf: str = (
+        "/usr/scratch/projects/multimodality/mvvae/experiments/trained_clfs/scMNC"
+    )
     n_clfs_outputs: int = 6
     label_names: List[str] = field(
         default_factory=lambda: [

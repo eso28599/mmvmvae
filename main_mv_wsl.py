@@ -56,7 +56,7 @@ def run_experiment(cfg: MyMVWSLConfig):
         # wandb.login(host="https://api.wandb.ai")
         wandb.login()
         
-    pl.seed_everything(cfg.seed, workers=True)
+    pl.seed_everything(cfg.model.seed, workers=True)
 
     # get data loaders
     train_loader, train_dst, val_loader, _ = dataset.get_dataset(cfg)

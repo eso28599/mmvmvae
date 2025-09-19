@@ -9,7 +9,7 @@ class ModelConfig:
     lr: float = 5e-4 # 5e-4
     epochs: int = 500 #500
     temp_annealing: str = "cosine"
-    
+    seed: int = 1
     latent_dim: int = 256
 
     # loss hyperparameters

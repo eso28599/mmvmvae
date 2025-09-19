@@ -1,0 +1,22 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
+#PBS -l walltime=12:00:00
+#PBS -N scMNC_classifier
+#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/scMNC_classifier.log
+#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/scMNC_classifier.err
+
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+source activate mvvae
+cd mmvmvae
+
+# wandb login $WANDB_API_KEY
+export CUDA_LAUNCH_BLOCKING=1
+export TORCH_USE_CUDA_DSA=1
+export HYDRA_FULL_ERROR=1
+
+# run the classifier first
+python main_train_clf_scMNC.py dataset="scMNC"
+
+# run the classifier with a jointposterior
+# python main_mv_wsl.py  dataset="CelebA" model="jointprior"   
+
