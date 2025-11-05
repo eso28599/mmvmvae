@@ -15,7 +15,7 @@ from PIL import Image
 class PolyMNIST(Dataset):
     """Multimodal MNIST Dataset."""
 
-    def __init__(self, dir_data, num_views, transform=None, target_transform=None):
+    def __init__(self, dir_data, num_views, mod_order, transform=None, target_transform=None):
         """
         Args:
             unimodal_datapaths (list): list of paths to weakly-supervised unimodal datasets with samples that
@@ -29,6 +29,7 @@ class PolyMNIST(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.label_names = "digit"
+        self.modalities_order = mod_order
 
         # save all paths to individual files
         self.file_paths = {dp: [] for dp in range(self.num_modalities)}
@@ -193,6 +194,8 @@ class PolyMNIST(Dataset):
             labels = [self.transform(label) for label in labels]
 
         images_dict = {"m%d" % m: images[m] for m in range(self.num_modalities)}
+        # images_dict = {"m%d" % m: images[m] for m in self.modalities_order}
+        
         return (
             images_dict,
             labels[0],

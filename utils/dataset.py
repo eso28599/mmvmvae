@@ -31,11 +31,13 @@ def get_dataset_PM(cfg):
     dir_data_train = os.path.join(
         cfg.dataset.dir_data_base, cfg.dataset.suffix_data_train
     )
-    train_dst = PolyMNIST(dir_data_train, cfg.dataset.num_views, transform=transform)
+    train_dst = PolyMNIST(dir_data_train, cfg.dataset.num_views,
+                          cfg.dataset.modalities_order, transform=transform)
     dir_data_test = os.path.join(
         cfg.dataset.dir_data_base, cfg.dataset.suffix_data_test
     )
-    val_dst = PolyMNIST(dir_data_test, cfg.dataset.num_views, transform=transform)
+    val_dst = PolyMNIST(dir_data_test, cfg.dataset.num_views, 
+                        cfg.dataset.modalities_order, transform=transform)
     train_loader = torch.utils.data.DataLoader(
         train_dst,
         batch_size=cfg.model.batch_size,

@@ -14,6 +14,11 @@ class DataConfig:
 @dataclass
 class PolyMNISTDataConfig(DataConfig):
     num_views: int = 5
+    modalities_order: list[int] = field(
+        default_factory=lambda: [
+            0, 1, 2, 3, 4
+        ]
+    )
     dir_data_base: str = "/rds/general/user/eso18/home/mmvmvae/data"
     dir_clfs_base: str = (
         "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_polyMNIST"

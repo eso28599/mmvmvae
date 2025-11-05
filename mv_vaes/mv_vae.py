@@ -42,6 +42,9 @@ class MVVAE(pl.LightningModule):
             self.modality_names = [
                 "m" + str(m) for m in range(0, cfg.dataset.num_views)
             ]
+            self.modality_names_ordered = [
+                "m" + str(m) for m in cfg.dataset.modalities_order
+            ]
             self.ref_mod_d_size = 3 * 28 * 28
             self.modalities_size = {
                 "m" + str(m): 3 * 28 * 28 for m in range(cfg.dataset.num_views)
@@ -214,9 +217,6 @@ class MVVAE(pl.LightningModule):
 
         # to calculate the empirical covariance matrix
         # see if it works at this point
-        print((cov_est[256:512, 256:512] > 2e-01).sum())
-        print((cov_est[0:256, 0:256] > 2e-01).sum())
-        print((cov_est[0:256, 256:512] > 2e-01).sum())
         self.covariance = cov_est.to(self.cfg.model.device)
         mu = mu / num_samples
         self.mu = mu.to(self.cfg.model.device)
