@@ -14,6 +14,8 @@ Untitled1.ipynb
 __pycache__/
 *.py[cod]
 *$py.class
+Icon
+settings.json
 
 # C extensions
 *.so
