@@ -1,13 +1,15 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
-#PBS -l walltime=48:00:00
+#PBS -l walltime=30:00:00
 #PBS -N sweep_01234
-#PBS -J 41-45
+#PBS -J 17-20
 #PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/PolyMNIST/output.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/PolyMNIST/error.log 
 
 
-# -J 25-26, delete 226
+# -J 1-90 for pm_all.txt to run all PM experiments
+# -J 1-20 for pm_params_mod.txt to run modalities PM experiments
+# -J 1-70 for pm_params.txt to run main PM experiments
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
@@ -18,10 +20,10 @@ export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 
 # Get params for this array index
-# params=$(sed -n "${PBS_ARRAY_INDEX}p" params.txt)
-# params=$(sed -n "${PBS_ARRAY_INDEX}p" params_mixed_uni.txt)
-params=$(sed -n "${PBS_ARRAY_INDEX}p" params_jp.txt)
-read dataset model seed ld lr n_ep gamma agg alpha <<< "$params"
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" params/pm_params.txt) # main experiment
+params=$(sed -n "${PBS_ARRAY_INDEX}p" params/pm_params_mod.txt) # mod experiment
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" params/pm_all.txt)
+read dataset model seed agg alpha mod <<< "$params"
 
 
 wandb_entity="eso18-imperial-college-london"
@@ -41,6 +43,10 @@ ld=256
 beta=1      # KL weight (float)
 aa=true     # alpha annealing steps (int)
 a_w=0.5
+ld=512 
+lr=5e-4 
+n_ep=400 
+gamma=0.0001
 
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
 
@@ -57,6 +63,7 @@ python main_mv_wsl.py \
     ++model.epochs=${n_ep} \
     ++model.aggregation="${agg}" \
     dataset=${dataset} \
+    ++dataset.modalities_order=${mod} \
     ++log.wandb_offline=false \
     ++log.downstream_logging_frequency=${log_freq_downstream} \
     ++log.coherence_logging_frequency=${log_freq_coherence} \

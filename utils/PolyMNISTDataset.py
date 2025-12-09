@@ -29,7 +29,9 @@ class PolyMNIST(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.label_names = "digit"
-        self.modalities_order = mod_order
+        mod_list = [n for n in range(num_views)]
+        mod_list.remove(mod_order)
+        self.modalities_order = [mod_order] + mod_list 
 
         # save all paths to individual files
         self.file_paths = {dp: [] for dp in range(self.num_modalities)}

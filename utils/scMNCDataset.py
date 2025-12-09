@@ -1,262 +1,147 @@
-import numpy as np
-import argparse
-import torch
 import os
-import glob
-
-import io
 import json
+import io
 import pickle
-from collections import Counter, OrderedDict
-from collections import defaultdict
+from collections import Counter, OrderedDict, defaultdict
+from sklearn import preprocessing
 
-import torch.nn as nn
-from nltk.tokenize import sent_tokenize, word_tokenize
-from torchvision import transforms, models, datasets
-
+import numpy as np
+import pandas as pd
+import torch
 from torch.utils.data import Dataset
-from torchvision.utils import save_image
 
-from PIL import Image
-
-class OrderedCounter(Counter, OrderedDict):
-    """Counter that remembers the order elements are first encountered."""
-
-    def __repr__(self):
-        return '%s(%r)' % (self.__class__.__name__, OrderedDict(self))
-
-    def __reduce__(self):
-        return self.__class__, (OrderedDict(self),)
+# code based on that from https://github.com/daifengwanglab/JAMIE/blob/main/examples/notebooks/scMNC-Visual-Cortical.ipynb 
+# data from https://github.com/daifengwanglab/scMNC/tree/main/mouse_motor_cortex
 
 class scMNC(Dataset):
-    def __init__(self, dir_data, train, img_size=64, num_views=2):
+    """Multimodal MNIST Dataset."""
+
+    def __init__(self, dir_data, transform=None, target_transform=None):
         """
-        dir_data: Path to the 'scMNC' directory.
-        transform: Optional transform to be applied on a sample.
+        Args:
+            unimodal_datapaths (list): list of paths to weakly-supervised unimodal datasets with samples that
+                correspond by index. Therefore the numbers of samples of all datapaths should match.
+            transform: tranforms on colored MNIST digits.
+            target_transform: transforms on labels.
         """
+        super().__init__()
         self.dir_data = dir_data
-        self.idx_to_path = {}
-        self.num_modalities = num_views
-        self.train = train
+        self.label_names = "type"
+        # save all paths to individual files
+        self.file_paths = {dp: [] for dp in range(self.num_modalities)}
+        for dp in range(self.num_modalities):
+            files = glob.glob(os.path.join(self.dir_data, "m" + str(dp), "*.png"))
+            self.file_paths[dp] = files
+        # assert that each modality has the same number of images
+        num_files = len(self.file_paths[dp])
+        for files in self.file_paths.values():
+            print(num_files, len(files))
+            assert len(files) == num_files
+        self.num_files = num_files
 
-        self.transform = transforms.Compose([
-            transforms.Resize((self.img_size, self.img_size)),  # Resize to a fixed size
-            transforms.ToTensor(),  # Convert image to tensor
-        ])
+    @staticmethod
+    def _create_scmnc_dataset(
+        dir_data,
+        savepath,
+        train
+    ):
+        """Structure the scMNC Dataset with labels under 'savepath'.
 
-        # Load idx2name mappings
-        # with open(dir_data + '/idx2name.txt', 'r') as file:
-        #     for line in file:
-        #         idx, img_path = line.strip().split()
-        #         self.idx_to_path[int(idx) - 1] = img_path[:-4]
+        Args:
+            dir_data (str): path to directory that contains the scMNC data files.
+            savepath (str): path to directory that the dataset will be written to. Will be created if it does not
+                exist.
+            train (bool): create the dataset based on MNIST training (True) or test data (False).
+        """
 
-        # load train or test indices
-        self._load_indices()
+        # load MNIST data
+        data1 = pd.read_csv(os.path.join(dir_data, "geneExp_filtered.csv"))
+        data2 = pd.read_csv(os.path.join(dir_data, "efeature_filtered.csv"))
+        sample_names1 = data1.columns[1:]
+        sample_names2 = np.array(data2)[:, 0]
+        feature_names1 = data1.iloc[:,0]
+        feature_names2 = data2.columns[3:]
+        assert (sample_names1 == sample_names2).all()
+        data1 = np.transpose(np.array(data1)[:, 1:])
+        data2 = np.array(data2)[:, 3:]
+        meta = pd.read_csv(
+          os.path.join(dir_data, "20200711_patchseq_metadata_mouse.csv")
+          )
+        meta_names = np.array(meta.columns)
+        meta_sid = np.argwhere(meta_names == 'transcriptomics_sample_id')[0][0]
+        meta_ttype = np.argwhere(meta_names == 't_type')[0][0]
+        meta = np.array(meta)
+        meta_idx = [
+          np.argwhere(meta[:, meta_sid] == sample_names1[i])[0][0] for i in     range(sample_names1.shape[0])
+          ]
+        type1 = np.array(
+          [x.split(' ')[0] for x in meta[meta_idx, meta_ttype]]
+          )
 
-        self.max_sequence_length = 32
-        self.min_occ = 3
-        os.makedirs(os.path.join(dir_data, "lang_emb"), exist_ok=True)
+        features = [np.array(feature_names1), np.array(feature_names2)]
+        feature_dict = {
+          'upstroke_downstroke_ratio_short_square':
+            'up-downstroke_ratio_short_square',
+            'upstroke_downstroke_ratio_long_square':
+              'up-downstroke_ratio_long_square'
+              }
+        # Preprocessing
+        data1 = preprocessing.scale(data1, axis=0)
+        data2 = preprocessing.scale(data2, axis=0)
+        data1[np.isnan(data1)] = 0  # Replace NaN with average
+        data2[np.isnan(data2)] = 0
+        dataset = [data1, data2]
 
-        self.gen_dir = os.path.join(self.dir_data, "oc_msl")
+        # Replace NULL feature names
+        for i in range(len(features)):
+            if features[i] is None:
+                features[i] = np.array([f'Feature {i}' for i in range(dataset[i].shape[1])])
+        
+                # save labels and data
+        os.makedirs(savepath, exist_ok=True)
+        with open(os.path.join(savepath, "labels.pkl"), "wb") as f:
+            pickle.dump(type1, f)
 
-        os.makedirs(self.gen_dir, exist_ok=True)
-        self.data_file = 'cub.{}.s{}'.format('train' if self.train else 'test', self.max_sequence_length)
-        self.vocab_file = 'cub.vocab'
 
-        if not os.path.exists(os.path.join(self.gen_dir, self.data_file)):
-            print("Data file not found for {} split at {}. Creating new... (this may take a while)".
-                  format('train' if self.train else 'test', os.path.join(self.gen_dir, self.data_file)))
-            self._create_data()
+    def __getitem__(self, index):
+        """
+        Returns a tuple (images, labels) where each element is a list of
+        length `self.num_modalities`.
+        """
+        files = [self.file_paths[dp][index] for dp in range(self.num_modalities)]
+        labels = [int(files[m].split(".")[-2]) for m in range(self.num_modalities)]
+        images = [Image.open(files[m]) for m in range(self.num_modalities)]
 
-        else:
-            self._load_data()
-
-        # Load labels
-        idx_label = [idx//10 for i, idx in enumerate(self.indices) if i%10==0]
-        label_path = os.path.join(self.dir_data, 'labels.txt')
-        with open(label_path, 'r') as file:
-            labels = [[int(item) for item in line.strip().split()] for line in file]
-        self.labels = torch.Tensor(labels)[idx_label, 248:263] # 248:263 is has_primary_color::xxx
-        # Combine primary colors
-        color_combine = {
-            "blue2red": [0, 2, 3, 4, 8, 9, 13],
-            "brown": [1],
-            "grey": [5],
-            "yellow": [6, 7, 10, 14],
-            "black": [11],
-            "white": [12]
-        }
-        self.label_names = list(color_combine.keys())
-        self.labels_combined = torch.zeros(len(self.labels), len(color_combine))
-        for i, (color, indices) in enumerate(color_combine.items()):
-            self.labels_combined[:, i] = torch.max(self.labels[:, indices], dim=1)[0]
+        images_dict = {"m%d" % m: images[m] for m in range(self.num_modalities)}
+        
+        return (
+            images_dict,
+            labels[0],
+        )  # NOTE: for scMNC, labels are shared across modalities, so can take one value
 
     def __len__(self):
-        return len(self.indices)
+        return self.num_files
 
-    def __getitem__(self, idx):
-        if idx not in range(self.__len__()):
-            raise ValueError(f"No data found for index: {idx}")
-        # row_num = self.indices[idx]
-        # idx = row_num//10
-        idx_img = self.indices[idx]//10
 
-        img_path = os.path.join(self.dir_data, 'images', self.idx_to_path[idx_img]+'.jpg')
-        # caption_path = os.path.join(self.dir_data, 'captions', self.idx_to_path[idx]+'.txt')
-        label_path = os.path.join(self.dir_data, 'labels.txt')
-        # print(img_path)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--num-modalities", type=int, default=5)
+    parser.add_argument("--savepath-train", type=str, required=True)
+    parser.add_argument("--savepath-test", type=str, required=True)
+    parser.add_argument("--backgroundimagepath", type=str, required=True)
+    parser.add_argument("--rotate-mnist", default=False, action="store_true")
+    parser.add_argument("--translate-mnist", default=False, action="store_true")
+    args = parser.parse_args()  # use vars to convert args into a dict
+    print("\nARGS:\n", args)
 
-        # Load image
-        image = Image.open(img_path).convert('RGB')
-        image = self.transform(image)
-        
-        # Load captions word to index
-        caption = torch.Tensor(self.data_captions[str(idx)]['idx'])
-
-        # Load labels
-        label = self.labels_combined[idx//10, :]
-
-        data_dict = {"text": caption, "img": image}
-        
-        return data_dict, label
-
-    
-    def _load_indices(self):
-        if self.train:
-            with open(self.dir_data + '/train_idx.txt') as file:
-                self.indices = [int(line.strip())*10+i for line in file for i in range(10)]
-        else:
-            with open(self.dir_data + '/test_idx.txt') as file:
-                self.indices = [int(line.strip())*10+i for line in file for i in range(10)]
-        return self.indices
-    
-    @property
-    def vocab_size(self):
-        return len(self.w2i)
-
-    @property
-    def pad_idx(self):
-        return self.w2i['<pad>']
-
-    @property
-    def eos_idx(self):
-        return self.w2i['<eos>']
-
-    @property
-    def unk_idx(self):
-        return self.w2i['<unk>']
-
-    def get_w2i(self):
-        return self.w2i
-
-    def get_i2w(self):
-        return self.i2w
-
-    def _load_data(self, vocab=True):
-        with open(os.path.join(self.gen_dir, self.data_file), 'rb') as file:
-            self.data_captions = json.load(file)
-
-        if vocab:
-            self._load_vocab()
-
-    def _load_vocab(self):
-        if not os.path.exists(os.path.join(self.gen_dir, self.vocab_file)):
-            self._create_vocab()
-        with open(os.path.join(self.gen_dir, self.vocab_file), 'r') as vocab_file:
-            vocab = json.load(vocab_file)
-        self.w2i, self.i2w = vocab['w2i'], vocab['i2w']
-
-    def _create_data(self):
-        if self.train and not os.path.exists(os.path.join(self.gen_dir, self.vocab_file)):
-            self._create_vocab()
-        else:
-            self._load_vocab()
-
-        idx_list = [idx//10 for i, idx in enumerate(self.indices) if i%10==0]
-        sentences = []
-        for idx in idx_list:
-            caption_path = os.path.join(self.dir_data, 'captions', self.idx_to_path[idx]+'.txt')
-            with open(caption_path, 'r') as file:
-                captions = [line.strip() for line in file]
-            sentences.extend(captions)
-
-        data = defaultdict(dict)
-        pad_count = 0
-
-        for i, line in enumerate(sentences):
-            words = word_tokenize(line)
-
-            tok = words[:self.max_sequence_length - 1]
-            tok = tok + ['<eos>']
-            length = len(tok)
-            if self.max_sequence_length > length:
-                tok.extend(['<pad>'] * (self.max_sequence_length - length))
-                pad_count += 1
-            idx = [self.w2i.get(w, self.w2i['<exc>']) for w in tok]
-
-            id = len(data)
-            data[id]['tok'] = tok
-            data[id]['idx'] = idx
-            data[id]['length'] = length
-
-        print("{} out of {} sentences are truncated with max sentence length {}.".
-              format(len(sentences) - pad_count, len(sentences), self.max_sequence_length))
-        with io.open(os.path.join(self.gen_dir, self.data_file), 'wb') as data_file:
-            data = json.dumps(data, ensure_ascii=False)
-            data_file.write(data.encode('utf8', 'replace'))
-
-        self._load_data(vocab=False)
-
-    def _create_vocab(self):
-
-        assert self.train, "Vocablurary can only be created for training file."
-
-        idx_list = [idx//10 for i, idx in enumerate(self.indices) if i%10==0]
-        sentences = []
-        for idx in idx_list:
-            caption_path = os.path.join(self.dir_data, 'captions', self.idx_to_path[idx]+'.txt')
-            with open(caption_path, 'r') as file:
-                captions = [line.strip() for line in file]
-            sentences.extend(captions)
-
-        occ_register = OrderedCounter()
-        w2i = dict()
-        i2w = dict()
-
-        special_tokens = ['<exc>', '<pad>', '<eos>']
-        for st in special_tokens:
-            i2w[len(w2i)] = st
-            w2i[st] = len(w2i)
-
-        texts = []
-        unq_words = []
-
-        for i, line in enumerate(sentences):
-            words = word_tokenize(line)
-            occ_register.update(words)
-            texts.append(words)
-
-        for w, occ in occ_register.items():
-            if occ > self.min_occ and w not in special_tokens:
-                i2w[len(w2i)] = w
-                w2i[w] = len(w2i)
-            else:
-                unq_words.append(w)
-
-        assert len(w2i) == len(i2w)
-
-        print("Vocablurary of {} keys created, {} words are excluded (occurrence <= {})."
-              .format(len(w2i), len(unq_words), self.min_occ))
-
-        vocab = dict(w2i=w2i, i2w=i2w)
-        with io.open(os.path.join(self.gen_dir, self.vocab_file), 'wb') as vocab_file:
-            data = json.dumps(vocab, ensure_ascii=False)
-            vocab_file.write(data.encode('utf8', 'replace'))
-
-        with open(os.path.join(self.gen_dir, 'cub.unique'), 'wb') as unq_file:
-            pickle.dump(np.array(unq_words), unq_file)
-
-        with open(os.path.join(self.gen_dir, 'cub.all'), 'wb') as a_file:
-            pickle.dump(occ_register, a_file)
-
-        self._load_vocab()
+    # create dataset
+    scMNC._create_mmnist_dataset(
+        args.savepath_train,
+        train=True
+    )
+    scMNC._create_mmnist_dataset(
+        args.savepath_test,
+        train=False
+    )
+    print("Done.")
