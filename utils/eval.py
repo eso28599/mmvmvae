@@ -10,7 +10,6 @@ import torch
 
 from clfs.polymnist_clf import ClfPolyMNIST
 from clfs.celeba_clf import ClfCelebA
-from clfs.cub_clf import ClfCUB
 
 
 def train_clf_lr_PM(encodings, labels):
@@ -43,26 +42,6 @@ def eval_clf_lr_celeba(clfs, encodings, labels):
         y_pred_k = clf_k.predict(encodings.cpu())
         ap = average_precision_score(labels[:, k].cpu(), y_pred_k)
         scores[k] = ap
-    return scores
-
-def train_clf_lr_cub(encodings, labels):
-    n_labels = labels.shape[1]
-    clfs = []
-    for k in range(0, n_labels):
-        clf = LogisticRegression(max_iter=10000).fit(
-            encodings.cpu(), labels[:, k].cpu()
-        )
-        clfs.append(clf)
-    return clfs
-
-def eval_clf_lr_cub(clfs, encodings, labels):
-    n_labels = labels.shape[1]
-    scores = torch.zeros(n_labels)
-    for k in range(0, n_labels):
-        clf_k = clfs[k]
-        y_pred_k = clf_k.predict(encodings.cpu())
-        auroc = roc_auc_score(labels[:, k].cpu(), y_pred_k)
-        scores[k] = auroc
     return scores
 
 def generate_samples(decoders, rep):
@@ -105,8 +84,6 @@ def load_modality_clfs(cfg):
         model = load_modality_clfs_PM(cfg)
     elif cfg.dataset.name.startswith("celeba"):
         model = load_modality_clfs_celeba(cfg)
-    elif cfg.dataset.name.startswith("CUB"):
-        model = load_modality_clfs_cub(cfg)
     else:
         print("dataset does not exist..exit")
         sys.exit()
@@ -124,11 +101,6 @@ def load_modality_clfs_PM(cfg):
 def load_modality_clfs_celeba(cfg):
     fp_clf = os.path.join(cfg.dataset.dir_clf, "last.ckpt")
     model = ClfCelebA.load_from_checkpoint(fp_clf)
-    return model
-
-def load_modality_clfs_cub(cfg):
-    fp_clf = os.path.join(cfg.dataset.dir_clf, "last.ckpt")
-    model = ClfCUB.load_from_checkpoint(fp_clf)
     return model
 
 

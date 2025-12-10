@@ -42,7 +42,7 @@ class EvalConfig:
 
     # fid
     path_inception_weights: str = (
-        "/rds/general/user/eso18/home/mmvmvae/pt_inception-2015-12-05-6726825d.pth"
+        "/rds/general/user/eso18/home/mmvmvae/utils/pt_inception-2015-12-05-6726825d.pth"
     )
 
 

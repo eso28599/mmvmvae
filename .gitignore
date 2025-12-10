@@ -4,7 +4,7 @@ clfs/wandb/*
 clfs/multi_view_vae/*
 logs_mmvmvae/*
 trained_classifiers/*
-pt_inception-2015-12-05-6726825d.pth
+# utils/pt_inception-2015-12-05-6726825d.pth
 Untitled.ipynb
 cub/cub.zip
 # Byte-compiled / optimized / DLL files
