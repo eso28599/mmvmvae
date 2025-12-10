@@ -2,8 +2,8 @@
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
 #PBS -l walltime=20:00:00
 #PBS -N poly_jp_all5
-#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_poly_joint.out
-#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/run_poly_joint.err
+#PBS -o /rds/general/user/eso18/home/mmvmvae/run_PM/logs/run_example.out
+#PBS -e /rds/general/user/eso18/home/mmvmvae/run_PM/logs/run_example.err
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
@@ -13,11 +13,7 @@ cd mmvmvae
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
-
-# run the classifier first
-# python main_train_clf_PM.py # needs re run with lower learning rate
+export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 
 # run the classifier with a jointposterir
-# python main_mv_wsl.py dataset="PMtranslated75" model="unimodal" \
-#     ++model.beta=0.1
 python main_mv_wsl.py dataset="PMtranslated75" model="jointprior"

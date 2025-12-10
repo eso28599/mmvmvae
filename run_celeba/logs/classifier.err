@@ -1,0 +1,141 @@
+Seed set to 0
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: Currently logged in as: eso18 (eso18-imperial-college-london). Use `wandb login --relogin` to force relogin
+wandb: wandb version 0.23.1 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20251210_145155-9xhgt8f0
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run lilac-eon-9
+wandb: ⭐️ View project at https://wandb.ai/eso18-imperial-college-london/mvvae_clf
+wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/mvvae_clf/runs/9xhgt8f0
+wandb: logging graph, to disable use `wandb.watch(log_graph=False)`
+You are using a CUDA device ('NVIDIA L40S') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:639: Checkpoint directory /rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-697fdb31-dffa-e6c4-04b2-074fba7bcd3d]
+
+  | Name | Type             | Params
+------------------------------------------
+0 | clfs | ModuleList       | 9.5 M 
+1 | loss | CrossEntropyLoss | 0     
+------------------------------------------
+9.5 M     Trainable params
+0         Non-trainable params
+9.5 M     Total params
+37.871    Total estimated model params size (MB)
+[rank: 0] Received SIGTERM: 15
+Error executing job with overrides: []
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 44, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 580, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 989, in _run
+    results = self._run_stage()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1035, in _run_stage
+    self.fit_loop.run()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 202, in run
+    self.advance()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 359, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 136, in run
+    self.advance(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 202, in advance
+    batch, _, __ = next(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fetchers.py", line 127, in __next__
+    batch = super().__next__()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fetchers.py", line 56, in __next__
+    batch = next(self.iterator)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/utilities/combined_loader.py", line 326, in __next__
+    out = next(self._iterator)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/utilities/combined_loader.py", line 74, in __next__
+    out[i] = next(self.iterators[i])
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1329, in _next_data
+    idx, data = self._get_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1295, in _get_data
+    success, data = self._try_get_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1133, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/queues.py", line 113, in get
+    if not self._poll(timeout):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 257, in poll
+    return self._poll(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 424, in _poll
+    r = wait([self], timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 931, in wait
+    ready = selector.select(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/selectors.py", line 416, in select
+    fd_event_list = self._selector.poll(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 4000011) is killed by signal: Terminated. 
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/mmvmvae/run_celeba/main_train_clf_celeba.py", line 74, in <module>
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/rds/general/user/eso18/home/mmvmvae/run_celeba/main_train_clf_celeba.py", line 70, in run_experiment
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 544, in fit
+    call._call_and_handle_interrupt(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 68, in _call_and_handle_interrupt
+    trainer._teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1012, in _teardown
+    self.strategy.teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 524, in teardown
+    _optimizers_to_device(self.optimizers, torch.device("cpu"))
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 28, in _optimizers_to_device
+    _optimizer_to_device(opt, device)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 34, in _optimizer_to_device
+    optimizer.state[p] = apply_to_collection(v, Tensor, move_data_to_device, device, allow_frozen=True)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 52, in apply_to_collection
+    return _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 104, in _apply_to_collection_slow
+    v = _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 96, in _apply_to_collection_slow
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 102, in move_data_to_device
+    return apply_to_collection(batch, dtype=_TransferableDataType, function=batch_to)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 64, in apply_to_collection
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 96, in batch_to
+    data_output = data.to(device, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 4000617) is killed by signal: Terminated. 
+wandb: - 0.022 MB of 0.299 MB uploadedwandb: \ 0.299 MB of 0.299 MB uploadedwandb: 
+wandb: Run history:
+wandb:               epoch ▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:     train/loss/loss ▅█▇█▃▁█▃▃▆▃▅
+wandb: trainer/global_step ▁▂▂▃▄▄▅▅▆▇▇█
+wandb: 
+wandb: Run summary:
+wandb:               epoch 0
+wandb:     train/loss/loss 29.64344
+wandb: trainer/global_step 599
+wandb: 
+wandb: 🚀 View run lilac-eon-9 at: https://wandb.ai/eso18-imperial-college-london/mvvae_clf/runs/9xhgt8f0
+wandb: Synced 6 W&B file(s), 1 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./clfs/wandb/run-20251210_145155-9xhgt8f0/logs

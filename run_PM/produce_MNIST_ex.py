@@ -34,4 +34,4 @@ for i in range(num_classes):
 plt.subplots_adjust(wspace=0, hspace=0, left=0, right=1, top=1, bottom=0)
 # plt.tight_layout()
 plt.show()
-plt.savefig("data/MMNIST/example.png")
+plt.savefig("run_PM/example.png")

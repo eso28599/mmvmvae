@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 23, in <module>
+    from config.DatasetConfig import CUBDataConfig
+ImportError: cannot import name 'CUBDataConfig' from 'config.DatasetConfig' (/rds/general/user/eso18/home/mmvmvae/config/DatasetConfig.py)

@@ -1,13 +1,13 @@
 #!/bin/bash
-# generate_params.sh
+# generate_params_PM.sh
 
 # common file names
 dataset_names=("PMtranslated75")
 seeds=(1 2 3 4 5)
 models=("joint" "mixedprior" "unimodal" "jointprior")
-outfile=params/pm_params.txt 
+outfile=run_PM/pm_params.txt 
 > $outfile
-outfile_mod=params/pm_params_mod.txt > $outfile_mod
+outfile_mod=run_PM/pm_params_mod.txt > $outfile_mod
 
 for dataset in "${dataset_names[@]}"; do
 for model in "${models[@]}"; do
@@ -42,4 +42,4 @@ done
 done
 done
 
-cat params/pm_params.txt params/pm_params_mod.txt > params/pm_all.txt
+cat run_PM/pm_params.txt run_PM/pm_params_mod.txt > run_PM/pm_all.txt

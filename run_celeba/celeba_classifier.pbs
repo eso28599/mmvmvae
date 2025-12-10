@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
+#PBS -l walltime=01:00:00
+#PBS -N joint_celeba
+#PBS -o /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/classifier.log
+#PBS -e /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/classifier.err
+
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+source activate mvvae
+cd mmvmvae
+
+# wandb login $WANDB_API_KEY
+export CUDA_LAUNCH_BLOCKING=1
+export TORCH_USE_CUDA_DSA=1
+export HYDRA_FULL_ERROR=1
+export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
+
+# run the classifier first
+python run_celeba/main_train_clf_celeba.py
+#PBS -l walltime=24:00:00
+

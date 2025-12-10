@@ -12,7 +12,6 @@ from torchvision.transforms import v2
 
 from utils.eval import train_clf_lr_PM, eval_clf_lr_PM
 from utils.eval import train_clf_lr_celeba, eval_clf_lr_celeba
-from utils.eval import train_clf_lr_cub, eval_clf_lr_cub
 from utils.eval import generate_samples
 from utils.eval import conditional_generation
 from utils.eval import conditional_generation_cov
@@ -84,19 +83,6 @@ class MVVAE(pl.LightningModule):
                     "img": cfg.dataset.img_size * cfg.dataset.img_size,
                     "text": cfg.dataset.img_size * cfg.dataset.img_size,
                 }
-        elif cfg.dataset.name.startswith("CUB"):
-            self.train_clf_lr = train_clf_lr_cub
-            self.eval_clf_lr = eval_clf_lr_cub
-            self.eval_downstream_task = self.eval_downstream_task_cub
-            self.calc_coherence = calc_coherence_ap
-            self.from_preds_to_clf_metric = from_preds_to_ap
-            self.modality_names = ["text", "img"]
-            self.betas = {"img": cfg.dataset.beta_img, "text": cfg.dataset.beta_text}
-            self.ref_mod_d_size = cfg.dataset.img_size * cfg.dataset.img_size
-            self.modalities_size = {
-                "img": cfg.dataset.img_size * cfg.dataset.img_size,
-                "text": cfg.dataset.len_sequence,
-            }
 
         self.transforms = v2.Compose(
             [

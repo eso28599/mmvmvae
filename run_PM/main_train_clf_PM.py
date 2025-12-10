@@ -23,7 +23,9 @@ cs.store(group="dataset", name="PMtranslated75", node=PMtranslatedData75Config)
 cs.store(name="base_config", node=MyClfConfig)
 
 
-@hydra.main(version_base=None, config_path="config", config_name="config_clf")
+@hydra.main(version_base=None, 
+            config_path="../config",
+            config_name="config_clf_PM")
 def run_experiment(cfg: MyClfConfig):
     print(cfg)
     pl.seed_everything(cfg.seed, workers=True)

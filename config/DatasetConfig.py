@@ -69,32 +69,6 @@ class CelebADataConfig(DataConfig):
 
     use_rec_weight: bool = True
     include_channels_rec_weight: bool = False
-
-
-@dataclass
-class CUBDataConfig(DataConfig):
-    name: str = "CUB"
-    num_views: int = 2
-    dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/cub"
-    num_labels: int = 6
-    dir_clf: str = (
-        "/usr/scratch/projects/multimodality/mvvae/experiments/trained_clfs/cub"
-    )
-    beta_img: float = 1.0
-    beta_text: float = 1.0
-    len_sequence: int = 32
-    img_size: int = 64
-    n_clfs_outputs: int = 6
-    label_names: List[str] = field(
-        default_factory=lambda: [
-            "blue2red",
-            "brown",
-            "grey",
-            "yellow",
-            "black",
-            "white",
-        ]
-    )
     
 @dataclass
 class scMNCDataConfig(DataConfig):

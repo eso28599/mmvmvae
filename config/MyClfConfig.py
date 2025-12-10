@@ -31,7 +31,7 @@ class ModelConfig:
 @dataclass
 class MyClfConfig:
     seed: int = 0
-    checkpoint_metric: str = "val/loss/mean_acc" # was "val/loss/mean_metric" "val/loss/mean_acc" for CelebA
+    checkpoint_metric: str = "val/loss/loss" # was "val/loss/mean_metric" "val/loss/mean_acc" for CelebA
     model: ModelConfig = MISSING
     log: LogConfig = MISSING
     dataset: DataConfig = MISSING

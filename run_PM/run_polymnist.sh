@@ -2,12 +2,12 @@
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
 #PBS -l walltime=30:00:00
 #PBS -N sweep_01234
-#PBS -J 17-20
+#PBS -J 1-90
 #PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/PolyMNIST/output.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/PolyMNIST/error.log 
 
 
-# -J 1-90 for pm_all.txt to run all PM experiments
+# -J 1-90 for pm_all.txt to run all PM experimentsß
 # -J 1-20 for pm_params_mod.txt to run modalities PM experiments
 # -J 1-70 for pm_params.txt to run main PM experiments
 
@@ -20,9 +20,9 @@ export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 
 # Get params for this array index
-# params=$(sed -n "${PBS_ARRAY_INDEX}p" params/pm_params.txt) # main experiment
-params=$(sed -n "${PBS_ARRAY_INDEX}p" params/pm_params_mod.txt) # mod experiment
-# params=$(sed -n "${PBS_ARRAY_INDEX}p" params/pm_all.txt)
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_params.txt) # main experiment
+params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_params_mod.txt) # mod experiment
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_all.txt)
 read dataset model seed agg alpha mod <<< "$params"
 
 

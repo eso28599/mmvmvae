@@ -20,7 +20,6 @@ from config.ModelConfig import SplitModelConfig
 from config.ModelConfig import JointPriorModelConfig
 from config.DatasetConfig import PMtranslatedData75Config
 from config.DatasetConfig import CelebADataConfig
-from config.DatasetConfig import CUBDataConfig
 from config.MyMVWSLConfig import EvalConfig
 
 from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
@@ -40,7 +39,6 @@ cs.store(group="model", name="split", node=SplitModelConfig)
 cs.store(group="eval", name="eval", node=EvalConfig)
 cs.store(group="dataset", name="PMtranslated75", node=PMtranslatedData75Config)
 cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
-cs.store(group="dataset", name="cub", node=CUBDataConfig)
 cs.store(name="base_config", node=MyMVWSLConfig)
 
 torch.set_float32_matmul_precision('high') # added
