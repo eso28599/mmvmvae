@@ -307,11 +307,8 @@ class MVVAE(pl.LightningModule):
                 z_m = self.reparametrize(mu_m, lv_m)
                 mod_c_gen_m_tilde = self.cond_generate_samples(m_tilde, z_m)
                 mod_c_cor_gen_m_tilde = self.cond_generate_samples_cov(m, m_tilde, z_m)
-                if self.cfg.dataset.name.startswith("CUB") and key_tilde == "text":
-                    mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0].argmax(dim=-1)
-                else:
-                    mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0]
-                    mods_m_cov_gen[key_tilde] = mod_c_cor_gen_m_tilde[0]
+                mods_m_gen[key_tilde] = mod_c_gen_m_tilde[0]
+                mods_m_cov_gen[key_tilde] = mod_c_cor_gen_m_tilde[0]
                 if m_tilde == m:
                     cond_rec[key] = mod_c_gen_m_tilde
                     cond_rec_cov[key] = mod_c_cor_gen_m_tilde
@@ -806,23 +803,6 @@ class MVVAE(pl.LightningModule):
             #     # self.log(f"val/downstream/{str_ds}/{key}/{l_name}", scores_m[k])
                 
         return scores
-
-    def eval_downstream_task_cub(self, str_ds, clfs, enc_mu_val, labels_val):
-        n_labels = labels_val.shape[1]
-        scores = torch.zeros((self.cfg.dataset.num_views, n_labels))
-        for m, key in enumerate(self.modality_names):
-            clf_m = clfs[m]
-            enc_mu_m_val = enc_mu_val[key]
-            scores_m = self.eval_clf_lr(
-                clf_m,
-                enc_mu_m_val,
-                labels_val,
-            )
-            scores[m, :] = scores_m
-            self.log("val/downstream/" + str_ds + "/" + key, scores_m.mean())
-            for k, l_name in enumerate(self.label_names):
-                self.log(f"val/downstream/{str_ds}/{key}/{l_name}", scores_m[k])
-        return scores
       
     def kl_div_cov(self, dist, cov_inv):
         mu, lv = dist
@@ -917,12 +897,7 @@ class MVVAE(pl.LightningModule):
             mod_rec_m = data_rec[key]
             rec_weight_m = float(self.ref_mod_d_size / self.modalities_size[key])
             if key == "text":
-                if self.cfg.dataset.name.startswith("CUB"):
-                    mod_d_out_m = torch.distributions.one_hot_categorical.Categorical(
-                        logits=mod_rec_m[0], validate_args=False
-                    )
-                else:
-                    mod_d_out_m = (
+                mod_d_out_m = (
                         torch.distributions.one_hot_categorical.OneHotCategorical(
                             logits=mod_rec_m[0], validate_args=False
                         )

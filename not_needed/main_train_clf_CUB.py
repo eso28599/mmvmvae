@@ -13,7 +13,7 @@ from config.MyClfConfig import LogConfig
 from config.DatasetConfig import CUBDataConfig
 
 from utils import dataset
-from clfs.cub_clf import ClfCUB
+from cub.cub_clf import ClfCUB
 
 cs = ConfigStore.instance()
 # Registering the Config class with the name 'config'.

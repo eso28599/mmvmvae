@@ -60,3 +60,20 @@ class CUBDataConfig(DataConfig):
             "white",
         ]
     )
+    
+    def eval_downstream_task_cub(self, str_ds, clfs, enc_mu_val, labels_val):
+        n_labels = labels_val.shape[1]
+        scores = torch.zeros((self.cfg.dataset.num_views, n_labels))
+        for m, key in enumerate(self.modality_names):
+            clf_m = clfs[m]
+            enc_mu_m_val = enc_mu_val[key]
+            scores_m = self.eval_clf_lr(
+                clf_m,
+                enc_mu_m_val,
+                labels_val,
+            )
+            scores[m, :] = scores_m
+            self.log("val/downstream/" + str_ds + "/" + key, scores_m.mean())
+            for k, l_name in enumerate(self.label_names):
+                self.log(f"val/downstream/{str_ds}/{key}/{l_name}", scores_m[k])
+        return scores
