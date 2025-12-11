@@ -81,14 +81,17 @@ class MVJointPriorVAE(MVVAE):
         klds = []
         # m = 0
         scalar = 1 + (self.cfg.dataset.num_views - 1) * (1 - self.cfg.model.cov_scalar) / self.cfg.model.cov_scalar
-        # key_m = self.modality_names[0]
-        key_m = self.modality_names_ordered[0]
+        if self.cfg.dataset.name.startswith("PM"):
+          key_m = self.modality_names_ordered[0]
+          enumerate_over = self.modality_names_ordered[1:]
+        else:
+          key_m = self.modality_names[0]
+          enumerate_over = self.modality_names[1:]
         kld_m = self.kl_div_orthog(dists_out[key_m], 1 / scalar)
         klds.append(kld_m.unsqueeze(1))
         # remaining modalities
         sum_product = torch.zeros_like(dists_out[key_m][0].transpose(0, 1))
-        # for m, key in enumerate(self.modality_names[1:]):
-        for m, key in enumerate(self.modality_names_ordered[1:]):
+        for m, key in enumerate(enumerate_over):
         # for m, key in enumerate(self.cfg.dataset.modalities_order[1:]):
             dist_m = dists_out[key]
             kld_m = self.kl_div_orthog(dist_m, self.cfg.model.cov_scalar)

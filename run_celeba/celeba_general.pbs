@@ -9,10 +9,10 @@ eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
 
-# wandb login $WANDB_API_KEY
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
+export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 
 # run the classifier with a jointposterior
 python main_mv_wsl.py \

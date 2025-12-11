@@ -15,7 +15,7 @@ export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 
 # Get params for this array index
-params=$(sed -n "${PBS_ARRAY_INDEX}p" params/celeba_params.txt) 
+params=$(sed -n "${PBS_ARRAY_INDEX}p" run_celeba/celeba_params.txt) 
 read dataset model seed agg alpha <<< "$params"
 
 # local wandb instance

@@ -16,4 +16,4 @@ export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 
 # run the classifier first
-python main_train_clf_PM.py # needs re run with lower learning rate
+python main_train_clf_PM.py 

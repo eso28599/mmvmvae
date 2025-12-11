@@ -1,0 +1,188 @@
+wandb: Currently logged in as: eso18 (eso18-imperial-college-london). Use `wandb login --relogin` to force relogin
+Seed set to 1
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: wandb version 0.23.1 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20251210_232112-965egj4v
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run hearty-haze-195
+wandb: ⭐️ View project at https://wandb.ai/eso18-imperial-college-london/multi_view_vae
+wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/multi_view_vae/runs/965egj4v
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-7331e81d-f0c3-4192-e1da-47b0c5f7824b]
+
+  | Name       | Type       | Params
+------------------------------------------
+0 | encoders   | ModuleList | 35.5 M
+1 | decoders   | ModuleList | 19.5 M
+2 | cov_mat    | ModuleList | 263 K 
+3 | transforms | Compose    | 0     
+------------------------------------------
+55.2 M    Trainable params
+0         Non-trainable params
+55.2 M    Total params
+220.790   Total estimated model params size (MB)
+=>> PBS: job killed: walltime 3603 exceeded limit 3600
+[rank: 0] Received SIGTERM: 15
+Error executing job with overrides: ['dataset=PMtranslated75', 'model=jointprior']
+Error in sys.excepthook:
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/linecache.py", line 72, in checkcache
+    stat = os.stat(fullname)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 4115469) is killed by signal: Terminated. 
+
+Original exception was:
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 44, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 580, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 989, in _run
+    results = self._run_stage()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1035, in _run_stage
+    self.fit_loop.run()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 202, in run
+    self.advance()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 359, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 137, in run
+    self.on_advance_end(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 285, in on_advance_end
+    self.val_loop.run()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/utilities.py", line 182, in _decorator
+    return loop_run(self, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 134, in run
+    self._evaluation_step(batch, batch_idx, dataloader_idx, dataloader_iter)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/evaluation_loop.py", line 421, in _evaluation_step
+    raise SIGTERMException
+pytorch_lightning.utilities.exceptions.SIGTERMException
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 162, in <module>
+    run_experiment()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 101, in run_experiment
+    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 544, in fit
+    call._call_and_handle_interrupt(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 68, in _call_and_handle_interrupt
+    trainer._teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1012, in _teardown
+    self.strategy.teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 524, in teardown
+    _optimizers_to_device(self.optimizers, torch.device("cpu"))
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 28, in _optimizers_to_device
+    _optimizer_to_device(opt, device)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 34, in _optimizer_to_device
+    optimizer.state[p] = apply_to_collection(v, Tensor, move_data_to_device, device, allow_frozen=True)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 52, in apply_to_collection
+    return _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 104, in _apply_to_collection_slow
+    v = _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 96, in _apply_to_collection_slow
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 102, in move_data_to_device
+    return apply_to_collection(batch, dtype=_TransferableDataType, function=batch_to)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 64, in apply_to_collection
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 96, in batch_to
+    data_output = data.to(device, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 4116905) is killed by signal: Terminated. 
+wandb: - 0.008 MB of 0.008 MB uploadedwandb: \ 0.008 MB of 0.030 MB uploadedwandb: | 0.030 MB of 0.030 MB uploadedwandb: 
+wandb: Run history:
+wandb:                  beta annealing ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███
+wandb:                           epoch ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇▇▇██
+wandb:             train/loss/klds_avg ▇█▇▆▆▅▅▅▅▄▄▄▄▄▄▃▃▃▃▃▂▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁
+wandb:                 train/loss/loss █▅▄▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:             train/loss/loss_rec █▅▄▄▃▃▃▃▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:               train/loss/mv_vae █▅▄▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:          train/loss/rec_loss_m0 ▁▃▄▅▅▅▆▆▆▆▆▇▇▇▇▇▇▇▇█▇████▇██████████▇███
+wandb:          train/loss/rec_loss_m1 ▁▃▄▅▆▆▆▇▇▇▇▇▇▇▇▇▇█▇██▇██████████████████
+wandb:          train/loss/rec_loss_m2 ▁▄▅▅▅▅▆▆▇▇▇▇▇▇▇▇▇▇██▇███████████████████
+wandb:          train/loss/rec_loss_m3 ▁▄▅▆▆▆▇▇▇▇▇▇▇▇▇▇████████████████████████
+wandb:          train/loss/rec_loss_m4 ▁▄▆▆▆▆▇▇▇▇▇▇▇▇▇██▇██████████████████████
+wandb: train/loss/weighted_rec_loss_m0 ▁▃▄▅▅▅▆▆▆▆▆▇▇▇▇▇▇▇▇█▇████▇██████████▇███
+wandb: train/loss/weighted_rec_loss_m1 ▁▃▄▅▆▆▆▇▇▇▇▇▇▇▇▇▇█▇██▇██████████████████
+wandb: train/loss/weighted_rec_loss_m2 ▁▄▅▅▅▅▆▆▇▇▇▇▇▇▇▇▇▇██▇███████████████████
+wandb: train/loss/weighted_rec_loss_m3 ▁▄▅▆▆▆▇▇▇▇▇▇▇▇▇▇████████████████████████
+wandb: train/loss/weighted_rec_loss_m4 ▁▄▆▆▆▆▇▇▇▇▇▇▇▇▇██▇██████████████████████
+wandb:             trainer/global_step ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███
+wandb:     val/loss/avg_rec_loss_epoch █▅▄▃▂▂▂▁▁▁▁▁
+wandb:               val/loss/klds_avg █▆▅▄▄▃▂▂▂▁▁▁
+wandb:                   val/loss/loss █▄▃▂▁▁▁▁▁▁▁▂
+wandb:               val/loss/loss_rec █▅▄▃▂▂▂▂▁▁▁▁
+wandb:                 val/loss/mv_vae █▄▃▂▁▁▁▁▁▁▁▂
+wandb:            val/loss/rec_loss_m0 ▁▄▅▆▇▆▇▇▇███
+wandb:            val/loss/rec_loss_m1 ▁▅▆▇▇▇▇█▇███
+wandb:            val/loss/rec_loss_m2 ▁▃▅▆▇▇▆▇████
+wandb:            val/loss/rec_loss_m3 ▁▄▅▆▆▇▇▇████
+wandb:            val/loss/rec_loss_m4 ▁▄▅▆▇▇▇▇████
+wandb:   val/loss/weighted_rec_loss_m0 ▁▄▅▆▇▆▇▇▇███
+wandb:   val/loss/weighted_rec_loss_m1 ▁▅▆▇▇▇▇█▇███
+wandb:   val/loss/weighted_rec_loss_m2 ▁▃▅▆▇▇▆▇████
+wandb:   val/loss/weighted_rec_loss_m3 ▁▄▅▆▆▇▇▇████
+wandb:   val/loss/weighted_rec_loss_m4 ▁▄▅▆▇▇▇▇████
+wandb: 
+wandb: Run summary:
+wandb:                  beta annealing 0.09678
+wandb:                           epoch 12
+wandb:             train/loss/klds_avg 3663.38184
+wandb:                 train/loss/loss 5675.23047
+wandb:             train/loss/loss_rec 5320.67383
+wandb:               train/loss/mv_vae 5675.23047
+wandb:          train/loss/rec_loss_m0 -1093.1687
+wandb:          train/loss/rec_loss_m1 -1010.27557
+wandb:          train/loss/rec_loss_m2 -1058.13171
+wandb:          train/loss/rec_loss_m3 -1109.64941
+wandb:          train/loss/rec_loss_m4 -1049.44849
+wandb: train/loss/weighted_rec_loss_m0 -1093.1687
+wandb: train/loss/weighted_rec_loss_m1 -1010.27557
+wandb: train/loss/weighted_rec_loss_m2 -1058.13171
+wandb: train/loss/weighted_rec_loss_m3 -1109.64941
+wandb: train/loss/weighted_rec_loss_m4 -1049.44849
+wandb:             trainer/global_step 6049
+wandb:     val/loss/avg_rec_loss_epoch 5331.81201
+wandb:               val/loss/klds_avg 3706.33765
+wandb:                   val/loss/loss 5664.84863
+wandb:               val/loss/loss_rec 5331.81201
+wandb:                 val/loss/mv_vae 5664.84863
+wandb:            val/loss/rec_loss_m0 -1095.88452
+wandb:            val/loss/rec_loss_m1 -1015.26215
+wandb:            val/loss/rec_loss_m2 -1056.04492
+wandb:            val/loss/rec_loss_m3 -1110.22327
+wandb:            val/loss/rec_loss_m4 -1054.39771
+wandb:   val/loss/weighted_rec_loss_m0 -1095.88452
+wandb:   val/loss/weighted_rec_loss_m1 -1015.26215
+wandb:   val/loss/weighted_rec_loss_m2 -1056.04492
+wandb:   val/loss/weighted_rec_loss_m3 -1110.22327
+wandb:   val/loss/weighted_rec_loss_m4 -1054.39771
+wandb: 
+wandb: 🚀 View run hearty-haze-195 at: https://wandb.ai/eso18-imperial-college-london/multi_view_vae/runs/965egj4v
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./clfs/wandb/run-20251210_232112-965egj4v/logs
