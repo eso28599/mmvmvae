@@ -1,10 +1,177 @@
+wandb: Currently logged in as: eso18 (eso18-imperial-college-london). Use `wandb login --relogin` to force relogin
+Seed set to 1
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: wandb version 0.23.1 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20251211_164158-zvgxl4i2
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run toasty-water-196
+wandb: ⭐️ View project at https://wandb.ai/eso18-imperial-college-london/multi_view_vae
+wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/multi_view_vae/runs/zvgxl4i2
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-5b7c3428-13dd-e399-c4ed-b60d31c7b8a7]
+
+  | Name       | Type       | Params
+------------------------------------------
+0 | encoders   | ModuleList | 9.0 M 
+1 | decoders   | ModuleList | 9.0 M 
+2 | cov_mat    | ModuleList | 65.8 K
+3 | transforms | Compose    | 0     
+------------------------------------------
+18.1 M    Trainable params
+0         Non-trainable params
+18.1 M    Total params
+72.401    Total estimated model params size (MB)
+=>> PBS: job killed: walltime 3652 exceeded limit 3600
+[rank: 0] Received SIGTERM: 15
+Error executing job with overrides: ['dataset=CelebA', 'model=jointprior', '++model.aggregation=avg']
 Traceback (most recent call last):
-  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 25, in <module>
-    from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
-  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_joint_vae.py", line 2, in <module>
-    from mv_vaes.mv_vae import MVVAE
-  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_vae.py", line 25, in <module>
-    from utils.vae import get_networks
-  File "/rds/general/user/eso18/home/mmvmvae/utils/vae.py", line 9, in <module>
-    from networks.NetworksCUBimg import Encoder as EncoderCUBimg
-ModuleNotFoundError: No module named 'networks.NetworksCUBimg'
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 44, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 580, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 989, in _run
+    results = self._run_stage()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1035, in _run_stage
+    self.fit_loop.run()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 202, in run
+    self.advance()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 359, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 136, in run
+    self.advance(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 202, in advance
+    batch, _, __ = next(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fetchers.py", line 127, in __next__
+    batch = super().__next__()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fetchers.py", line 56, in __next__
+    batch = next(self.iterator)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/utilities/combined_loader.py", line 326, in __next__
+    out = next(self._iterator)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/utilities/combined_loader.py", line 74, in __next__
+    out[i] = next(self.iterators[i])
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1329, in _next_data
+    idx, data = self._get_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1295, in _get_data
+    success, data = self._try_get_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1133, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/queues.py", line 113, in get
+    if not self._poll(timeout):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 257, in poll
+    return self._poll(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 424, in _poll
+    r = wait([self], timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 931, in wait
+    ready = selector.select(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/selectors.py", line 416, in select
+    fd_event_list = self._selector.poll(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 53217) is killed by signal: Terminated. 
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 162, in <module>
+    run_experiment()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 101, in run_experiment
+    trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 544, in fit
+    call._call_and_handle_interrupt(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 68, in _call_and_handle_interrupt
+    trainer._teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1012, in _teardown
+    self.strategy.teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 524, in teardown
+    _optimizers_to_device(self.optimizers, torch.device("cpu"))
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 28, in _optimizers_to_device
+    _optimizer_to_device(opt, device)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 34, in _optimizer_to_device
+    optimizer.state[p] = apply_to_collection(v, Tensor, move_data_to_device, device, allow_frozen=True)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 52, in apply_to_collection
+    return _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 104, in _apply_to_collection_slow
+    v = _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 96, in _apply_to_collection_slow
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 102, in move_data_to_device
+    return apply_to_collection(batch, dtype=_TransferableDataType, function=batch_to)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 64, in apply_to_collection
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 96, in batch_to
+    data_output = data.to(device, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 56013) is killed by signal: Terminated. 
+wandb: - 0.008 MB of 0.008 MB uploadedwandb: \ 0.008 MB of 0.030 MB uploadedwandb: | 0.030 MB of 0.030 MB uploadedwandb: 
+wandb: Run history:
+wandb:                    beta annealing ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇████
+wandb:                             epoch ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅▅█
+wandb:               train/loss/klds_avg █▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                   train/loss/loss █▅▅▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▂▂▃▂▂▂▂▁▂▁▂▂▂▂▁▁▁▁▁▁▁
+wandb:               train/loss/loss_rec █▆▅▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▂▂▃▂▂▂▂▁▂▁▂▂▂▂▁▁▁▁▁▁▁
+wandb:                 train/loss/mv_vae █▅▅▄▄▄▄▄▄▄▃▃▃▃▃▃▃▃▃▂▂▃▂▂▂▂▁▂▁▂▂▂▂▁▁▁▁▁▁▁
+wandb:           train/loss/rec_loss_img ▁▄▅▆▆▆▆▆▆▆▇▇▇▇▇▇▇▇▇▇▇▇█▇▇▇██████████████
+wandb:          train/loss/rec_loss_text ▁▃▃▄▄▄▄▄▄▄▅▅▅▅▅▅▅▅▅▆▆▅▆▆▆▆▇▆▇▇▇▇▇▇▇▇██▇█
+wandb:  train/loss/weighted_rec_loss_img ▁▄▅▆▆▆▆▆▆▆▇▇▇▇▇▇▇▇▇▇▇▇█▇▇▇██████████████
+wandb: train/loss/weighted_rec_loss_text ▁▃▃▄▄▄▄▄▄▄▅▅▅▅▅▅▅▅▅▆▆▅▆▆▆▆▇▆▇▇▇▇▇▇▇▇██▇█
+wandb:               trainer/global_step ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇████
+wandb:       val/loss/avg_rec_loss_epoch █▁
+wandb:                 val/loss/klds_avg █▁
+wandb:                     val/loss/loss █▁
+wandb:                 val/loss/loss_rec █▁
+wandb:                   val/loss/mv_vae █▁
+wandb:             val/loss/rec_loss_img ▁█
+wandb:            val/loss/rec_loss_text ▁█
+wandb:    val/loss/weighted_rec_loss_img ▁█
+wandb:   val/loss/weighted_rec_loss_text ▁█
+wandb: 
+wandb: Run summary:
+wandb:                    beta annealing 0.04078
+wandb:                             epoch 2
+wandb:               train/loss/klds_avg 2635.0415
+wandb:                   train/loss/loss 10069.69336
+wandb:               train/loss/loss_rec 9962.22656
+wandb:                 train/loss/mv_vae 10069.69336
+wandb:           train/loss/rec_loss_img -6199.01318
+wandb:          train/loss/rec_loss_text -235.20082
+wandb:  train/loss/weighted_rec_loss_img -6199.01318
+wandb: train/loss/weighted_rec_loss_text -3763.21313
+wandb:               trainer/global_step 2549
+wandb:       val/loss/avg_rec_loss_epoch 9413.51953
+wandb:                 val/loss/klds_avg 2622.99951
+wandb:                     val/loss/loss 9520.2041
+wandb:                 val/loss/loss_rec 9413.5166
+wandb:                   val/loss/mv_vae 9520.2041
+wandb:             val/loss/rec_loss_img -6144.87256
+wandb:            val/loss/rec_loss_text -204.29047
+wandb:    val/loss/weighted_rec_loss_img -6144.87256
+wandb:   val/loss/weighted_rec_loss_text -3268.64746
+wandb: 
+wandb: 🚀 View run toasty-water-196 at: https://wandb.ai/eso18-imperial-college-london/multi_view_vae/runs/zvgxl4i2
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./clfs/wandb/run-20251211_164158-zvgxl4i2/logs

@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=00:10:00
+#PBS -l walltime=30:00:00
 #PBS -N joint_celeba
 #PBS -o /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/full_celeba.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/full_celeba.err
@@ -9,15 +9,13 @@ eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
 
-# wandb login $WANDB_API_KEY
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
+export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 
 # run the classifier with a jointposterior
 python main_mv_wsl.py \
   dataset="CelebA" \
   model="jointprior" \
   ++model.aggregation="avg"
-
-#PBS -l walltime=24:00:00

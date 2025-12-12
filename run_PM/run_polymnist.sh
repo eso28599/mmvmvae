@@ -3,8 +3,8 @@
 #PBS -l walltime=30:00:00
 #PBS -N sweep_01234
 #PBS -J 1-90
-#PBS -o /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/PolyMNIST/output.log
-#PBS -e /rds/general/user/eso18/home/mmvmvae/logs_mmvmvae/PolyMNIST/error.log 
+#PBS -o /rds/general/user/eso18/home/mmvmvae/run_PM/logs/output.log
+#PBS -e /rds/general/user/eso18/home/mmvmvae/run_PM/logs/error.log 
 
 
 # -J 1-90 for pm_all.txt to run all PM experimentsß
@@ -20,9 +20,9 @@ export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 
 # Get params for this array index
+params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_all.txt)
 # params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_params.txt) # main experiment
-params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_params_mod.txt) # mod experiment
-# params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_all.txt)
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" run_PM/pm_params_mod.txt) # mod experiment
 read dataset model seed agg alpha mod <<< "$params"
 
 
@@ -33,7 +33,8 @@ dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/MMNIST"
 dataset_name_tar="MMNIST.tar.gz"
 # dir_clfs_base="/rds/general/user/eso18/home/mmvmvae/trained_classifiers"
 wandb_logdir="${dir_experiments}/run_PM/logs"
-WD=$(pwd)
+# WD=$(pwd)
+WD="mmvmvae"
 device="cuda"  # 'cuda' if you are useing a GPU
 log_freq_downstream=50
 log_freq_coherence=50

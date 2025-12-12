@@ -5,11 +5,11 @@
 #PBS -o /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/classifier.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/classifier.err
 
+# set global variables
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
 
-# wandb login $WANDB_API_KEY
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1

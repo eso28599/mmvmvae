@@ -41,9 +41,6 @@ class MVVAE(pl.LightningModule):
             self.modality_names = [
                 "m" + str(m) for m in range(0, cfg.dataset.num_views)
             ]
-            # self.modality_names_ordered = [
-            #     "m" + str(m) for m in cfg.dataset.modalities_order
-            # ]
             mod_list = [n for n in range(cfg.dataset.num_views)]
             mod_list.remove(cfg.dataset.modalities_order)
             mod_order = [cfg.dataset.modalities_order] + mod_list 
