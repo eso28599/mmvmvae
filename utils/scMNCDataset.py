@@ -16,13 +16,11 @@ from torch.utils.data import Dataset
 class scMNC(Dataset):
     """Multimodal MNIST Dataset."""
 
-    def __init__(self, dir_data, transform=None, target_transform=None):
+    def __init__(self, dir_data):
         """
         Args:
             unimodal_datapaths (list): list of paths to weakly-supervised unimodal datasets with samples that
                 correspond by index. Therefore the numbers of samples of all datapaths should match.
-            transform: tranforms on colored MNIST digits.
-            target_transform: transforms on labels.
         """
         super().__init__()
         self.dir_data = dir_data
@@ -42,8 +40,7 @@ class scMNC(Dataset):
     @staticmethod
     def _create_scmnc_dataset(
         dir_data,
-        savepath,
-        train
+        savepath
     ):
         """Structure the scMNC Dataset with labels under 'savepath'.
 
@@ -51,7 +48,6 @@ class scMNC(Dataset):
             dir_data (str): path to directory that contains the scMNC data files.
             savepath (str): path to directory that the dataset will be written to. Will be created if it does not
                 exist.
-            train (bool): create the dataset based on MNIST training (True) or test data (False).
         """
 
         # load MNIST data
@@ -136,12 +132,8 @@ if __name__ == "__main__":
     print("\nARGS:\n", args)
 
     # create dataset
-    scMNC._create_mmnist_dataset(
-        args.savepath_train,
-        train=True
-    )
-    scMNC._create_mmnist_dataset(
-        args.savepath_test,
-        train=False
+    scMNC._create_scmnc_dataset(
+        args.dir_data,
+        args.savepath_train
     )
     print("Done.")

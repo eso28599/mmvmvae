@@ -1,9 +1,9 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
 #PBS -l walltime=01:00:00
-#PBS -N poly_classifier
-#PBS -o /rds/general/user/eso18/home/mmvmvae/run_PM/logs/run_poly_classifier.out
-#PBS -e /rds/general/user/eso18/home/mmvmvae/run_PM/logs/run_poly_classifier.err
+#PBS -N scMNC_classifier
+#PBS -o /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/run_scMNC_classifier.out
+#PBS -e /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/run_scMNC_classifier.err
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
@@ -16,4 +16,4 @@ export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 
 # run the classifier first
-python run_PM/main_train_clf_PM.py 
+python run_scMNC/main_train_clf_scMNC.py 

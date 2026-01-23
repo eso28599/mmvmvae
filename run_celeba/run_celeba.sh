@@ -1,8 +1,8 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
-#PBS -l walltime=48:00:00
-#PBS -N celeba_sweep
-#PBS -J 1-45
+#PBS -l walltime=72:00:00
+#PBS -N missing_runs
+#PBS -J 1-8 
 #PBS -o /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/output.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/error.log 
 
@@ -15,7 +15,9 @@ export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 
 # Get params for this array index
-params=$(sed -n "${PBS_ARRAY_INDEX}p" run_celeba/celeba_params.txt) 
+IDX=$(sed -n "${PBS_ARRAY_INDEX}p" run_celeba/indices.txt)
+params=$(sed -n "${IDX}p" run_celeba/celeba_params.txt) 
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" run_celeba/celeba_params.txt) 
 read dataset model seed agg alpha <<< "$params"
 
 # local wandb instance
