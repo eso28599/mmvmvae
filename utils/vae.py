@@ -5,6 +5,7 @@ from config.MyMVWSLConfig import MyMVWSLConfig
 from networks.NetworksImgCelebA import EncoderImg, DecoderImg
 from networks.NetworksTextCelebA import EncoderText, DecoderText
 from networks.ConvNetworksPolyMNIST import Encoder, Decoder
+from networks.NetworksscMNC import scEncoder, scDecoder
 from networks.ConvNetworksPolyMNIST import ResnetEncoder, ResnetDecoder
 from networks.JointPrior import OrthogMat
 # from networks.NetworksRatsspike import Encoder as RatsEncoder
@@ -52,20 +53,20 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
                 DecoderText(cfg).to(cfg.model.device),
             ]
         )
-    elif cfg.dataset.name.startswith(""):
-        original_dims = [92, 79, 104, 49, 46]
-        # encoders = nn.ModuleList(
-        #     [
-        #         RatsEncoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
-        #         for m in range(cfg.dataset.num_views)
-        #     ]
-        # )
-        # decoders = nn.ModuleList(
-        #     [
-        #         RatsDecoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
-        #         for m in range(cfg.dataset.num_views)
-        #     ]
-        # )
+    elif cfg.dataset.name.startswith("sc"):
+        original_dims = [1302, 39]
+        encoders = nn.ModuleList(
+            [
+                scEncoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
+                for m in range(cfg.dataset.num_views)
+            ]
+        )
+        decoders = nn.ModuleList(
+            [
+                scDecoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
+                for m in range(cfg.dataset.num_views)
+            ]
+        )
     else:
         raise NotImplementedError(
             "Unknown dataset/networks to create encoders and decoders for specified config"

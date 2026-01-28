@@ -1,12 +1,9 @@
-import os
-import math
 import numpy as np
 
 import torch
 from torch import nn
 import torch.nn.functional as F
 import pytorch_lightning as pl
-import wandb
 from sklearn.metrics import accuracy_score
 
 from networks.ClfscMNC import ClfscMNC_FC
@@ -15,14 +12,15 @@ from networks.ClfscMNC import ClfscMNC_FC
 class ClfscMNC(pl.LightningModule):
     def __init__(self, cfg):
         super().__init__()
+        original_dims = [1302, 39]
         self.clfs = nn.ModuleList(
             [
-                ClfscMNC_FC().to(cfg.model.device)
+                ClfscMNC_FC(original_dims[m]).to(cfg.model.device)
                 for m in range(cfg.dataset.num_views)
             ]
         )
         self.cfg = cfg
-        self.loss = nn.MSELoss()
+        self.loss = nn.CrossEntropyLoss()
         self.validation_step_outputs = []
         self.training_step_outputs = []
 
@@ -31,24 +29,24 @@ class ClfscMNC(pl.LightningModule):
 
         self.save_hyperparameters()
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch):
         out = self.forward(self.cfg, batch)
-        loss, mean_acc = self.compute_loss("train", batch, out)
+        loss, _ = self.compute_loss("train", batch, out)
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch):
         out = self.forward(self.cfg, batch)
         loss, mean_acc = self.compute_loss("val", batch, out)
         self.validation_step_outputs.append(mean_acc)
         return loss
 
     def on_validation_epoch_end(self):
-        mean_acc = torch.tensor(self.validation_step_outputs).mean()
+        # mean_acc = torch.tensor(self.validation_step_outputs).mean()
         # self.final_accuracy = mean_acc
         self.validation_step_outputs.clear()  # free memory
 
     def compute_loss(self, str_set, batch, out):
-        imgs, labels = batch
+        _, labels = batch
         preds, losses = out
         loss = losses.mean(dim=1).mean(dim=0)
 
@@ -69,18 +67,19 @@ class ClfscMNC(pl.LightningModule):
         return loss, mean_acc
 
     def forward(self, cfg, batch):
-        imgs, labels = batch
+        data, labels = batch
         preds = torch.zeros(
-            (cfg.model.batch_size_eval, cfg.dataset.num_views, 10),
+            (cfg.model.batch_size_eval, cfg.dataset.num_views, 6),
             device=cfg.model.device,
         )
         losses = torch.zeros(
             (cfg.model.batch_size_eval, cfg.dataset.num_views, 1),
             device=cfg.model.device,
         )
+        modality_names = ["exp", "feat"]
         for m in range(cfg.dataset.num_views):
-            imgs_m = imgs["m" + str(m)]
-            pred_m = self.clfs[m](imgs_m)
+            data_m = data[modality_names[m]]
+            pred_m = self.clfs[m](data_m)
             preds[:, m, :] = pred_m
             loss_m = self.loss(pred_m, labels)
             losses[:, m, :] = loss_m

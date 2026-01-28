@@ -12,6 +12,7 @@ from torchvision.transforms import v2
 
 from utils.eval import train_clf_lr_PM, eval_clf_lr_PM
 from utils.eval import train_clf_lr_celeba, eval_clf_lr_celeba
+from utils.eval import train_clf_lr_scMNC, eval_clf_lr_scMNC
 from utils.eval import generate_samples
 from utils.eval import conditional_generation
 from utils.eval import conditional_generation_cov
@@ -53,6 +54,17 @@ class MVVAE(pl.LightningModule):
             }
             self.betas = {
                 "m" + str(m): cfg.model.beta for m in range(cfg.dataset.num_views)
+            }
+        elif cfg.dataset.name.startswith("sc"):
+            self.train_clf_lr = train_clf_lr_scMNC
+            self.eval_clf_lr = eval_clf_lr_scMNC
+            self.eval_downstream_task = self.eval_downstream_task_scMNC
+            self.from_preds_to_clf_metric = from_preds_to_acc
+            self.calc_coherence = calc_coherence_acc
+            self.modality_names = ["exp", "feat"]
+            mod_list = [n for n in range(cfg.dataset.num_views)]
+            self.modalities_size = {
+                "exp": 1302, "feat": 19
             }
         elif cfg.dataset.name.startswith("celeba"):
             self.train_clf_lr = train_clf_lr_celeba
@@ -754,6 +766,20 @@ class MVVAE(pl.LightningModule):
                    
 
     def eval_downstream_task_PM(self, str_ds, clfs, enc_mu_val, labels_val):
+        scores = torch.zeros((self.cfg.dataset.num_views, 1))
+        for m, key in enumerate(self.modality_names):
+            clf_m = clfs[m]
+            enc_mu_m_val = enc_mu_val[key]
+            bal_acc_m = self.eval_clf_lr(
+                clf_m,
+                enc_mu_m_val,
+                labels_val,
+            )
+            self.log("val/downstream/" + str_ds + "/" + key, bal_acc_m.mean())
+            scores[m, 0] = bal_acc_m.mean()
+        return scores
+      
+    def eval_downstream_task_scMNC(self, str_ds, clfs, enc_mu_val, labels_val):
         scores = torch.zeros((self.cfg.dataset.num_views, 1))
         for m, key in enumerate(self.modality_names):
             clf_m = clfs[m]

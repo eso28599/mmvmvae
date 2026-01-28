@@ -10,6 +10,7 @@ import torch
 
 from clfs.polymnist_clf import ClfPolyMNIST
 from clfs.celeba_clf import ClfCelebA
+from clfs.scMNC_clf import ClfscMNC
 
 
 def train_clf_lr_PM(encodings, labels):
@@ -18,6 +19,17 @@ def train_clf_lr_PM(encodings, labels):
 
 
 def eval_clf_lr_PM(clf, encodings, labels):
+    y_pred = clf.predict(encodings.cpu())
+    acc = accuracy_score(labels.cpu(), y_pred)
+    return np.array(acc)
+  
+
+def train_clf_lr_scMNC(encodings, labels):
+    clf = LogisticRegression(max_iter=10000).fit(encodings.cpu(), labels.cpu())
+    return clf
+
+
+def eval_clf_lr_scMNC(clf, encodings, labels):
     y_pred = clf.predict(encodings.cpu())
     acc = accuracy_score(labels.cpu(), y_pred)
     return np.array(acc)
@@ -84,6 +96,8 @@ def load_modality_clfs(cfg):
         model = load_modality_clfs_PM(cfg)
     elif cfg.dataset.name.startswith("celeba"):
         model = load_modality_clfs_celeba(cfg)
+    elif cfg.dataset.name.startswith("sc"):
+        model = load_modality_clfs_scMNC(cfg)
     else:
         print("dataset does not exist..exit")
         sys.exit()
@@ -101,6 +115,11 @@ def load_modality_clfs_PM(cfg):
 def load_modality_clfs_celeba(cfg):
     fp_clf = os.path.join(cfg.dataset.dir_clf, "last.ckpt")
     model = ClfCelebA.load_from_checkpoint(fp_clf)
+    return model
+  
+def load_modality_clfs_scMNC(cfg):
+    fp_clf = os.path.join(cfg.dataset.dir_clf, "last.ckpt")
+    model = ClfscMNC.load_from_checkpoint(fp_clf)
     return model
 
 

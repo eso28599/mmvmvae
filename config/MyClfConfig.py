@@ -26,6 +26,7 @@ class ModelConfig:
     batch_size_eval: int = 256 # 256, had 32
     lr: float = 1e-3
     epochs: int = 10
+    seed: int = 0
 
 
 @dataclass

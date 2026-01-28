@@ -1,9 +1,11 @@
+from cProfile import label
 import os
 import json
 import io
 import pickle
 from collections import Counter, OrderedDict, defaultdict
 from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
 
 import numpy as np
 import pandas as pd
@@ -16,31 +18,51 @@ from torch.utils.data import Dataset
 class scMNC(Dataset):
     """Multimodal MNIST Dataset."""
 
-    def __init__(self, dir_data):
+    def __init__(self, dir_data, seed, train=True):
         """
         Args:
             unimodal_datapaths (list): list of paths to weakly-supervised unimodal datasets with samples that
-                correspond by index. Therefore the numbers of samples of all datapaths should match.
+            correspond by index. Therefore the numbers of samples of all datapaths should match.
         """
         super().__init__()
         self.dir_data = dir_data
+        self.seed = seed
+        self.num_modalities = 2  # for scMNC, we have 2 modalities: gene expression and electrophysiology
+        # create dataset if it does not exist
         self.label_names = "type"
-        # save all paths to individual files
-        self.file_paths = {dp: [] for dp in range(self.num_modalities)}
-        for dp in range(self.num_modalities):
-            files = glob.glob(os.path.join(self.dir_data, "m" + str(dp), "*.png"))
-            self.file_paths[dp] = files
-        # assert that each modality has the same number of images
-        num_files = len(self.file_paths[dp])
-        for files in self.file_paths.values():
-            print(num_files, len(files))
-            assert len(files) == num_files
-        self.num_files = num_files
+        filename_exp = os.path.join(
+            dir_data, "expression_data.csv"
+        )
+        filename_feat = os.path.join(
+            dir_data, "feature_data.csv"
+        )
+        filename_labels = os.path.join(
+            dir_data, "labels.csv"
+        )
+        if not os.path.exists(filename_exp) or not os.path.exists(filename_feat) or not os.path.exists(filename_labels):
+            scMNC._create_scmnc_dataset(
+                dir_data,
+                dir_data
+            )
+        # load partition info
+        self.original_dims = [1302, 39]
+        self.modality_names = ["exp", "feat"]
+        self.exp_data = pd.read_csv(filename_exp)
+        num_samples = self.exp_data.shape[0]
+        dp = 0 if train else 1
+        partition = [
+          x in train_test_split(
+            range(num_samples), test_size=0.2,
+            random_state = seed
+            )[dp] for x in range(num_samples)]
+        self.exp_data = self.exp_data.loc[partition].to_numpy()
+        self.feat_data = pd.read_csv(filename_feat).loc[partition].to_numpy()
+        self.labels = pd.read_csv(filename_labels).loc[partition].to_numpy().reshape(-1)
+        self.num_files = len(self.labels)
 
     @staticmethod
     def _create_scmnc_dataset(
-        dir_data,
-        savepath
+        dir_data, savepath
     ):
         """Structure the scMNC Dataset with labels under 'savepath'.
 
@@ -93,26 +115,33 @@ class scMNC(Dataset):
             if features[i] is None:
                 features[i] = np.array([f'Feature {i}' for i in range(dataset[i].shape[1])])
         
-                # save labels and data
-        os.makedirs(savepath, exist_ok=True)
-        with open(os.path.join(savepath, "labels.pkl"), "wb") as f:
-            pickle.dump(type1, f)
-
+        # One-hot encode labels
+        labels = np.unique(type1, return_inverse=True)[1]
+        # save labels as csv
+        with open(os.path.join(savepath, "labels.csv"), "w") as f:
+            writer = pd.DataFrame(data=labels)
+            writer.to_csv(f, index=False)
+        # save expression data
+        with open(os.path.join(savepath, "expression_data.csv"), "w") as f:
+            writer = pd.DataFrame(data=dataset[0], columns=features[0])
+            writer.to_csv(f, index=False)
+        # save feature data
+        with open(os.path.join(savepath, "feature_data.csv"), "w") as f:
+            writer = pd.DataFrame(data=dataset[1], columns=features[1])
+            writer.to_csv(f, index=False) 
+        
 
     def __getitem__(self, index):
         """
-        Returns a tuple (images, labels) where each element is a list of
-        length `self.num_modalities`.
+        Returns a tuple (data, labels) where data is a dict containing expression and feature data
+        for the given index and labels is the corresponding cell type label.
         """
-        files = [self.file_paths[dp][index] for dp in range(self.num_modalities)]
-        labels = [int(files[m].split(".")[-2]) for m in range(self.num_modalities)]
-        images = [Image.open(files[m]) for m in range(self.num_modalities)]
 
-        images_dict = {"m%d" % m: images[m] for m in range(self.num_modalities)}
-        
+        data_dict = {"exp": torch.from_numpy(self.exp_data[index]).float(),
+                     "feat": torch.from_numpy(self.feat_data[index]).float()}
         return (
-            images_dict,
-            labels[0],
+            data_dict,
+            self.labels[index],
         )  # NOTE: for scMNC, labels are shared across modalities, so can take one value
 
     def __len__(self):
@@ -122,12 +151,8 @@ class scMNC(Dataset):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--num-modalities", type=int, default=5)
     parser.add_argument("--savepath-train", type=str, required=True)
     parser.add_argument("--savepath-test", type=str, required=True)
-    parser.add_argument("--backgroundimagepath", type=str, required=True)
-    parser.add_argument("--rotate-mnist", default=False, action="store_true")
-    parser.add_argument("--translate-mnist", default=False, action="store_true")
     args = parser.parse_args()  # use vars to convert args into a dict
     print("\nARGS:\n", args)
 

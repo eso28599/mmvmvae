@@ -23,8 +23,9 @@ cs.store(group="model", name="model", node=ModelConfig)
 cs.store(group="dataset", name="scMNC", node=scMNCDataConfig)
 cs.store(name="base_config", node=MyClfConfig)
 
-
-@hydra.main(version_base=None, config_path="config", config_name="config_clf")
+@hydra.main(version_base=None,
+            config_path="../config",
+            config_name="config_clf_scMNC")
 def run_experiment(cfg: MyClfConfig):
     print(cfg)
     pl.seed_everything(cfg.seed, workers=True)
@@ -57,6 +58,7 @@ def run_experiment(cfg: MyClfConfig):
         accelerator="gpu" if cfg.model.device == "cuda" else cfg.model.device,
         logger=wandb_logger,
         check_val_every_n_epoch=1,
+        log_every_n_steps=2,
         deterministic=True,
         callbacks=[checkpoint_callback],
     )

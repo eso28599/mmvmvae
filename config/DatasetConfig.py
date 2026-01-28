@@ -77,7 +77,7 @@ class scMNCDataConfig(DataConfig):
     dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/scMNC"
     num_labels: int = 6
     dir_clf: str = (
-        "/usr/scratch/projects/multimodality/mvvae/experiments/trained_clfs/scMNC"
+        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_scMNC"
     )
     n_clfs_outputs: int = 6
     label_names: List[str] = field(

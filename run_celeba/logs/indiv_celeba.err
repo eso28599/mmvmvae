@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 25, in <module>
+    from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
+  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_joint_vae.py", line 2, in <module>
+    from mv_vaes.mv_vae import MVVAE
+  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_vae.py", line 26, in <module>
+    from utils.vae import get_networks
+  File "/rds/general/user/eso18/home/mmvmvae/utils/vae.py", line 8, in <module>
+    from networks.NetworksscMNC import scEncoder, scDecoder
+ImportError: cannot import name 'scEncoder' from 'networks.NetworksscMNC' (/rds/general/user/eso18/home/mmvmvae/networks/NetworksscMNC.py)

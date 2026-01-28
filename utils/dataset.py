@@ -52,10 +52,8 @@ def get_dataset_PM(cfg):
     return train_loader, train_dst, val_loader, val_dst
   
 def get_dataset_sc(cfg):
-    dir_data = os.path.join(cfg.dataset.dir_data)
-
-    train_dst = scMNC(dir_data, train=True)
-    val_dst = scMNC(dir_data, train=False)
+    train_dst = scMNC(cfg.dataset.dir_data, cfg.model.seed, train=True)
+    eval_dst = scMNC(cfg.dataset.dir_data, cfg.model.seed, train=False)
     torch.multiprocessing.set_sharing_strategy('file_system')
     
     train_loader = torch.utils.data.DataLoader(
@@ -66,13 +64,13 @@ def get_dataset_sc(cfg):
         drop_last=True,
     )
     val_loader = torch.utils.data.DataLoader(
-        val_dst,
+        eval_dst,
         batch_size=cfg.model.batch_size_eval,
         shuffle=False,
         num_workers=cfg.dataset.num_workers,
         drop_last=True,
     )
-    return train_loader, train_dst, val_loader, val_dst
+    return train_loader, train_dst, val_loader, eval_dst
 
 
 def get_dataset_celeba(cfg):
