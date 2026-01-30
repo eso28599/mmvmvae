@@ -2,6 +2,7 @@ import os
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.utilities.model_summary.model_summary import ModelSummary
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 import wandb
 
 import hydra
@@ -20,6 +21,7 @@ from config.ModelConfig import SplitModelConfig
 from config.ModelConfig import JointPriorModelConfig
 from config.DatasetConfig import PMtranslatedData75Config
 from config.DatasetConfig import CelebADataConfig
+from config.DatasetConfig import scMNCDataConfig
 from config.MyMVWSLConfig import EvalConfig
 
 from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
@@ -39,9 +41,10 @@ cs.store(group="model", name="split", node=SplitModelConfig)
 cs.store(group="eval", name="eval", node=EvalConfig)
 cs.store(group="dataset", name="PMtranslated75", node=PMtranslatedData75Config)
 cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
+cs.store(group="dataset", name="scMNC", node=scMNCDataConfig)
 cs.store(name="base_config", node=MyMVWSLConfig)
 
-torch.set_float32_matmul_precision('high') # added
+torch.set_float32_matmul_precision('high')
 
 @hydra.main(version_base=None, config_path="config", config_name="config")
 def run_experiment(cfg: MyMVWSLConfig):
@@ -77,6 +80,8 @@ def run_experiment(cfg: MyMVWSLConfig):
     summary = ModelSummary(model, max_depth=2)
     print(summary)
 
+    early_stopping = EarlyStopping(monitor="val/loss/loss_rec", mode="min")
+
     # train the model (hint: here are some helpful Trainer arguments for rapid idea iteration)
     wandb_logger = WandbLogger(
         name=cfg.log.wandb_run_name,
@@ -94,6 +99,7 @@ def run_experiment(cfg: MyMVWSLConfig):
         logger=wandb_logger,
         check_val_every_n_epoch=1,
         deterministic=True,
+        callbacks=[early_stopping] if cfg.model.early_stop else [],
     )
 
     if cfg.log.debug:

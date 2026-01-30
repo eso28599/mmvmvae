@@ -1,9 +1,5 @@
 from cProfile import label
 import os
-import json
-import io
-import pickle
-from collections import Counter, OrderedDict, defaultdict
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
@@ -28,7 +24,6 @@ class scMNC(Dataset):
         self.dir_data = dir_data
         self.seed = seed
         self.num_modalities = 2  # for scMNC, we have 2 modalities: gene expression and electrophysiology
-        # create dataset if it does not exist
         self.label_names = "type"
         filename_exp = os.path.join(
             dir_data, "expression_data.csv"
@@ -39,6 +34,7 @@ class scMNC(Dataset):
         filename_labels = os.path.join(
             dir_data, "labels.csv"
         )
+        # create dataset if it does not exist
         if not os.path.exists(filename_exp) or not os.path.exists(filename_feat) or not os.path.exists(filename_labels):
             scMNC._create_scmnc_dataset(
                 dir_data,

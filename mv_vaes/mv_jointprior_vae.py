@@ -133,6 +133,6 @@ class MVJointPriorVAE(MVVAE):
         # logging
         self.log(str_set + "/loss/klds_avg", klds_term.mean(dim=0))
         self.log(str_set + "/loss/loss_rec", loss_rec.mean(dim=0))
-        self.log(str_set + "/loss/mv_vae", loss_mv_vae)
+        # self.log(str_set + "/loss/mv_vae", loss_mv_vae)
         self.log(str_set + "/loss/loss", total_loss)
         return total_loss, loss_rec

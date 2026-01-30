@@ -1,44 +1,61 @@
+import numpy as np
 import torch.nn as nn
-
-from networks.FeatureExtractorText import FeatureExtractorText
-from networks.FeatureCompressor import LinearFeatureCompressor
-from networks.DataGeneratorText import DataGeneratorText
+import torch
 
 
-class EncoderText(nn.Module):
-    def __init__(self, cfg):
-        super(EncoderText, self).__init__()
-        self.feature_extractor = FeatureExtractorText(
-            cfg,
-            a=cfg.dataset.skip_connections_text_weight_a,
-            b=cfg.dataset.skip_connections_text_weight_b,
+class scEncoder(nn.Module):
+    """
+    Adopted from ConvNetworksPolyMNIST.py, itself adopted from:
+    https://www.cs.toronto.edu/~lczhang/360/lec/w05/autoencoder.html
+    """
+
+    def __init__(self, input_dim, latent_dim, hidden_dim):
+        super(scEncoder, self).__init__()
+        
+        self.latent_dim = latent_dim
+        self.hidden_dim = hidden_dim
+        self.input_dim = input_dim
+        self.encoder = nn.Sequential(  # input shape (, input_dim)
+            nn.Linear(self.input_dim, self.hidden_dim),  
+            nn.ReLU(),
+            nn.Linear(self.hidden_dim, self.hidden_dim),  
+            nn.ReLU(),
+            nn.Linear(self.hidden_dim, self.latent_dim),  
+            nn.ReLU(),
         )
-        self.feature_compressor = LinearFeatureCompressor(
-            5 * cfg.dataset.filter_dim_text, cfg.model.latent_dim
+         # latent representation
+        self.mu = nn.Linear(self.latent_dim, self.latent_dim)
+        self.logvar = nn.Linear(self.latent_dim, self.latent_dim)
+
+    def forward(self, x):
+        h = self.encoder(x)
+        return (
+            self.mu(h),
+            self.logvar(h),
         )
 
-    def forward(self, x_text):
-        h_text = self.feature_extractor(x_text)
-        mu, logvar = self.feature_compressor(h_text)
-        # return mu, logvar, h_text;
-        return mu, logvar
+class scDecoder(nn.Module):
+    """
+    Adopted from ConvNetworksPolyMNIST.py, itself adopted from:
+    https://www.cs.toronto.edu/~lczhang/360/lec/w05/autoencoder.html
+    """
 
-
-class DecoderText(nn.Module):
-    def __init__(self, cfg):
-        super(DecoderText, self).__init__()
-        self.feature_generator = nn.Linear(
-            cfg.model.latent_dim, 5 * cfg.dataset.filter_dim_text, bias=True
-        )
-        self.text_generator = DataGeneratorText(
-            cfg,
-            a=cfg.dataset.skip_connections_text_weight_a,
-            b=cfg.dataset.skip_connections_text_weight_b,
+    def __init__(self, output_dim, latent_dim, hidden_dim):
+        super(scDecoder, self).__init__()
+        self.latent_dim = latent_dim
+        self.hidden_dim = hidden_dim
+        self.output_dim = output_dim
+        self.decoder = nn.Sequential(
+            nn.Linear(self.latent_dim, self.hidden_dim), 
+            nn.ReLU(),
+            nn.Linear(self.hidden_dim, self.hidden_dim), 
+            nn.ReLU(),
+            nn.Linear(self.hidden_dim, self.output_dim),  
+            nn.ReLU(),
         )
 
     def forward(self, z):
-        text_feat_hat = self.feature_generator(z)
-        text_feat_hat = text_feat_hat.unsqueeze(-1)
-        text_hat = self.text_generator(text_feat_hat)
-        text_hat = text_hat.transpose(-2, -1)
-        return [text_hat]
+        x_hat = self.decoder(z)
+        return x_hat, torch.tensor(0.75).to(
+            z.device
+        )  # NOTE: consider learning scale param, too

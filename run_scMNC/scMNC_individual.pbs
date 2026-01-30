@@ -1,9 +1,9 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=30:00:00
-#PBS -N test_early_stop
-#PBS -o /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/early_stop.log
-#PBS -e /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/early_stop.err
+#PBS -l walltime=05:00:00
+#PBS -N scMNC_early_stop
+#PBS -o /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.log
+#PBS -e /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.err
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
@@ -13,17 +13,16 @@ export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
-dataset="CelebA"
+dataset="scMNC"
 model="jointprior"
 seed=1
 agg="avg"
 alpha=0.95 
 wandb_entity="eso18-imperial-college-london"
-project_name="mvvae_celeba"
+project_name="mvvae_scMNC"
 dir_experiments="/rds/general/user/eso18/home/mmvmvae"
-dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/CelebA"
-dataset_name_tar="CelebA.tar.gz"
-wandb_logdir="${dir_experiments}/run_celeba/logs"
+dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/scMNC"
+wandb_logdir="${dir_experiments}/run_scMNC/logs"
 WD=$(pwd)
 device="cuda"  # 'cuda' if you are useing a GPU
 log_freq_downstream=50
@@ -31,12 +30,13 @@ log_freq_coherence=50
 log_freq_lhood=50
 log_freq_plotting=50
 ld=256
+hd=512
 beta=1      # KL weight (float)
 aa=true     # alpha annealing steps (int)
 a_w=0.5
 ld=512 
 lr=5e-4 
-n_ep=400 
+n_ep=2500 
 gamma=0.0001
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
 
@@ -49,9 +49,11 @@ python main_mv_wsl.py \
     ++model.cov_scalar=${cov_scalar} \
     ++model.device=${device} \
     ++model.beta=${beta} \
+    ++model.batch_size=32 \
     ++model.beta_annealing=false \
     ++model.early_stop=true \
     ++model.latent_dim=${ld} \
+    ++model.hidden_dim=${hd} \
     ++model.lr=${lr} \
     ++model.epochs=${n_ep} \
     ++model.aggregation="${agg}" \

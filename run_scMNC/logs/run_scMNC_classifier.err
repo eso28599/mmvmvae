@@ -7,14 +7,15 @@ wandb: Currently logged in as: eso18 (eso18-imperial-college-london). Use `wandb
 wandb: wandb version 0.24.0 is available!  To upgrade, please run:
 wandb:  $ pip install wandb --upgrade
 wandb: Tracking run with wandb version 0.16.2
-wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20260127_184953-41i0m7gi
+wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/clfs/wandb/run-20260128_112624-80lisexx
 wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run playful-sea-19
+wandb: Syncing run sparkling-snowball-22
 wandb: ⭐️ View project at https://wandb.ai/eso18-imperial-college-london/mvvae_clf
-wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/mvvae_clf/runs/41i0m7gi
+wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/mvvae_clf/runs/80lisexx
 wandb: logging graph, to disable use `wandb.watch(log_graph=False)`
 You are using a CUDA device ('NVIDIA L40S') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
-LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-973a72fe-e31a-507a-ce5f-01f7d87bf7b8]
+/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/callbacks/model_checkpoint.py:639: Checkpoint directory /rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_scMNC exists and is not empty.
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-d47220be-41b6-6ae7-69cc-8baa5637fbc6]
 
   | Name | Type             | Params
 ------------------------------------------
@@ -25,40 +26,41 @@ LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-973a72fe-e31a-507a-ce5f-01f7d87bf7b8]
 0         Non-trainable params
 239 K     Total params
 0.958     Total estimated model params size (MB)
-`Trainer.fit` stopped: `max_epochs=10` reached.
-wandb: - 0.009 MB of 0.009 MB uploadedwandb: \ 0.052 MB of 0.052 MB uploadedwandb: 
+wandb: - 0.009 MB of 0.053 MB uploadedwandb: \ 0.053 MB of 0.053 MB uploadedwandb: 
 wandb: Run history:
-wandb:               epoch ▁▁▁▁▂▂▂▂▃▃▃▃▃▃▃▃▄▄▄▄▅▅▅▅▆▆▆▆▆▆▆▆▇▇▇▇████
-wandb:   train/accuracy/v0 ▁▅▅▆▆▆▇▇▇▇▇▇█▇██████▇███████████████████
-wandb:   train/accuracy/v1 ▁▂▂▃▄▄▄▅▅▇▆▆▇▇▇▇▇▇▇▇▇▇▇▇█▇▇▇▇▇▇█▇▇█▇▇██▇
-wandb:     train/loss/loss █▇▇▅▄▄▃▃▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-wandb: train/loss/mean_acc ▁▄▄▄▅▅▅▆▆▇▇▇▇▇▇▇▇█▇▇▇██▇█▇██████████████
-wandb:       train/loss/v0 █▇▆▄▃▂▂▂▂▂▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
-wandb:       train/loss/v1 ██▇▇▆▆▅▄▃▃▃▂▂▂▂▂▂▁▂▂▂▂▁▂▁▂▁▁▁▂▁▁▁▂▁▁▁▁▁▁
-wandb: trainer/global_step ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇▇███
-wandb:     val/accuracy/v0 ▁█████▇██▇
-wandb:     val/accuracy/v1 ▁▆▇███████
-wandb:       val/loss/loss █▃▂▁▁▁▁▁▁▁
-wandb:   val/loss/mean_acc ▁▆▇███████
-wandb:         val/loss/v0 █▂▁▁▁▂▂▂▂▂
-wandb:         val/loss/v1 █▄▂▁▁▁▁▁▁▁
+wandb:               epoch ▁▁▁▁▂▂▂▂▂▂▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▅▆▆▆▇▇▇▇▇▇▇███
+wandb:   train/accuracy/v0 ▁▄▄▆▆▇▇▇██▇▇▇███▇███████████████████████
+wandb:   train/accuracy/v1 ▁▂▂▃▃▄▆▆▆▆▆▆▇▇▇▇▇▇█▇█▇█▇█▇▇█▇▇███▇▇▇██▇█
+wandb:     train/loss/loss ██▆▄▄▃▃▂▂▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb: train/loss/mean_acc ▁▃▃▅▅▆▆▇▇▇▇▇▇▇▇▇▇▇█▇███▇████████████████
+wandb:       train/loss/v0 █▇▅▃▂▂▂▂▁▁▁▁▂▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:       train/loss/v1 ██▇▆▆▄▄▃▃▂▃▃▂▂▂▂▂▂▁▂▁▂▁▂▁▂▁▁▁▂▁▁▁▁▂▁▁▁▁▁
+wandb: trainer/global_step ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:     val/accuracy/v0 ▁▇███████▇█▇
+wandb:     val/accuracy/v1 ▁▅▇█████████
+wandb:       val/loss/loss █▃▂▁▁▁▁▁▁▁▁▁
+wandb:   val/loss/mean_acc ▁▅▇█████████
+wandb:         val/loss/v0 █▂▁▁▁▁▁▂▁▂▁▂
+wandb:         val/loss/v1 █▄▂▂▁▁▁▁▁▁▁▁
+wandb:            val_loss █▃▂▁▁▁▁▁▁▁▁▁
 wandb: 
 wandb: Run summary:
-wandb:               epoch 9
-wandb:   train/accuracy/v0 0.97656
-wandb:   train/accuracy/v1 0.90625
-wandb:     train/loss/loss 0.1572
-wandb: train/loss/mean_acc 0.94141
-wandb:       train/loss/v0 0.07888
-wandb:       train/loss/v1 0.23552
-wandb: trainer/global_step 109
-wandb:     val/accuracy/v0 0.95898
-wandb:     val/accuracy/v1 0.91016
-wandb:       val/loss/loss 0.24207
-wandb:   val/loss/mean_acc 0.93457
-wandb:         val/loss/v0 0.19606
-wandb:         val/loss/v1 0.28808
+wandb:               epoch 11
+wandb:   train/accuracy/v0 1.0
+wandb:   train/accuracy/v1 0.91406
+wandb:     train/loss/loss 0.11848
+wandb: train/loss/mean_acc 0.95703
+wandb:       train/loss/v0 0.00846
+wandb:       train/loss/v1 0.2285
+wandb: trainer/global_step 131
+wandb:     val/accuracy/v0 0.97461
+wandb:     val/accuracy/v1 0.95312
+wandb:       val/loss/loss 0.14827
+wandb:   val/loss/mean_acc 0.96387
+wandb:         val/loss/v0 0.11965
+wandb:         val/loss/v1 0.17689
+wandb:            val_loss 0.14827
 wandb: 
-wandb: 🚀 View run playful-sea-19 at: https://wandb.ai/eso18-imperial-college-london/mvvae_clf/runs/41i0m7gi
+wandb: 🚀 View run sparkling-snowball-22 at: https://wandb.ai/eso18-imperial-college-london/mvvae_clf/runs/80lisexx
 wandb: Synced 6 W&B file(s), 1 media file(s), 0 artifact file(s) and 0 other file(s)
-wandb: Find logs at: ./clfs/wandb/run-20260127_184953-41i0m7gi/logs
+wandb: Find logs at: ./clfs/wandb/run-20260128_112624-80lisexx/logs

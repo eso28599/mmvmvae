@@ -63,8 +63,12 @@ class MVVAE(pl.LightningModule):
             self.calc_coherence = calc_coherence_acc
             self.modality_names = ["exp", "feat"]
             mod_list = [n for n in range(cfg.dataset.num_views)]
+            self.ref_mod_d_size = 1302
             self.modalities_size = {
-                "exp": 1302, "feat": 19
+                "exp": 1302, "feat": 39
+            }
+            self.betas = {
+                "exp": cfg.model.beta, "feat": cfg.model.beta
             }
         elif cfg.dataset.name.startswith("celeba"):
             self.train_clf_lr = train_clf_lr_celeba
@@ -152,7 +156,7 @@ class MVVAE(pl.LightningModule):
         self.fid_scores = {}
         for key in self.modality_names:
             for key_tilde in self.modality_names:
-                if key_tilde == "text":
+                if key_tilde in ("text", "exp", "feat"):
                     continue
                 self.fid_scores[key + "_to_" + key_tilde] = FrechetInceptionDistance(
                     compute_on_cpu=True,
@@ -383,7 +387,7 @@ class MVVAE(pl.LightningModule):
         for m, key in enumerate(self.modality_names):
             mu_m, lv_m = dists_enc_out[key]
             for m_tilde, key_tilde in enumerate(self.modality_names):
-                if key_tilde == "text":
+                if key_tilde in ("text", "exp", "feat"):
                     continue
                 imgs_m_tilde = imgs[key_tilde]
                 fid = self.fid_scores[key + "_to_" + key_tilde]
@@ -661,7 +665,7 @@ class MVVAE(pl.LightningModule):
                             "val/txt_samples",
                             f"cond_gen_cov_{key}_{key_tilde}",
                         )
-                    elif key_tilde == "text":
+                    elif key_tilde in ("text", "exp", "feat"):
                         continue
                     mod_grid_m_m_tilde = make_grid(
                         torch.cat(
@@ -691,7 +695,7 @@ class MVVAE(pl.LightningModule):
         if (self.current_epoch + 1) % self.cfg.log.fid_logging_frequency == 0:
             for m, key in enumerate(self.modality_names):
                 for m_tilde, key_tilde in enumerate(self.modality_names):
-                    if key_tilde == "text":
+                    if key_tilde in ("text", "exp", "feat"):
                         continue
                     fid = self.fid_scores[key + "_to_" + key_tilde]
                     score_m_m_tilde = fid.compute()
@@ -926,11 +930,18 @@ class MVVAE(pl.LightningModule):
                         )
                     )
                 log_p_mod_m = mod_d_out_m.log_prob(mod_gt_m).sum(dim=[1])
+            elif key in ("exp", "feat"):
+                mod_d_out_m = torch.distributions.laplace.Laplace(
+                    mod_rec_m[0], torch.tensor(0.75).to(self.device)
+                )
+                # print("mod_gt_m shape:", mod_gt_m.shape )
+                log_p_mod_m = mod_d_out_m.log_prob(mod_gt_m).sum(dim=[1])
             else:
                 mod_d_out_m = torch.distributions.laplace.Laplace(
                     mod_rec_m[0], torch.tensor(0.75).to(self.device)
                 )
                 log_p_mod_m = mod_d_out_m.log_prob(mod_gt_m).sum(dim=[1, 2, 3])
+                
             rec_loss_mods[key] = log_p_mod_m.mean(dim=0)
             rec_loss_mods_weighted[key] = (rec_weight_m * log_p_mod_m).mean(dim=0)
             rec_loss_all.append(rec_weight_m * log_p_mod_m.unsqueeze(1))

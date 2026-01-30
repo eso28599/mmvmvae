@@ -1,5 +1,4 @@
 import numpy as np
-
 import torch
 from torch import nn
 import torch.nn.functional as F
@@ -23,10 +22,6 @@ class ClfscMNC(pl.LightningModule):
         self.loss = nn.CrossEntropyLoss()
         self.validation_step_outputs = []
         self.training_step_outputs = []
-
-        # buffer for final scores
-        # self.register_buffer("final_accuracy", torch.zeros(1))
-
         self.save_hyperparameters()
 
     def training_step(self, batch):
@@ -38,11 +33,10 @@ class ClfscMNC(pl.LightningModule):
         out = self.forward(self.cfg, batch)
         loss, mean_acc = self.compute_loss("val", batch, out)
         self.validation_step_outputs.append(mean_acc)
+        self.log("val_loss", loss)
         return loss
 
     def on_validation_epoch_end(self):
-        # mean_acc = torch.tensor(self.validation_step_outputs).mean()
-        # self.final_accuracy = mean_acc
         self.validation_step_outputs.clear()  # free memory
 
     def compute_loss(self, str_set, batch, out):

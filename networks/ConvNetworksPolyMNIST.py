@@ -1,4 +1,4 @@
-import numpy as np
+
 
 import torch
 import torch.nn as nn
@@ -95,79 +95,79 @@ class Decoder(nn.Module):
         )  # NOTE: consider learning scale param, too
 
 
-class EncoderDist(nn.Module):
-    """
-    Adopted from:
-    https://www.cs.toronto.edu/~lczhang/360/lec/w05/autoencoder.html
-    """
+# class EncoderDist(nn.Module):
+#     """
+#     Adopted from:
+#     https://www.cs.toronto.edu/~lczhang/360/lec/w05/autoencoder.html
+#     """
 
-    def __init__(self, latent_dim, n_groups):
-        super(EncoderDist, self).__init__()
+#     def __init__(self, latent_dim, n_groups):
+#         super(EncoderDist, self).__init__()
 
-        self.latent_dim = latent_dim
-        self.n_groups = n_groups
-        self.encoder = nn.Sequential(  # input shape (3, 28, 28)
-            nn.Conv2d(3, 32, kernel_size=3, stride=2, padding=1),  # -> (32, 14, 14)
-            nn.ReLU(),
-            # nn.BatchNorm2d(32),
-            nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),  # -> (64, 7, 7)
-            nn.ReLU(),
-            # nn.BatchNorm2d(64),
-            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),  # -> (128, 4, 4)
-            nn.ReLU(),
-            # nn.BatchNorm2d(128),
-            Flatten(),  # -> (2048)
-            nn.Linear(2048, latent_dim + n_groups),
-            nn.ReLU(),
-        )
-        # latent representation
-        self.log_omega = nn.Linear(latent_dim + n_groups, n_groups)
-        self.log_scores = nn.Linear(latent_dim + n_groups, latent_dim)
+#         self.latent_dim = latent_dim
+#         self.n_groups = n_groups
+#         self.encoder = nn.Sequential(  # input shape (3, 28, 28)
+#             nn.Conv2d(3, 32, kernel_size=3, stride=2, padding=1),  # -> (32, 14, 14)
+#             nn.ReLU(),
+#             # nn.BatchNorm2d(32),
+#             nn.Conv2d(32, 64, kernel_size=3, stride=2, padding=1),  # -> (64, 7, 7)
+#             nn.ReLU(),
+#             # nn.BatchNorm2d(64),
+#             nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),  # -> (128, 4, 4)
+#             nn.ReLU(),
+#             # nn.BatchNorm2d(128),
+#             Flatten(),  # -> (2048)
+#             nn.Linear(2048, latent_dim + n_groups),
+#             nn.ReLU(),
+#         )
+#         # latent representation
+#         self.log_omega = nn.Linear(latent_dim + n_groups, n_groups)
+#         self.log_scores = nn.Linear(latent_dim + n_groups, latent_dim)
 
-    def forward(self, x):
-        h = self.encoder(x)
-        return (
-            self.log_omega(h),
-            self.log_scores(h),
-        )
+#     def forward(self, x):
+#         h = self.encoder(x)
+#         return (
+#             self.log_omega(h),
+#             self.log_scores(h),
+#         )
 
 
-class ResnetEncoderDist(nn.Module):
-    def __init__(self, cfg):  # , z_dim, size, nfilter=64, nfilter_max=1024, **kwargs):
-        super().__init__()
-        s0 = self.s0 = 7  # kwargs['s0']
-        nf = self.nf = 64  # nfilter
-        nf_max = self.nf_max = 1024  # nfilter_max
-        size = 28
-        n_groups = cfg.model.n_groups
-        latent_dim = cfg.model.latent_dim
+# class ResnetEncoderDist(nn.Module):
+#     def __init__(self, cfg):  # , z_dim, size, nfilter=64, nfilter_max=1024, **kwargs):
+#         super().__init__()
+#         s0 = self.s0 = 7  # kwargs['s0']
+#         nf = self.nf = 64  # nfilter
+#         nf_max = self.nf_max = 1024  # nfilter_max
+#         size = 28
+#         n_groups = cfg.model.n_groups
+#         latent_dim = cfg.model.latent_dim
 
-        # Submodules
-        nlayers = int(np.log2(size / s0))
-        self.nf0 = min(nf_max, nf * 2**nlayers)
+#         # Submodules
+#         nlayers = int(np.log2(size / s0))
+#         self.nf0 = min(nf_max, nf * 2**nlayers)
 
-        blocks = [ResnetBlock(nf, nf)]
+#         blocks = [ResnetBlock(nf, nf)]
 
-        for i in range(nlayers):
-            nf0 = min(nf * 2**i, nf_max)
-            nf1 = min(nf * 2 ** (i + 1), nf_max)
-            blocks += [
-                nn.AvgPool2d(3, stride=2, padding=1),
-                ResnetBlock(nf0, nf1),
-            ]
+#         for i in range(nlayers):
+#             nf0 = min(nf * 2**i, nf_max)
+#             nf1 = min(nf * 2 ** (i + 1), nf_max)
+#             blocks += [
+#                 nn.AvgPool2d(3, stride=2, padding=1),
+#                 ResnetBlock(nf0, nf1),
+#             ]
 
-        self.conv_img = nn.Conv2d(3, 1 * nf, 3, padding=1)
-        self.resnet = nn.Sequential(*blocks)
-        # latent representation
-        self.log_omega = nn.Linear(self.nf0 * s0 * s0, n_groups)
-        self.log_scores = nn.Linear(self.nf0 * s0 * s0, latent_dim)
+#         self.conv_img = nn.Conv2d(3, 1 * nf, 3, padding=1)
+#         self.resnet = nn.Sequential(*blocks)
+#         # latent representation
+#         self.log_omega = nn.Linear(self.nf0 * s0 * s0, n_groups)
+#         self.log_scores = nn.Linear(self.nf0 * s0 * s0, latent_dim)
 
-    def forward(self, x):
-        batch_size = x.size(0)
-        out = self.conv_img(x)
-        out = self.resnet(out)
-        out = out.view(batch_size, self.nf0 * self.s0 * self.s0)
-        return self.log_omega(out), self.log_scores(out)
+#     def forward(self, x):
+#         batch_size = x.size(0)
+#         out = self.conv_img(x)
+#         out = self.resnet(out)
+#         out = out.view(batch_size, self.nf0 * self.s0 * self.s0)
+#         return self.log_omega(out), self.log_scores(out)
 
 
 class ResnetBlock(nn.Module):

@@ -57,13 +57,13 @@ def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
         original_dims = [1302, 39]
         encoders = nn.ModuleList(
             [
-                scEncoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
+                scEncoder(original_dims[m], cfg.model.latent_dim, cfg.model.hidden_dim).to(cfg.model.device)
                 for m in range(cfg.dataset.num_views)
             ]
         )
         decoders = nn.ModuleList(
             [
-                scDecoder(cfg.model.latent_dim, original_dims[m]).to(cfg.model.device)
+                scDecoder(original_dims[m], cfg.model.latent_dim, cfg.model.hidden_dim).to(cfg.model.device)
                 for m in range(cfg.dataset.num_views)
             ]
         )

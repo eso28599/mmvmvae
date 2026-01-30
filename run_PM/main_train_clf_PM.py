@@ -2,7 +2,7 @@ import os
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-
+import torch
 from omegaconf import OmegaConf
 import hydra
 from hydra.core.config_store import ConfigStore
@@ -22,6 +22,8 @@ cs.store(group="model", name="model", node=ModelConfig)
 cs.store(group="dataset", name="PMtranslated75", node=PMtranslatedData75Config)
 cs.store(name="base_config", node=MyClfConfig)
 
+
+torch.set_float32_matmul_precision('high')
 
 @hydra.main(version_base=None, 
             config_path="../config",

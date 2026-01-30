@@ -1,7 +1,8 @@
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+import torch
 from omegaconf import OmegaConf
 import hydra
 from hydra.core.config_store import ConfigStore
@@ -14,6 +15,8 @@ from config.DatasetConfig import scMNCDataConfig
 
 from utils import dataset
 from clfs.scMNC_clf import ClfscMNC
+
+torch.set_float32_matmul_precision('high')
 
 
 cs = ConfigStore.instance()
@@ -58,9 +61,9 @@ def run_experiment(cfg: MyClfConfig):
         accelerator="gpu" if cfg.model.device == "cuda" else cfg.model.device,
         logger=wandb_logger,
         check_val_every_n_epoch=1,
-        log_every_n_steps=2,
+        log_every_n_steps=1,
         deterministic=True,
-        callbacks=[checkpoint_callback],
+        callbacks=[checkpoint_callback, EarlyStopping(monitor="val_loss", mode="min")],
     )
 
     trainer.logger.watch(model, log="all")

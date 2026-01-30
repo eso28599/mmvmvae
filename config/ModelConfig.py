@@ -11,6 +11,8 @@ class ModelConfig:
     temp_annealing: str = "cosine"
     seed: int = 1
     latent_dim: int = 256
+    hidden_dim: int = 512
+    early_stop: bool = False
 
     # loss hyperparameters
     beta: float = 1.0

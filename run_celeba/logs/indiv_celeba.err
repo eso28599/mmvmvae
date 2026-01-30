@@ -1,10 +1,861 @@
+wandb: Currently logged in as: eso18 (eso18-imperial-college-london). Use `wandb login --relogin` to force relogin
+Seed set to 1
+GPU available: True (cuda), used: True
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+HPU available: False, using: 0 HPUs
+wandb: wandb version 0.24.0 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.16.2
+wandb: Run data is saved locally in /rds/general/user/eso18/home/mmvmvae/run_celeba/logs/wandb/run-20260128_112339-w07570nb
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run happy-armadillo-67
+wandb: ⭐️ View project at https://wandb.ai/eso18-imperial-college-london/mvvae_celeba
+wandb: 🚀 View run at https://wandb.ai/eso18-imperial-college-london/mvvae_celeba/runs/w07570nb
+LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [GPU-f78a317e-16fc-fbdd-bde7-2778a2e3d6c0]
+
+  | Name       | Type       | Params
+------------------------------------------
+0 | encoders   | ModuleList | 9.3 M 
+1 | decoders   | ModuleList | 9.2 M 
+2 | cov_mat    | ModuleList | 262 K 
+3 | transforms | Compose    | 0     
+------------------------------------------
+18.8 M    Trainable params
+0         Non-trainable params
+18.8 M    Total params
+75.155    Total estimated model params size (MB)
+[rank: 0] Received SIGTERM: 15
+Error executing job with overrides: ['model=jointprior', '++model.seed=1', '++model.alpha_scalar=0.95', '++model.cov_scalar=.0975', '++model.device=cuda', '++model.beta=1', '++model.beta_annealing=false', '++model.latent_dim=512', '++model.lr=5e-4', '++model.epochs=400', '++model.aggregation=avg', 'dataset=CelebA', '++dataset.modalities_order=', '++log.wandb_offline=false', '++log.downstream_logging_frequency=50', '++log.coherence_logging_frequency=50', '++log.likelihood_logging_frequency=50', '++log.img_plotting_frequency=50', '++log.wandb_offline=false', '++log.wandb_local_instance=true', '++log.wandb_entity=eso18-imperial-college-london', '++log.wandb_group=full_runs', '++log.wandb_project_name=mvvae_celeba', '++log.dir_logs=/rds/general/user/eso18/home/mmvmvae/run_celeba/logs']
 Traceback (most recent call last):
-  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 25, in <module>
-    from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
-  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_joint_vae.py", line 2, in <module>
-    from mv_vaes.mv_vae import MVVAE
-  File "/rds/general/user/eso18/home/mmvmvae/mv_vaes/mv_vae.py", line 26, in <module>
-    from utils.vae import get_networks
-  File "/rds/general/user/eso18/home/mmvmvae/utils/vae.py", line 8, in <module>
-    from networks.NetworksscMNC import scEncoder, scDecoder
-ImportError: cannot import name 'scEncoder' from 'networks.NetworksscMNC' (/rds/general/user/eso18/home/mmvmvae/networks/NetworksscMNC.py)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1133, in _try_get_data
+    data = self._data_queue.get(timeout=timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/queues.py", line 113, in get
+    if not self._poll(timeout):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 257, in poll
+    return self._poll(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 424, in _poll
+    r = wait([self], timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/multiprocessing/connection.py", line 931, in wait
+    ready = selector.select(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/selectors.py", line 416, in select
+    fd_event_list = self._selector.poll(timeout)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 63, in handler
+    def handler(signum, frame):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 533461) is killed by signal: Terminated. 
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 44, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 580, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 989, in _run
+    results = self._run_stage()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1035, in _run_stage
+    self.fit_loop.run()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 202, in run
+    self.advance()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fit_loop.py", line 359, in advance
+    self.epoch_loop.run(self._data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 136, in run
+    self.advance(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/training_epoch_loop.py", line 202, in advance
+    batch, _, __ = next(data_fetcher)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fetchers.py", line 127, in __next__
+    batch = super().__next__()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/loops/fetchers.py", line 56, in __next__
+    batch = next(self.iterator)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/utilities/combined_loader.py", line 326, in __next__
+    out = next(self._iterator)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/utilities/combined_loader.py", line 74, in __next__
+    out[i] = next(self.iterators[i])
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 631, in __next__
+    data = self._next_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1329, in _next_data
+    idx, data = self._get_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1295, in _get_data
+    success, data = self._try_get_data()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/dataloader.py", line 1146, in _try_get_data
+    raise RuntimeError(f'DataLoader worker (pid(s) {pids_str}) exited unexpectedly') from e
+RuntimeError: DataLoader worker (pid(s) 533461, 533524) exited unexpectedly
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 162, in <module>
+    ].mean()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/main.py", line 94, in decorated_main
+    _run_hydra(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 394, in _run_hydra
+    _run_app(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 457, in _run_app
+    run_and_report(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 223, in run_and_report
+    raise ex
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 220, in run_and_report
+    return func()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/utils.py", line 458, in <lambda>
+    lambda: hydra.run(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/_internal/hydra.py", line 132, in run
+    _ = ret.return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 260, in return_value
+    raise self._return_value
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/hydra/core/utils.py", line 186, in run_job
+    ret.return_value = task_function(task_cfg)
+  File "/rds/general/user/eso18/home/mmvmvae/main_mv_wsl.py", line 101, in run_experiment
+    deterministic=True,
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 544, in fit
+    call._call_and_handle_interrupt(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/call.py", line 68, in _call_and_handle_interrupt
+    trainer._teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/trainer/trainer.py", line 1012, in _teardown
+    self.strategy.teardown()
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/pytorch_lightning/strategies/strategy.py", line 524, in teardown
+    _optimizers_to_device(self.optimizers, torch.device("cpu"))
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 28, in _optimizers_to_device
+    _optimizer_to_device(opt, device)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/optimizer.py", line 34, in _optimizer_to_device
+    optimizer.state[p] = apply_to_collection(v, Tensor, move_data_to_device, device, allow_frozen=True)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 52, in apply_to_collection
+    return _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 104, in _apply_to_collection_slow
+    v = _apply_to_collection_slow(
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 96, in _apply_to_collection_slow
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 102, in move_data_to_device
+    return apply_to_collection(batch, dtype=_TransferableDataType, function=batch_to)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_utilities/core/apply_func.py", line 64, in apply_to_collection
+    return function(data, *args, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/lightning_fabric/utilities/apply_func.py", line 96, in batch_to
+    data_output = data.to(device, **kwargs)
+  File "/rds/general/user/eso18/home/anaconda3/envs/mvvae/lib/python3.10/site-packages/torch/utils/data/_utils/signal_handling.py", line 66, in handler
+    _error_if_any_worker_fails()
+RuntimeError: DataLoader worker (pid 531244) is killed by signal: Terminated. 
+wandb: - 15.268 MB of 15.268 MB uploadedwandb: \ 15.268 MB of 15.387 MB uploadedwandb: | 15.269 MB of 15.387 MB uploadedwandb: / 15.387 MB of 15.387 MB uploadedwandb: 
+wandb: Run history:
+wandb:                                  beta annealing ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                                           epoch ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:                             train/loss/klds_avg ▁▇▇█▇▇▆▆▅▄▅▅▄▄▃▃▄▃▃▃▃▃▃▃▃▃▃▃▃▅▂▃▃▃▃▃▃▃▃▃
+wandb:                                 train/loss/loss █▅▄▄▃▃▂▂▂▂▂▂▂▂▂▂▂▁▂▂▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                             train/loss/loss_rec █▅▄▄▃▃▂▂▂▂▂▂▂▂▂▂▂▁▂▂▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                               train/loss/mv_vae █▅▄▄▃▃▂▂▂▂▂▂▂▂▂▂▂▁▂▂▁▁▁▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                         train/loss/rec_loss_img ▁▄▅▆▅▆▆▇▇▆▇▆▆▇▇█▇█▇▇▇█▇▇▇▇▇▇▇██▇▇████▇▇█
+wandb:                        train/loss/rec_loss_text ▁▄▅▅▆▆▇▇▇▇▇▇▇▇▇▇▇█▇▇███▇████████████████
+wandb:                train/loss/weighted_rec_loss_img ▁▄▅▆▅▆▆▇▇▆▇▆▆▇▇█▇█▇▇▇█▇▇▇▇▇▇▇██▇▇████▇▇█
+wandb:               train/loss/weighted_rec_loss_text ▁▄▅▅▆▆▇▇▇▇▇▇▇▇▇▇▇█▇▇███▇████████████████
+wandb:                             trainer/global_step ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇████
+wandb:          val/coherence/img_img/5_o_Clock_Shadow ▁█
+wandb:           val/coherence/img_img/Arched_Eyebrows ▁█
+wandb:                val/coherence/img_img/Attractive ▁█
+wandb:           val/coherence/img_img/Bags_Under_Eyes ▁█
+wandb:                      val/coherence/img_img/Bald ▁█
+wandb:                     val/coherence/img_img/Bangs ▁█
+wandb:                  val/coherence/img_img/Big_Lips ▁█
+wandb:                  val/coherence/img_img/Big_Nose ▁█
+wandb:                val/coherence/img_img/Black_Hair ▁█
+wandb:                val/coherence/img_img/Blond_Hair ▁█
+wandb:                    val/coherence/img_img/Blurry ▁█
+wandb:                val/coherence/img_img/Brown_Hair ▁█
+wandb:            val/coherence/img_img/Bushy_Eyebrows ▁█
+wandb:                    val/coherence/img_img/Chubby ▁█
+wandb:               val/coherence/img_img/Double_Chin ▁█
+wandb:                val/coherence/img_img/Eyeglasses ▁█
+wandb:                    val/coherence/img_img/Goatee ▁█
+wandb:                 val/coherence/img_img/Gray_Hair █▁
+wandb:              val/coherence/img_img/Heavy_Makeup ▁█
+wandb:           val/coherence/img_img/High_Cheekbones ▁█
+wandb:                      val/coherence/img_img/Male ▁█
+wandb:       val/coherence/img_img/Mouth_Slightly_Open ▁█
+wandb:                  val/coherence/img_img/Mustache ▁█
+wandb:               val/coherence/img_img/Narrow_Eyes ▁█
+wandb:                  val/coherence/img_img/No_Beard ▁█
+wandb:                 val/coherence/img_img/Oval_Face █▁
+wandb:                 val/coherence/img_img/Pale_Skin ▁█
+wandb:               val/coherence/img_img/Pointy_Nose ▁█
+wandb:         val/coherence/img_img/Receding_Hairline ▁█
+wandb:               val/coherence/img_img/Rosy_Cheeks ▁█
+wandb:                 val/coherence/img_img/Sideburns ▁█
+wandb:                   val/coherence/img_img/Smiling ▁█
+wandb:             val/coherence/img_img/Straight_Hair ▁█
+wandb:                 val/coherence/img_img/Wavy_Hair ▁█
+wandb:          val/coherence/img_img/Wearing_Earrings ▁█
+wandb:               val/coherence/img_img/Wearing_Hat ▁█
+wandb:          val/coherence/img_img/Wearing_Lipstick ▁█
+wandb:          val/coherence/img_img/Wearing_Necklace ▁█
+wandb:           val/coherence/img_img/Wearing_Necktie ▁█
+wandb:                     val/coherence/img_img/Young █▁
+wandb:      val/coherence/img_img_cov/5_o_Clock_Shadow ▁█
+wandb:       val/coherence/img_img_cov/Arched_Eyebrows ▁█
+wandb:            val/coherence/img_img_cov/Attractive ▁█
+wandb:       val/coherence/img_img_cov/Bags_Under_Eyes ▁█
+wandb:                  val/coherence/img_img_cov/Bald █▁
+wandb:                 val/coherence/img_img_cov/Bangs ▁█
+wandb:              val/coherence/img_img_cov/Big_Lips ▁█
+wandb:              val/coherence/img_img_cov/Big_Nose ▁█
+wandb:            val/coherence/img_img_cov/Black_Hair ▁█
+wandb:            val/coherence/img_img_cov/Blond_Hair ▁█
+wandb:                val/coherence/img_img_cov/Blurry █▁
+wandb:            val/coherence/img_img_cov/Brown_Hair ▁█
+wandb:        val/coherence/img_img_cov/Bushy_Eyebrows ▁█
+wandb:                val/coherence/img_img_cov/Chubby ▁█
+wandb:           val/coherence/img_img_cov/Double_Chin ▁█
+wandb:            val/coherence/img_img_cov/Eyeglasses ▁█
+wandb:                val/coherence/img_img_cov/Goatee ▁█
+wandb:             val/coherence/img_img_cov/Gray_Hair █▁
+wandb:          val/coherence/img_img_cov/Heavy_Makeup █▁
+wandb:       val/coherence/img_img_cov/High_Cheekbones ▁█
+wandb:                  val/coherence/img_img_cov/Male ▁█
+wandb:   val/coherence/img_img_cov/Mouth_Slightly_Open ▁█
+wandb:              val/coherence/img_img_cov/Mustache ▁█
+wandb:           val/coherence/img_img_cov/Narrow_Eyes ▁█
+wandb:              val/coherence/img_img_cov/No_Beard ▁█
+wandb:             val/coherence/img_img_cov/Oval_Face ▁█
+wandb:             val/coherence/img_img_cov/Pale_Skin ▁█
+wandb:           val/coherence/img_img_cov/Pointy_Nose ▁█
+wandb:     val/coherence/img_img_cov/Receding_Hairline ▁█
+wandb:           val/coherence/img_img_cov/Rosy_Cheeks ▁█
+wandb:             val/coherence/img_img_cov/Sideburns ▁█
+wandb:               val/coherence/img_img_cov/Smiling ▁█
+wandb:         val/coherence/img_img_cov/Straight_Hair ▁█
+wandb:             val/coherence/img_img_cov/Wavy_Hair ▁█
+wandb:      val/coherence/img_img_cov/Wearing_Earrings ▁█
+wandb:           val/coherence/img_img_cov/Wearing_Hat █▁
+wandb:      val/coherence/img_img_cov/Wearing_Lipstick ▁█
+wandb:      val/coherence/img_img_cov/Wearing_Necklace ▁█
+wandb:       val/coherence/img_img_cov/Wearing_Necktie ▁█
+wandb:                 val/coherence/img_img_cov/Young █▁
+wandb:         val/coherence/img_text/5_o_Clock_Shadow ▁█
+wandb:          val/coherence/img_text/Arched_Eyebrows ▁█
+wandb:               val/coherence/img_text/Attractive █▁
+wandb:          val/coherence/img_text/Bags_Under_Eyes █▁
+wandb:                     val/coherence/img_text/Bald █▁
+wandb:                    val/coherence/img_text/Bangs █▁
+wandb:                 val/coherence/img_text/Big_Lips █▁
+wandb:                 val/coherence/img_text/Big_Nose █▁
+wandb:               val/coherence/img_text/Black_Hair █▁
+wandb:               val/coherence/img_text/Blond_Hair █▁
+wandb:                   val/coherence/img_text/Blurry █▁
+wandb:               val/coherence/img_text/Brown_Hair █▁
+wandb:           val/coherence/img_text/Bushy_Eyebrows █▁
+wandb:                   val/coherence/img_text/Chubby █▁
+wandb:              val/coherence/img_text/Double_Chin █▁
+wandb:               val/coherence/img_text/Eyeglasses ▁█
+wandb:                   val/coherence/img_text/Goatee ▁█
+wandb:                val/coherence/img_text/Gray_Hair █▁
+wandb:             val/coherence/img_text/Heavy_Makeup ▁█
+wandb:          val/coherence/img_text/High_Cheekbones █▁
+wandb:                     val/coherence/img_text/Male █▁
+wandb:      val/coherence/img_text/Mouth_Slightly_Open █▁
+wandb:                 val/coherence/img_text/Mustache █▁
+wandb:              val/coherence/img_text/Narrow_Eyes █▁
+wandb:                 val/coherence/img_text/No_Beard ▁█
+wandb:                val/coherence/img_text/Oval_Face ▁█
+wandb:                val/coherence/img_text/Pale_Skin ▁█
+wandb:              val/coherence/img_text/Pointy_Nose █▁
+wandb:        val/coherence/img_text/Receding_Hairline ▁█
+wandb:              val/coherence/img_text/Rosy_Cheeks █▁
+wandb:                val/coherence/img_text/Sideburns ▁█
+wandb:                  val/coherence/img_text/Smiling █▁
+wandb:            val/coherence/img_text/Straight_Hair ▁█
+wandb:                val/coherence/img_text/Wavy_Hair ▁█
+wandb:         val/coherence/img_text/Wearing_Earrings █▁
+wandb:              val/coherence/img_text/Wearing_Hat █▁
+wandb:         val/coherence/img_text/Wearing_Lipstick ▁█
+wandb:         val/coherence/img_text/Wearing_Necklace █▁
+wandb:          val/coherence/img_text/Wearing_Necktie █▁
+wandb:                    val/coherence/img_text/Young █▁
+wandb:     val/coherence/img_text_cov/5_o_Clock_Shadow ▁█
+wandb:      val/coherence/img_text_cov/Arched_Eyebrows ▁█
+wandb:           val/coherence/img_text_cov/Attractive █▁
+wandb:      val/coherence/img_text_cov/Bags_Under_Eyes ▁█
+wandb:                 val/coherence/img_text_cov/Bald █▁
+wandb:                val/coherence/img_text_cov/Bangs █▁
+wandb:             val/coherence/img_text_cov/Big_Lips █▁
+wandb:             val/coherence/img_text_cov/Big_Nose ▁█
+wandb:           val/coherence/img_text_cov/Black_Hair █▁
+wandb:           val/coherence/img_text_cov/Blond_Hair █▁
+wandb:               val/coherence/img_text_cov/Blurry █▁
+wandb:           val/coherence/img_text_cov/Brown_Hair ▁█
+wandb:       val/coherence/img_text_cov/Bushy_Eyebrows ▁█
+wandb:               val/coherence/img_text_cov/Chubby ▁█
+wandb:          val/coherence/img_text_cov/Double_Chin █▁
+wandb:           val/coherence/img_text_cov/Eyeglasses ▁█
+wandb:               val/coherence/img_text_cov/Goatee █▁
+wandb:            val/coherence/img_text_cov/Gray_Hair █▁
+wandb:         val/coherence/img_text_cov/Heavy_Makeup ▁█
+wandb:      val/coherence/img_text_cov/High_Cheekbones █▁
+wandb:                 val/coherence/img_text_cov/Male █▁
+wandb:  val/coherence/img_text_cov/Mouth_Slightly_Open █▁
+wandb:             val/coherence/img_text_cov/Mustache █▁
+wandb:          val/coherence/img_text_cov/Narrow_Eyes ▁█
+wandb:             val/coherence/img_text_cov/No_Beard █▁
+wandb:            val/coherence/img_text_cov/Oval_Face ▁█
+wandb:            val/coherence/img_text_cov/Pale_Skin ▁█
+wandb:          val/coherence/img_text_cov/Pointy_Nose █▁
+wandb:    val/coherence/img_text_cov/Receding_Hairline █▁
+wandb:          val/coherence/img_text_cov/Rosy_Cheeks █▁
+wandb:            val/coherence/img_text_cov/Sideburns █▁
+wandb:              val/coherence/img_text_cov/Smiling █▁
+wandb:        val/coherence/img_text_cov/Straight_Hair ▁█
+wandb:            val/coherence/img_text_cov/Wavy_Hair ▁█
+wandb:     val/coherence/img_text_cov/Wearing_Earrings █▁
+wandb:          val/coherence/img_text_cov/Wearing_Hat █▁
+wandb:     val/coherence/img_text_cov/Wearing_Lipstick █▁
+wandb:     val/coherence/img_text_cov/Wearing_Necklace ▁█
+wandb:      val/coherence/img_text_cov/Wearing_Necktie █▁
+wandb:                val/coherence/img_text_cov/Young █▁
+wandb:                        val/coherence/img_to_img ▁█
+wandb:                    val/coherence/img_to_img_cov ▁█
+wandb:                       val/coherence/img_to_text █▁
+wandb:                   val/coherence/img_to_text_cov █▁
+wandb:         val/coherence/text_img/5_o_Clock_Shadow ▁█
+wandb:          val/coherence/text_img/Arched_Eyebrows █▁
+wandb:               val/coherence/text_img/Attractive ▁█
+wandb:          val/coherence/text_img/Bags_Under_Eyes ▁█
+wandb:                     val/coherence/text_img/Bald █▁
+wandb:                    val/coherence/text_img/Bangs ▁█
+wandb:                 val/coherence/text_img/Big_Lips █▁
+wandb:                 val/coherence/text_img/Big_Nose ▁█
+wandb:               val/coherence/text_img/Black_Hair ▁█
+wandb:               val/coherence/text_img/Blond_Hair ▁█
+wandb:                   val/coherence/text_img/Blurry █▁
+wandb:               val/coherence/text_img/Brown_Hair ▁█
+wandb:           val/coherence/text_img/Bushy_Eyebrows ▁█
+wandb:                   val/coherence/text_img/Chubby ▁█
+wandb:              val/coherence/text_img/Double_Chin ▁█
+wandb:               val/coherence/text_img/Eyeglasses █▁
+wandb:                   val/coherence/text_img/Goatee ▁█
+wandb:                val/coherence/text_img/Gray_Hair ▁█
+wandb:             val/coherence/text_img/Heavy_Makeup ▁█
+wandb:          val/coherence/text_img/High_Cheekbones ▁█
+wandb:                     val/coherence/text_img/Male ▁█
+wandb:      val/coherence/text_img/Mouth_Slightly_Open ▁█
+wandb:                 val/coherence/text_img/Mustache ▁█
+wandb:              val/coherence/text_img/Narrow_Eyes ▁█
+wandb:                 val/coherence/text_img/No_Beard ▁█
+wandb:                val/coherence/text_img/Oval_Face ▁█
+wandb:                val/coherence/text_img/Pale_Skin ▁█
+wandb:              val/coherence/text_img/Pointy_Nose ▁█
+wandb:        val/coherence/text_img/Receding_Hairline █▁
+wandb:              val/coherence/text_img/Rosy_Cheeks █▁
+wandb:                val/coherence/text_img/Sideburns ▁█
+wandb:                  val/coherence/text_img/Smiling ▁█
+wandb:            val/coherence/text_img/Straight_Hair ▁█
+wandb:                val/coherence/text_img/Wavy_Hair ▁█
+wandb:         val/coherence/text_img/Wearing_Earrings █▁
+wandb:              val/coherence/text_img/Wearing_Hat █▁
+wandb:         val/coherence/text_img/Wearing_Lipstick ▁█
+wandb:         val/coherence/text_img/Wearing_Necklace █▁
+wandb:          val/coherence/text_img/Wearing_Necktie ▁█
+wandb:                    val/coherence/text_img/Young ▁█
+wandb:     val/coherence/text_img_cov/5_o_Clock_Shadow █▁
+wandb:      val/coherence/text_img_cov/Arched_Eyebrows ▁█
+wandb:           val/coherence/text_img_cov/Attractive █▁
+wandb:      val/coherence/text_img_cov/Bags_Under_Eyes █▁
+wandb:                 val/coherence/text_img_cov/Bald █▁
+wandb:                val/coherence/text_img_cov/Bangs ▁█
+wandb:             val/coherence/text_img_cov/Big_Lips ▁█
+wandb:             val/coherence/text_img_cov/Big_Nose █▁
+wandb:           val/coherence/text_img_cov/Black_Hair ▁█
+wandb:           val/coherence/text_img_cov/Blond_Hair █▁
+wandb:               val/coherence/text_img_cov/Blurry ▁█
+wandb:           val/coherence/text_img_cov/Brown_Hair █▁
+wandb:       val/coherence/text_img_cov/Bushy_Eyebrows █▁
+wandb:               val/coherence/text_img_cov/Chubby █▁
+wandb:          val/coherence/text_img_cov/Double_Chin █▁
+wandb:           val/coherence/text_img_cov/Eyeglasses █▁
+wandb:               val/coherence/text_img_cov/Goatee █▁
+wandb:            val/coherence/text_img_cov/Gray_Hair █▁
+wandb:         val/coherence/text_img_cov/Heavy_Makeup █▁
+wandb:      val/coherence/text_img_cov/High_Cheekbones █▁
+wandb:                 val/coherence/text_img_cov/Male █▁
+wandb:  val/coherence/text_img_cov/Mouth_Slightly_Open █▁
+wandb:             val/coherence/text_img_cov/Mustache █▁
+wandb:          val/coherence/text_img_cov/Narrow_Eyes █▁
+wandb:             val/coherence/text_img_cov/No_Beard █▁
+wandb:            val/coherence/text_img_cov/Oval_Face ▁█
+wandb:            val/coherence/text_img_cov/Pale_Skin ▁█
+wandb:          val/coherence/text_img_cov/Pointy_Nose █▁
+wandb:    val/coherence/text_img_cov/Receding_Hairline █▁
+wandb:          val/coherence/text_img_cov/Rosy_Cheeks ▁█
+wandb:            val/coherence/text_img_cov/Sideburns █▁
+wandb:              val/coherence/text_img_cov/Smiling █▁
+wandb:        val/coherence/text_img_cov/Straight_Hair ▁█
+wandb:            val/coherence/text_img_cov/Wavy_Hair █▁
+wandb:     val/coherence/text_img_cov/Wearing_Earrings ▁█
+wandb:          val/coherence/text_img_cov/Wearing_Hat █▁
+wandb:     val/coherence/text_img_cov/Wearing_Lipstick █▁
+wandb:     val/coherence/text_img_cov/Wearing_Necklace █▁
+wandb:      val/coherence/text_img_cov/Wearing_Necktie █▁
+wandb:                val/coherence/text_img_cov/Young █▁
+wandb:        val/coherence/text_text/5_o_Clock_Shadow █▁
+wandb:         val/coherence/text_text/Arched_Eyebrows ▁█
+wandb:              val/coherence/text_text/Attractive █▁
+wandb:         val/coherence/text_text/Bags_Under_Eyes ▁█
+wandb:                    val/coherence/text_text/Bald █▁
+wandb:                   val/coherence/text_text/Bangs █▁
+wandb:                val/coherence/text_text/Big_Lips ▁█
+wandb:                val/coherence/text_text/Big_Nose █▁
+wandb:              val/coherence/text_text/Black_Hair █▁
+wandb:              val/coherence/text_text/Blond_Hair ▁█
+wandb:                  val/coherence/text_text/Blurry ▁█
+wandb:              val/coherence/text_text/Brown_Hair █▁
+wandb:          val/coherence/text_text/Bushy_Eyebrows █▁
+wandb:                  val/coherence/text_text/Chubby ▁█
+wandb:             val/coherence/text_text/Double_Chin ▁█
+wandb:              val/coherence/text_text/Eyeglasses ▁█
+wandb:                  val/coherence/text_text/Goatee ▁█
+wandb:               val/coherence/text_text/Gray_Hair █▁
+wandb:            val/coherence/text_text/Heavy_Makeup ▁█
+wandb:         val/coherence/text_text/High_Cheekbones ▁█
+wandb:                    val/coherence/text_text/Male ▁█
+wandb:     val/coherence/text_text/Mouth_Slightly_Open ▁█
+wandb:                val/coherence/text_text/Mustache ▁█
+wandb:             val/coherence/text_text/Narrow_Eyes ▁█
+wandb:                val/coherence/text_text/No_Beard ▁█
+wandb:               val/coherence/text_text/Oval_Face █▁
+wandb:               val/coherence/text_text/Pale_Skin ▁█
+wandb:             val/coherence/text_text/Pointy_Nose █▁
+wandb:       val/coherence/text_text/Receding_Hairline ▁█
+wandb:             val/coherence/text_text/Rosy_Cheeks ▁█
+wandb:               val/coherence/text_text/Sideburns █▁
+wandb:                 val/coherence/text_text/Smiling █▁
+wandb:           val/coherence/text_text/Straight_Hair ▁█
+wandb:               val/coherence/text_text/Wavy_Hair ▁█
+wandb:        val/coherence/text_text/Wearing_Earrings ▁█
+wandb:             val/coherence/text_text/Wearing_Hat █▁
+wandb:        val/coherence/text_text/Wearing_Lipstick ▁█
+wandb:        val/coherence/text_text/Wearing_Necklace █▁
+wandb:         val/coherence/text_text/Wearing_Necktie ▁█
+wandb:                   val/coherence/text_text/Young █▁
+wandb:    val/coherence/text_text_cov/5_o_Clock_Shadow █▁
+wandb:     val/coherence/text_text_cov/Arched_Eyebrows ▁█
+wandb:          val/coherence/text_text_cov/Attractive █▁
+wandb:     val/coherence/text_text_cov/Bags_Under_Eyes ▁█
+wandb:                val/coherence/text_text_cov/Bald ▁█
+wandb:               val/coherence/text_text_cov/Bangs ▁█
+wandb:            val/coherence/text_text_cov/Big_Lips █▁
+wandb:            val/coherence/text_text_cov/Big_Nose █▁
+wandb:          val/coherence/text_text_cov/Black_Hair █▁
+wandb:          val/coherence/text_text_cov/Blond_Hair ▁█
+wandb:              val/coherence/text_text_cov/Blurry ▁█
+wandb:          val/coherence/text_text_cov/Brown_Hair █▁
+wandb:      val/coherence/text_text_cov/Bushy_Eyebrows █▁
+wandb:              val/coherence/text_text_cov/Chubby █▁
+wandb:         val/coherence/text_text_cov/Double_Chin ▁█
+wandb:          val/coherence/text_text_cov/Eyeglasses ▁█
+wandb:              val/coherence/text_text_cov/Goatee ▁█
+wandb:           val/coherence/text_text_cov/Gray_Hair ▁█
+wandb:        val/coherence/text_text_cov/Heavy_Makeup ▁█
+wandb:     val/coherence/text_text_cov/High_Cheekbones ▁█
+wandb:                val/coherence/text_text_cov/Male ▁█
+wandb: val/coherence/text_text_cov/Mouth_Slightly_Open ▁█
+wandb:            val/coherence/text_text_cov/Mustache ▁█
+wandb:         val/coherence/text_text_cov/Narrow_Eyes ▁█
+wandb:            val/coherence/text_text_cov/No_Beard ▁█
+wandb:           val/coherence/text_text_cov/Oval_Face █▁
+wandb:           val/coherence/text_text_cov/Pale_Skin █▁
+wandb:         val/coherence/text_text_cov/Pointy_Nose █▁
+wandb:   val/coherence/text_text_cov/Receding_Hairline ▁█
+wandb:         val/coherence/text_text_cov/Rosy_Cheeks ▁█
+wandb:           val/coherence/text_text_cov/Sideburns █▁
+wandb:             val/coherence/text_text_cov/Smiling █▁
+wandb:       val/coherence/text_text_cov/Straight_Hair █▁
+wandb:           val/coherence/text_text_cov/Wavy_Hair ▁█
+wandb:    val/coherence/text_text_cov/Wearing_Earrings █▁
+wandb:         val/coherence/text_text_cov/Wearing_Hat ▁█
+wandb:    val/coherence/text_text_cov/Wearing_Lipstick ▁█
+wandb:    val/coherence/text_text_cov/Wearing_Necklace █▁
+wandb:     val/coherence/text_text_cov/Wearing_Necktie ▁█
+wandb:               val/coherence/text_text_cov/Young █▁
+wandb:                       val/coherence/text_to_img █▁
+wandb:                   val/coherence/text_to_img_cov ▁█
+wandb:                      val/coherence/text_to_text ▁█
+wandb:                  val/coherence/text_to_text_cov ▁█
+wandb:           val/condition_generation/avg_rec_loss █▁
+wandb:       val/condition_generation_cov/avg_rec_loss █▁
+wandb:                   val/downstream/aggregated/img ▁█
+wandb:                  val/downstream/aggregated/text ▁█
+wandb:                     val/downstream/unimodal/img ▁█
+wandb:                    val/downstream/unimodal/text ▁█
+wandb:                              val/fid/img_to_img █▁
+wandb:                          val/fid/img_to_img_cov █▁
+wandb:                             val/fid/text_to_img █▁
+wandb:                         val/fid/text_to_img_cov █▁
+wandb:                     val/loss/avg_rec_loss_epoch █▅▃▃▃▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                               val/loss/klds_avg ▃▆█▅▅▅▄▅▄▅▄▃▅▃▂▃▂▂▂▂▂▁▁▂▁▂▂▂▂▂▁▁▁▁▁▂▂▁▂▁
+wandb:                                   val/loss/loss █▅▃▃▃▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                               val/loss/loss_rec █▅▃▃▃▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                                 val/loss/mv_vae █▅▃▃▃▂▂▂▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:                           val/loss/rec_loss_img ▁▄▆▆▆▇▇▇▇▇▇▇▇█▇█▇▇██████████████████████
+wandb:                          val/loss/rec_loss_text ▁▄▆▆▆▇▇▇▇▇▇▇▇███████████████████████████
+wandb:                  val/loss/weighted_rec_loss_img ▁▄▆▆▆▇▇▇▇▇▇▇▇█▇█▇▇██████████████████████
+wandb:                 val/loss/weighted_rec_loss_text ▁▄▆▆▆▇▇▇▇▇▇▇▇███████████████████████████
+wandb: 
+wandb: Run summary:
+wandb:                                  beta annealing 1.0
+wandb:                                           epoch 106
+wandb:                             train/loss/klds_avg 2624.16138
+wandb:                                 train/loss/loss 8898.21094
+wandb:                             train/loss/loss_rec 6274.04932
+wandb:                               train/loss/mv_vae 8898.21094
+wandb:                         train/loss/rec_loss_img -5858.27148
+wandb:                        train/loss/rec_loss_text -25.9861
+wandb:                train/loss/weighted_rec_loss_img -5858.27148
+wandb:               train/loss/weighted_rec_loss_text -415.77762
+wandb:                             trainer/global_step 134999
+wandb:          val/coherence/img_img/5_o_Clock_Shadow 0.43658
+wandb:           val/coherence/img_img/Arched_Eyebrows 0.56593
+wandb:                val/coherence/img_img/Attractive 0.75471
+wandb:           val/coherence/img_img/Bags_Under_Eyes 0.44981
+wandb:                      val/coherence/img_img/Bald 0.18521
+wandb:                     val/coherence/img_img/Bangs 0.59868
+wandb:                  val/coherence/img_img/Big_Lips 0.29679
+wandb:                  val/coherence/img_img/Big_Nose 0.51359
+wandb:                val/coherence/img_img/Black_Hair 0.63696
+wandb:                val/coherence/img_img/Blond_Hair 0.74834
+wandb:                    val/coherence/img_img/Blurry 0.10557
+wandb:                val/coherence/img_img/Brown_Hair 0.57838
+wandb:            val/coherence/img_img/Bushy_Eyebrows 0.53997
+wandb:                    val/coherence/img_img/Chubby 0.27915
+wandb:               val/coherence/img_img/Double_Chin 0.29374
+wandb:                val/coherence/img_img/Eyeglasses 0.49351
+wandb:                    val/coherence/img_img/Goatee 0.52255
+wandb:                 val/coherence/img_img/Gray_Hair 0.50028
+wandb:              val/coherence/img_img/Heavy_Makeup 0.83762
+wandb:           val/coherence/img_img/High_Cheekbones 0.82563
+wandb:                      val/coherence/img_img/Male 0.95326
+wandb:       val/coherence/img_img/Mouth_Slightly_Open 0.84097
+wandb:                  val/coherence/img_img/Mustache 0.33302
+wandb:               val/coherence/img_img/Narrow_Eyes 0.1661
+wandb:                  val/coherence/img_img/No_Beard 0.93371
+wandb:                 val/coherence/img_img/Oval_Face 0.40355
+wandb:                 val/coherence/img_img/Pale_Skin 0.04647
+wandb:               val/coherence/img_img/Pointy_Nose 0.43494
+wandb:         val/coherence/img_img/Receding_Hairline 0.30693
+wandb:               val/coherence/img_img/Rosy_Cheeks 0.42182
+wandb:                 val/coherence/img_img/Sideburns 0.48991
+wandb:                   val/coherence/img_img/Smiling 0.88727
+wandb:             val/coherence/img_img/Straight_Hair 0.3337
+wandb:                 val/coherence/img_img/Wavy_Hair 0.43038
+wandb:          val/coherence/img_img/Wearing_Earrings 0.47118
+wandb:               val/coherence/img_img/Wearing_Hat 0.67616
+wandb:          val/coherence/img_img/Wearing_Lipstick 0.85062
+wandb:          val/coherence/img_img/Wearing_Necklace 0.26525
+wandb:           val/coherence/img_img/Wearing_Necktie 0.30307
+wandb:                     val/coherence/img_img/Young 0.83308
+wandb:      val/coherence/img_img_cov/5_o_Clock_Shadow 0.43833
+wandb:       val/coherence/img_img_cov/Arched_Eyebrows 0.56815
+wandb:            val/coherence/img_img_cov/Attractive 0.75205
+wandb:       val/coherence/img_img_cov/Bags_Under_Eyes 0.44978
+wandb:                  val/coherence/img_img_cov/Bald 0.20787
+wandb:                 val/coherence/img_img_cov/Bangs 0.60463
+wandb:              val/coherence/img_img_cov/Big_Lips 0.29598
+wandb:              val/coherence/img_img_cov/Big_Nose 0.51533
+wandb:            val/coherence/img_img_cov/Black_Hair 0.63719
+wandb:            val/coherence/img_img_cov/Blond_Hair 0.7482
+wandb:                val/coherence/img_img_cov/Blurry 0.10842
+wandb:            val/coherence/img_img_cov/Brown_Hair 0.57769
+wandb:        val/coherence/img_img_cov/Bushy_Eyebrows 0.54535
+wandb:                val/coherence/img_img_cov/Chubby 0.28476
+wandb:           val/coherence/img_img_cov/Double_Chin 0.29607
+wandb:            val/coherence/img_img_cov/Eyeglasses 0.49984
+wandb:                val/coherence/img_img_cov/Goatee 0.52122
+wandb:             val/coherence/img_img_cov/Gray_Hair 0.50271
+wandb:          val/coherence/img_img_cov/Heavy_Makeup 0.83219
+wandb:       val/coherence/img_img_cov/High_Cheekbones 0.82167
+wandb:                  val/coherence/img_img_cov/Male 0.95474
+wandb:   val/coherence/img_img_cov/Mouth_Slightly_Open 0.83823
+wandb:              val/coherence/img_img_cov/Mustache 0.33886
+wandb:           val/coherence/img_img_cov/Narrow_Eyes 0.16587
+wandb:              val/coherence/img_img_cov/No_Beard 0.93409
+wandb:             val/coherence/img_img_cov/Oval_Face 0.40821
+wandb:             val/coherence/img_img_cov/Pale_Skin 0.04768
+wandb:           val/coherence/img_img_cov/Pointy_Nose 0.43573
+wandb:     val/coherence/img_img_cov/Receding_Hairline 0.30377
+wandb:           val/coherence/img_img_cov/Rosy_Cheeks 0.42696
+wandb:             val/coherence/img_img_cov/Sideburns 0.49613
+wandb:               val/coherence/img_img_cov/Smiling 0.88737
+wandb:         val/coherence/img_img_cov/Straight_Hair 0.33265
+wandb:             val/coherence/img_img_cov/Wavy_Hair 0.42934
+wandb:      val/coherence/img_img_cov/Wearing_Earrings 0.47367
+wandb:           val/coherence/img_img_cov/Wearing_Hat 0.6669
+wandb:      val/coherence/img_img_cov/Wearing_Lipstick 0.84826
+wandb:      val/coherence/img_img_cov/Wearing_Necklace 0.26762
+wandb:       val/coherence/img_img_cov/Wearing_Necktie 0.29729
+wandb:                 val/coherence/img_img_cov/Young 0.83282
+wandb:         val/coherence/img_text/5_o_Clock_Shadow 0.15507
+wandb:          val/coherence/img_text/Arched_Eyebrows 0.26317
+wandb:               val/coherence/img_text/Attractive 0.65191
+wandb:          val/coherence/img_text/Bags_Under_Eyes 0.23736
+wandb:                     val/coherence/img_text/Bald 0.024
+wandb:                    val/coherence/img_text/Bangs 0.14268
+wandb:                 val/coherence/img_text/Big_Lips 0.17248
+wandb:                 val/coherence/img_text/Big_Nose 0.27208
+wandb:               val/coherence/img_text/Black_Hair 0.20951
+wandb:               val/coherence/img_text/Blond_Hair 0.23231
+wandb:                   val/coherence/img_text/Blurry 0.05028
+wandb:               val/coherence/img_text/Brown_Hair 0.24716
+wandb:           val/coherence/img_text/Bushy_Eyebrows 0.17276
+wandb:                   val/coherence/img_text/Chubby 0.07946
+wandb:              val/coherence/img_text/Double_Chin 0.0572
+wandb:               val/coherence/img_text/Eyeglasses 0.15174
+wandb:                   val/coherence/img_text/Goatee 0.15534
+wandb:                val/coherence/img_text/Gray_Hair 0.0622
+wandb:             val/coherence/img_text/Heavy_Makeup 0.67881
+wandb:          val/coherence/img_text/High_Cheekbones 0.46065
+wandb:                     val/coherence/img_text/Male 0.6096
+wandb:      val/coherence/img_text/Mouth_Slightly_Open 0.50254
+wandb:                 val/coherence/img_text/Mustache 0.04986
+wandb:              val/coherence/img_text/Narrow_Eyes 0.07731
+wandb:                 val/coherence/img_text/No_Beard 0.83602
+wandb:                val/coherence/img_text/Oval_Face 0.31955
+wandb:                val/coherence/img_text/Pale_Skin 0.04506
+wandb:              val/coherence/img_text/Pointy_Nose 0.30166
+wandb:        val/coherence/img_text/Receding_Hairline 0.06947
+wandb:              val/coherence/img_text/Rosy_Cheeks 0.04949
+wandb:                val/coherence/img_text/Sideburns 0.09446
+wandb:                  val/coherence/img_text/Smiling 0.5237
+wandb:            val/coherence/img_text/Straight_Hair 0.21833
+wandb:                val/coherence/img_text/Wavy_Hair 0.33008
+wandb:         val/coherence/img_text/Wearing_Earrings 0.17111
+wandb:              val/coherence/img_text/Wearing_Hat 0.05885
+wandb:         val/coherence/img_text/Wearing_Lipstick 0.74413
+wandb:         val/coherence/img_text/Wearing_Necklace 0.15166
+wandb:          val/coherence/img_text/Wearing_Necktie 0.09289
+wandb:                    val/coherence/img_text/Young 0.74562
+wandb:     val/coherence/img_text_cov/5_o_Clock_Shadow 0.10685
+wandb:      val/coherence/img_text_cov/Arched_Eyebrows 0.23874
+wandb:           val/coherence/img_text_cov/Attractive 0.53825
+wandb:      val/coherence/img_text_cov/Bags_Under_Eyes 0.20859
+wandb:                 val/coherence/img_text_cov/Bald 0.01936
+wandb:                val/coherence/img_text_cov/Bangs 0.13795
+wandb:             val/coherence/img_text_cov/Big_Lips 0.14937
+wandb:             val/coherence/img_text_cov/Big_Nose 0.2389
+wandb:           val/coherence/img_text_cov/Black_Hair 0.20253
+wandb:           val/coherence/img_text_cov/Blond_Hair 0.13851
+wandb:               val/coherence/img_text_cov/Blurry 0.04499
+wandb:           val/coherence/img_text_cov/Brown_Hair 0.23594
+wandb:       val/coherence/img_text_cov/Bushy_Eyebrows 0.14156
+wandb:               val/coherence/img_text_cov/Chubby 0.06437
+wandb:          val/coherence/img_text_cov/Double_Chin 0.0491
+wandb:           val/coherence/img_text_cov/Eyeglasses 0.06391
+wandb:               val/coherence/img_text_cov/Goatee 0.06232
+wandb:            val/coherence/img_text_cov/Gray_Hair 0.04879
+wandb:         val/coherence/img_text_cov/Heavy_Makeup 0.35115
+wandb:      val/coherence/img_text_cov/High_Cheekbones 0.41554
+wandb:                 val/coherence/img_text_cov/Male 0.38159
+wandb:  val/coherence/img_text_cov/Mouth_Slightly_Open 0.46642
+wandb:             val/coherence/img_text_cov/Mustache 0.04041
+wandb:          val/coherence/img_text_cov/Narrow_Eyes 0.07771
+wandb:             val/coherence/img_text_cov/No_Beard 0.80654
+wandb:            val/coherence/img_text_cov/Oval_Face 0.28213
+wandb:            val/coherence/img_text_cov/Pale_Skin 0.04906
+wandb:          val/coherence/img_text_cov/Pointy_Nose 0.28803
+wandb:    val/coherence/img_text_cov/Receding_Hairline 0.07741
+wandb:          val/coherence/img_text_cov/Rosy_Cheeks 0.0603
+wandb:            val/coherence/img_text_cov/Sideburns 0.05728
+wandb:              val/coherence/img_text_cov/Smiling 0.46882
+wandb:        val/coherence/img_text_cov/Straight_Hair 0.20235
+wandb:            val/coherence/img_text_cov/Wavy_Hair 0.28646
+wandb:     val/coherence/img_text_cov/Wearing_Earrings 0.1865
+wandb:          val/coherence/img_text_cov/Wearing_Hat 0.04065
+wandb:     val/coherence/img_text_cov/Wearing_Lipstick 0.40205
+wandb:     val/coherence/img_text_cov/Wearing_Necklace 0.11046
+wandb:      val/coherence/img_text_cov/Wearing_Necktie 0.07543
+wandb:                val/coherence/img_text_cov/Young 0.75088
+wandb:                        val/coherence/img_to_img 0.51484
+wandb:                    val/coherence/img_to_img_cov 0.51361
+wandb:                       val/coherence/img_to_text 0.21418
+wandb:                   val/coherence/img_to_text_cov 0.26169
+wandb:         val/coherence/text_img/5_o_Clock_Shadow 0.21549
+wandb:          val/coherence/text_img/Arched_Eyebrows 0.52163
+wandb:               val/coherence/text_img/Attractive 0.67752
+wandb:          val/coherence/text_img/Bags_Under_Eyes 0.28073
+wandb:                     val/coherence/text_img/Bald 0.02061
+wandb:                    val/coherence/text_img/Bangs 0.16549
+wandb:                 val/coherence/text_img/Big_Lips 0.19705
+wandb:                 val/coherence/text_img/Big_Nose 0.38907
+wandb:               val/coherence/text_img/Black_Hair 0.23659
+wandb:               val/coherence/text_img/Blond_Hair 0.14765
+wandb:                   val/coherence/text_img/Blurry 0.06431
+wandb:               val/coherence/text_img/Brown_Hair 0.27592
+wandb:           val/coherence/text_img/Bushy_Eyebrows 0.19133
+wandb:                   val/coherence/text_img/Chubby 0.08662
+wandb:              val/coherence/text_img/Double_Chin 0.10576
+wandb:               val/coherence/text_img/Eyeglasses 0.0618
+wandb:                   val/coherence/text_img/Goatee 0.1153
+wandb:                val/coherence/text_img/Gray_Hair 0.05539
+wandb:             val/coherence/text_img/Heavy_Makeup 0.74192
+wandb:          val/coherence/text_img/High_Cheekbones 0.65274
+wandb:                     val/coherence/text_img/Male 0.74934
+wandb:      val/coherence/text_img/Mouth_Slightly_Open 0.64223
+wandb:                 val/coherence/text_img/Mustache 0.07282
+wandb:              val/coherence/text_img/Narrow_Eyes 0.09369
+wandb:                 val/coherence/text_img/No_Beard 0.85207
+wandb:                val/coherence/text_img/Oval_Face 0.31516
+wandb:                val/coherence/text_img/Pale_Skin 0.04119
+wandb:              val/coherence/text_img/Pointy_Nose 0.3606
+wandb:        val/coherence/text_img/Receding_Hairline 0.0611
+wandb:              val/coherence/text_img/Rosy_Cheeks 0.2329
+wandb:                val/coherence/text_img/Sideburns 0.1057
+wandb:                  val/coherence/text_img/Smiling 0.66787
+wandb:            val/coherence/text_img/Straight_Hair 0.18186
+wandb:                val/coherence/text_img/Wavy_Hair 0.38051
+wandb:         val/coherence/text_img/Wearing_Earrings 0.34531
+wandb:              val/coherence/text_img/Wearing_Hat 0.05902
+wandb:         val/coherence/text_img/Wearing_Lipstick 0.75886
+wandb:         val/coherence/text_img/Wearing_Necklace 0.20723
+wandb:          val/coherence/text_img/Wearing_Necktie 0.08184
+wandb:                    val/coherence/text_img/Young 0.76654
+wandb:     val/coherence/text_img_cov/5_o_Clock_Shadow 0.09949
+wandb:      val/coherence/text_img_cov/Arched_Eyebrows 0.22062
+wandb:           val/coherence/text_img_cov/Attractive 0.47479
+wandb:      val/coherence/text_img_cov/Bags_Under_Eyes 0.17806
+wandb:                 val/coherence/text_img_cov/Bald 0.02055
+wandb:                val/coherence/text_img_cov/Bangs 0.14658
+wandb:             val/coherence/text_img_cov/Big_Lips 0.15598
+wandb:             val/coherence/text_img_cov/Big_Nose 0.19889
+wandb:           val/coherence/text_img_cov/Black_Hair 0.20487
+wandb:           val/coherence/text_img_cov/Blond_Hair 0.15052
+wandb:               val/coherence/text_img_cov/Blurry 0.04963
+wandb:           val/coherence/text_img_cov/Brown_Hair 0.23261
+wandb:       val/coherence/text_img_cov/Bushy_Eyebrows 0.13422
+wandb:               val/coherence/text_img_cov/Chubby 0.05067
+wandb:          val/coherence/text_img_cov/Double_Chin 0.0369
+wandb:           val/coherence/text_img_cov/Eyeglasses 0.06078
+wandb:               val/coherence/text_img_cov/Goatee 0.05893
+wandb:            val/coherence/text_img_cov/Gray_Hair 0.0464
+wandb:         val/coherence/text_img_cov/Heavy_Makeup 0.30862
+wandb:      val/coherence/text_img_cov/High_Cheekbones 0.41886
+wandb:                 val/coherence/text_img_cov/Male 0.35319
+wandb:  val/coherence/text_img_cov/Mouth_Slightly_Open 0.44931
+wandb:             val/coherence/text_img_cov/Mustache 0.04015
+wandb:          val/coherence/text_img_cov/Narrow_Eyes 0.06846
+wandb:             val/coherence/text_img_cov/No_Beard 0.80186
+wandb:            val/coherence/text_img_cov/Oval_Face 0.27074
+wandb:            val/coherence/text_img_cov/Pale_Skin 0.04235
+wandb:          val/coherence/text_img_cov/Pointy_Nose 0.27069
+wandb:    val/coherence/text_img_cov/Receding_Hairline 0.07234
+wandb:          val/coherence/text_img_cov/Rosy_Cheeks 0.06043
+wandb:            val/coherence/text_img_cov/Sideburns 0.05538
+wandb:              val/coherence/text_img_cov/Smiling 0.43831
+wandb:        val/coherence/text_img_cov/Straight_Hair 0.20068
+wandb:            val/coherence/text_img_cov/Wavy_Hair 0.25978
+wandb:     val/coherence/text_img_cov/Wearing_Earrings 0.15975
+wandb:          val/coherence/text_img_cov/Wearing_Hat 0.04128
+wandb:     val/coherence/text_img_cov/Wearing_Lipstick 0.36216
+wandb:     val/coherence/text_img_cov/Wearing_Necklace 0.11203
+wandb:      val/coherence/text_img_cov/Wearing_Necktie 0.06582
+wandb:                val/coherence/text_img_cov/Young 0.73917
+wandb:        val/coherence/text_text/5_o_Clock_Shadow 0.14375
+wandb:         val/coherence/text_text/Arched_Eyebrows 0.29658
+wandb:              val/coherence/text_text/Attractive 0.59433
+wandb:         val/coherence/text_text/Bags_Under_Eyes 0.2078
+wandb:                    val/coherence/text_text/Bald 0.02261
+wandb:                   val/coherence/text_text/Bangs 0.14003
+wandb:                val/coherence/text_text/Big_Lips 0.16098
+wandb:                val/coherence/text_text/Big_Nose 0.2545
+wandb:              val/coherence/text_text/Black_Hair 0.21037
+wandb:              val/coherence/text_text/Blond_Hair 0.20931
+wandb:                  val/coherence/text_text/Blurry 0.05192
+wandb:              val/coherence/text_text/Brown_Hair 0.24024
+wandb:          val/coherence/text_text/Bushy_Eyebrows 0.13993
+wandb:                  val/coherence/text_text/Chubby 0.07234
+wandb:             val/coherence/text_text/Double_Chin 0.0681
+wandb:              val/coherence/text_text/Eyeglasses 0.08504
+wandb:                  val/coherence/text_text/Goatee 0.08338
+wandb:               val/coherence/text_text/Gray_Hair 0.05212
+wandb:            val/coherence/text_text/Heavy_Makeup 0.6184
+wandb:         val/coherence/text_text/High_Cheekbones 0.63523
+wandb:                    val/coherence/text_text/Male 0.5687
+wandb:     val/coherence/text_text/Mouth_Slightly_Open 0.57009
+wandb:                val/coherence/text_text/Mustache 0.07208
+wandb:             val/coherence/text_text/Narrow_Eyes 0.06894
+wandb:                val/coherence/text_text/No_Beard 0.83182
+wandb:               val/coherence/text_text/Oval_Face 0.31827
+wandb:               val/coherence/text_text/Pale_Skin 0.04553
+wandb:             val/coherence/text_text/Pointy_Nose 0.27495
+wandb:       val/coherence/text_text/Receding_Hairline 0.08612
+wandb:             val/coherence/text_text/Rosy_Cheeks 0.08775
+wandb:               val/coherence/text_text/Sideburns 0.08582
+wandb:                 val/coherence/text_text/Smiling 0.61916
+wandb:           val/coherence/text_text/Straight_Hair 0.20277
+wandb:               val/coherence/text_text/Wavy_Hair 0.30249
+wandb:        val/coherence/text_text/Wearing_Earrings 0.17027
+wandb:             val/coherence/text_text/Wearing_Hat 0.05527
+wandb:        val/coherence/text_text/Wearing_Lipstick 0.58736
+wandb:        val/coherence/text_text/Wearing_Necklace 0.15064
+wandb:         val/coherence/text_text/Wearing_Necktie 0.07836
+wandb:                   val/coherence/text_text/Young 0.75482
+wandb:    val/coherence/text_text_cov/5_o_Clock_Shadow 0.14097
+wandb:     val/coherence/text_text_cov/Arched_Eyebrows 0.29511
+wandb:          val/coherence/text_text_cov/Attractive 0.58894
+wandb:     val/coherence/text_text_cov/Bags_Under_Eyes 0.21165
+wandb:                val/coherence/text_text_cov/Bald 0.02564
+wandb:               val/coherence/text_text_cov/Bangs 0.14259
+wandb:            val/coherence/text_text_cov/Big_Lips 0.16261
+wandb:            val/coherence/text_text_cov/Big_Nose 0.2555
+wandb:          val/coherence/text_text_cov/Black_Hair 0.20841
+wandb:          val/coherence/text_text_cov/Blond_Hair 0.21214
+wandb:              val/coherence/text_text_cov/Blurry 0.05505
+wandb:          val/coherence/text_text_cov/Brown_Hair 0.24159
+wandb:      val/coherence/text_text_cov/Bushy_Eyebrows 0.1364
+wandb:              val/coherence/text_text_cov/Chubby 0.06959
+wandb:         val/coherence/text_text_cov/Double_Chin 0.07008
+wandb:          val/coherence/text_text_cov/Eyeglasses 0.08631
+wandb:              val/coherence/text_text_cov/Goatee 0.08389
+wandb:           val/coherence/text_text_cov/Gray_Hair 0.05126
+wandb:        val/coherence/text_text_cov/Heavy_Makeup 0.62322
+wandb:     val/coherence/text_text_cov/High_Cheekbones 0.63412
+wandb:                val/coherence/text_text_cov/Male 0.57367
+wandb: val/coherence/text_text_cov/Mouth_Slightly_Open 0.57451
+wandb:            val/coherence/text_text_cov/Mustache 0.08084
+wandb:         val/coherence/text_text_cov/Narrow_Eyes 0.06748
+wandb:            val/coherence/text_text_cov/No_Beard 0.83054
+wandb:           val/coherence/text_text_cov/Oval_Face 0.3141
+wandb:           val/coherence/text_text_cov/Pale_Skin 0.0426
+wandb:         val/coherence/text_text_cov/Pointy_Nose 0.27877
+wandb:   val/coherence/text_text_cov/Receding_Hairline 0.08217
+wandb:         val/coherence/text_text_cov/Rosy_Cheeks 0.08432
+wandb:           val/coherence/text_text_cov/Sideburns 0.08689
+wandb:             val/coherence/text_text_cov/Smiling 0.6154
+wandb:       val/coherence/text_text_cov/Straight_Hair 0.20457
+wandb:           val/coherence/text_text_cov/Wavy_Hair 0.3042
+wandb:    val/coherence/text_text_cov/Wearing_Earrings 0.17061
+wandb:         val/coherence/text_text_cov/Wearing_Hat 0.05343
+wandb:    val/coherence/text_text_cov/Wearing_Lipstick 0.58895
+wandb:    val/coherence/text_text_cov/Wearing_Necklace 0.14957
+wandb:     val/coherence/text_text_cov/Wearing_Necktie 0.07656
+wandb:               val/coherence/text_text_cov/Young 0.75497
+wandb:                       val/coherence/text_to_img 0.2028
+wandb:                   val/coherence/text_to_img_cov 0.30447
+wandb:                      val/coherence/text_to_text 0.25573
+wandb:                  val/coherence/text_to_text_cov 0.25545
+wandb:           val/condition_generation/avg_rec_loss 6048.00977
+wandb:       val/condition_generation_cov/avg_rec_loss 6047.93457
+wandb:                   val/downstream/aggregated/img 0.37496
+wandb:                  val/downstream/aggregated/text 0.27862
+wandb:                     val/downstream/unimodal/img 0.37496
+wandb:                    val/downstream/unimodal/text 0.27862
+wandb:                              val/fid/img_to_img 56.92776
+wandb:                          val/fid/img_to_img_cov 56.9206
+wandb:                             val/fid/text_to_img 104.49909
+wandb:                         val/fid/text_to_img_cov 191.96545
+wandb:                     val/loss/avg_rec_loss_epoch 6036.10645
+wandb:                               val/loss/klds_avg 2624.62915
+wandb:                                   val/loss/loss 8660.74219
+wandb:                               val/loss/loss_rec 6036.10693
+wandb:                                 val/loss/mv_vae 8660.74219
+wandb:                           val/loss/rec_loss_img -5821.92334
+wandb:                          val/loss/rec_loss_text -13.38653
+wandb:                  val/loss/weighted_rec_loss_img -5821.92334
+wandb:                 val/loss/weighted_rec_loss_text -214.18443
+wandb: 
+wandb: 🚀 View run happy-armadillo-67 at: https://wandb.ai/eso18-imperial-college-london/mvvae_celeba/runs/w07570nb
+wandb: Synced 6 W&B file(s), 62 media file(s), 37 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./run_celeba/logs/wandb/run-20260128_112339-w07570nb/logs
