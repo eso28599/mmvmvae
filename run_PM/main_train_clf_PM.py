@@ -7,7 +7,7 @@ from omegaconf import OmegaConf
 import hydra
 from hydra.core.config_store import ConfigStore
 
-from config.ClfConfig import MyClfConfig
+from config.ClfConfig import ClfConfig
 from config.ClfConfig import ModelConfig
 from config.ClfConfig import LogConfig
 from config.DatasetConfig import PMtranslatedData75Config
@@ -20,7 +20,7 @@ cs = ConfigStore.instance()
 cs.store(group="log", name="log", node=LogConfig)
 cs.store(group="model", name="model", node=ModelConfig)
 cs.store(group="dataset", name="PMtranslated75", node=PMtranslatedData75Config)
-cs.store(name="base_config", node=MyClfConfig)
+cs.store(name="base_config", node=ClfConfig)
 
 
 torch.set_float32_matmul_precision('high')
@@ -28,7 +28,7 @@ torch.set_float32_matmul_precision('high')
 @hydra.main(version_base=None, 
             config_path="../config",
             config_name="config_clf_PM")
-def run_experiment(cfg: MyClfConfig):
+def run_experiment(cfg: ClfConfig):
     print(cfg)
     pl.seed_everything(cfg.seed, workers=True)
 
