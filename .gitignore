@@ -1,4 +1,13 @@
-data/*
+# data/*
+data/CelebA/*
+data/celeba_data.zip  
+data/CelebA.tar.gz  
+data/data/*  
+download_data.pbs  
+data/MMNIST/*  
+data/MMNIST.tar.gz  
+data/PolyMNIST.zip  
+# data/scMNC/*
 outputs/*
 clfs/wandb/*
 clfs/multi_view_vae/*
