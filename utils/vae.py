@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from config.MyMVWSLConfig import MyMVWSLConfig
+from config.ExperimentConfig import ImplementConfig
 
 from networks.NetworksImgCelebA import EncoderImg, DecoderImg
 from networks.NetworksTextCelebA import EncoderText, DecoderText
@@ -12,7 +12,7 @@ from networks.JointPrior import OrthogMat
 # from networks.NetworksRatsspike import Decoder as RatsDecoder
 
 
-def get_networks(cfg: MyMVWSLConfig) -> list[nn.ModuleList]:
+def get_networks(cfg: ImplementConfig) -> list[nn.ModuleList]:
     if cfg.dataset.name.startswith("PM"):
         if not cfg.model.use_resnets:
             encoders = nn.ModuleList(

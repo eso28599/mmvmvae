@@ -9,9 +9,9 @@ from hydra.core.config_store import ConfigStore
 from utils import dataset
 from clfs.celeba_clf import ClfCelebA
 
-from config.MyClfConfig import MyClfConfig
-from config.MyClfConfig import ModelConfig
-from config.MyClfConfig import LogConfig
+from config.ClfConfig import MyClfConfig
+from config.ClfConfig import ModelConfig
+from config.ClfConfig import LogConfig
 from config.DatasetConfig import CelebADataConfig
 
 cs = ConfigStore.instance()

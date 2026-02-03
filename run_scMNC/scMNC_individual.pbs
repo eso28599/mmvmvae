@@ -48,7 +48,7 @@ n_ep=2500 # number of epochs
 early_stop=true # whether to use early stopping
 
 # run the classifier with a jointposterior
-python main_mv_wsl.py \
+python run_experiment.py \
     model=${model} \
     ++model.seed=${seed} \
     ++model.alpha_scalar=${alpha} \

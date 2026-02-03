@@ -48,7 +48,7 @@ class EvalConfig:
 
 
 @dataclass
-class MyMVWSLConfig:
+class ExperimentConfig:
     seed: int = 0
     checkpoint_metric: str = "val/loss/loss"
     # logger

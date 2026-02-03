@@ -46,7 +46,7 @@ n_ep=400 # number of epochs
 early_stop=false # whether to use early stopping
 beta_anneal=true # whether to use beta/kl annealing
 
-python main_mv_wsl.py \
+python run_experiment.py \
     model=${model} \
     ++model.seed=${seed} \
     ++model.alpha_scalar=${alpha} \

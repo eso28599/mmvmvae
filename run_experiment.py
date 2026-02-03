@@ -9,20 +9,24 @@ import hydra
 from hydra.core.config_store import ConfigStore
 from omegaconf import OmegaConf
 import torch # added for torch.set_float32_matmul_precision
-
 from utils import dataset
+torch.set_float32_matmul_precision('high')
 
-from config.MyMVWSLConfig import MyMVWSLConfig
-from config.MyMVWSLConfig import LogConfig
+
+# experiment configs 
+from config.ExperimentConfig import ExperimentConfig
+from config.ExperimentConfig import LogConfig
+from config.ExperimentConfig import EvalConfig
+# model configs
 from config.ModelConfig import JointModelConfig
 from config.ModelConfig import MixedPriorModelConfig
 from config.ModelConfig import UnimodalModelConfig
 from config.ModelConfig import JointPriorModelConfig
+# dataset configs
 from config.DatasetConfig import PMtranslatedData75Config
 from config.DatasetConfig import CelebADataConfig
 from config.DatasetConfig import scMNCDataConfig
-from config.MyMVWSLConfig import EvalConfig
-
+# models
 from mv_vaes.mv_joint_vae import MVJointVAE as MVJointVAE
 from mv_vaes.mv_unimodal_vae import MVunimodalVAE as MVunimodalVAE
 from mv_vaes.mv_mixedprior_vae import MVMixedPriorVAE as MVMixedPriorVAE
@@ -39,12 +43,10 @@ cs.store(group="eval", name="eval", node=EvalConfig)
 cs.store(group="dataset", name="PMtranslated75", node=PMtranslatedData75Config)
 cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
 cs.store(group="dataset", name="scMNC", node=scMNCDataConfig)
-cs.store(name="base_config", node=MyMVWSLConfig)
-
-torch.set_float32_matmul_precision('high')
+cs.store(name="base_config", node=ExperimentConfig)
 
 @hydra.main(version_base=None, config_path="config", config_name="config")
-def run_experiment(cfg: MyMVWSLConfig):
+def run_experiment(cfg: ExperimentConfig):
     print(cfg)
     
     if cfg.log.wandb_local_instance:

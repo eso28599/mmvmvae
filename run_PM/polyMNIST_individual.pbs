@@ -45,7 +45,7 @@ early_stop=true # whether to use early stopping
 beta_anneal=false # whether to use beta/kl annealing
 
 # run the model with specified parameters
-python main_mv_wsl.py \
+python run_experiment.py \
     model=${model} \
     ++model.seed=${seed} \
     ++model.alpha_scalar=${alpha} \
