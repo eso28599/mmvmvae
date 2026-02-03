@@ -23,6 +23,7 @@ run_celeba/logs/mvvae_celeba/*
 run_scMNC/logs/*
 Untitled.ipynb
 not_needed/cub.zip
+remove.txt
 cub/cub.zip
 # Byte-compiled / optimized / DLL files
 __pycache__/
