@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=00:30:00
+#PBS -l walltime=00:40:00
 #PBS -N scMNC_smaller_ld
 #PBS -o /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.err
@@ -13,46 +13,43 @@ cd mmvmvae
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
-export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 
 # user specific variables
+export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
 wandb_entity="eso18-imperial-college-london"
 project_name="mvvae_scMNC"
 dir_experiments="/rds/general/user/eso18/home/mmvmvae"
 dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/scMNC"
 wandb_logdir="${dir_experiments}/run_scMNC/logs"
 device="cuda"  # 'cuda' if you are useing a GPU
-WD=$(pwd)
+cd $(pwd)
 
 # dataset specific variables
 dataset="scMNC"
 
 # model specific variables
 model="jointprior"
-agg="avg" # aggregation method: 'avg' or 'moe' or 'mopoe'
-alpha=0.95 # needed for jointprior
+alpha=0.95 ## alpha value if using for jointprior
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
+agg="avg" # aggregation method for joint: 'mopoe', 'moe', 'avg'
+aa=true  # whether to use alpha annealing for mixedprior
 
 # architecture variables
-ld=256 # latent dimension of encoder/decoder
+ld=256 # latent dimension
 hd=512 # hidden dimension of encoder/decoder 
+batch_size=32 # batch size
 
 # experimental running variables
 seed=1
 log_freq=1
 
 # training specific variables
-beta_anneal=true # whether to use beta annealing
-beta=1  # KL weight (float)
-aa=true  # alpha annealing steps (int)
-a_w=0.5
+beta_anneal=true # whether to use beta/kl annealing
 lr=5e-4 # learning rate
 n_ep=2500 # number of epochs
-gamma=0.0001
-early_stop=true
+early_stop=true # whether to use early stopping
 
 # run the classifier with a jointposterior
-cd $WD
 python main_mv_wsl.py \
     model=${model} \
     ++model.seed=${seed} \
@@ -60,7 +57,7 @@ python main_mv_wsl.py \
     ++model.cov_scalar=${cov_scalar} \
     ++model.device=${device} \
     ++model.beta=${beta} \
-    ++model.batch_size=32 \
+    ++model.batch_size=${batch_size} \
     ++model.beta_annealing=${beta_anneal} \
     ++model.early_stop=${early_stop} \
     ++model.latent_dim=${ld} \

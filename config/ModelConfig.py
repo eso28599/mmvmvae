@@ -15,7 +15,6 @@ class ModelConfig:
     early_stop: bool = False
 
     # loss hyperparameters
-    beta: float = 1.0
     beta_annealing: bool = True # True
     init_beta_value: float = 0 # 1
     final_beta_value: float = 1.0 # 0
@@ -27,12 +26,10 @@ class ModelConfig:
     # network architectures
     use_resnets: bool = True
 
-
 @dataclass
 class JointModelConfig(ModelConfig):
     name: str = "joint"
     aggregation: str = "poe"
-
 
 @dataclass
 class MixedPriorModelConfig(ModelConfig):
@@ -58,11 +55,3 @@ class JointPriorModelConfig(ModelConfig):
 @dataclass
 class UnimodalModelConfig(ModelConfig):
     name: str = "unimodal"
-
-
-@dataclass
-class SplitModelConfig(ModelConfig):
-    name: str = "split"
-    aggregation: str = "moe"
-    mod_specific_dim: int = 256
-    split_type: str = "simple"

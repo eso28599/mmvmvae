@@ -68,10 +68,10 @@ class MVunimodalVAE(MVVAE):
         self.log("beta annealing", beta_weight)
         # kl divergence of latent distribution
         klds = []
-        for m, key in enumerate(self.modality_names):
+        for _, key in enumerate(self.modality_names):
             dist_m = dists_out[key]
             kld_m = self.kl_div_z(dist_m)
-            klds.append(self.betas[key] * kld_m.unsqueeze(1))
+            klds.append(kld_m.unsqueeze(1))
             self.log(
                 f"{str_set}/loss/kld_{key}",
                 kld_m.mean(dim=0),

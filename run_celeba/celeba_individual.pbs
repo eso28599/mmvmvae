@@ -9,47 +9,54 @@ eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
 
+# Set environment variables
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
-dataset="CelebA"
-model="jointprior"
-seed=1
-agg="avg"
-alpha=0.95 
+cd $(pwd)
+
+# user specific variables
 wandb_entity="eso18-imperial-college-london"
 project_name="mvvae_celeba"
 dir_experiments="/rds/general/user/eso18/home/mmvmvae"
 dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/CelebA"
 wandb_logdir="${dir_experiments}/run_celeba/logs"
-WD=$(pwd)
 device="cuda"  # 'cuda' if you are useing a GPU
-log_freq_downstream=50
-log_freq_coherence=50
-log_freq_lhood=50
-log_freq_plotting=50
-ld=256
-beta=1      # KL weight (float)
-aa=true     # alpha annealing steps (int)
-a_w=0.5
-ld=512 
-lr=5e-4 
-n_ep=400 
-gamma=0.0001
+
+# dataset specific variables
+dataset="CelebA"
+
+# model specific variables
+model="jointprior"
+alpha=0.95 ## alpha value if using for jointprior
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
+agg="avg" # aggregation method for joint: 'mopoe', 'moe', 'avg'
+aa=true  # whether to use alpha annealing for mixedprior
+
+# architecture variables
+ld=512  # latent dimension
+
+# experimental running variables
+seed=1
+log_freq=50
+
+# training specific variables
+lr=5e-4  # learning rate
+n_ep=400 # number of epochs
+early_stop=true
+beta_anneal=false # whether to use beta/kl annealing
 
 # run the classifier with a jointposterior
-cd $WD
 python main_mv_wsl.py \
     model=${model} \
     ++model.seed=${seed} \
     ++model.alpha_scalar=${alpha} \
     ++model.cov_scalar=${cov_scalar} \
     ++model.device=${device} \
-    ++model.beta=${beta} \
-    ++model.beta_annealing=false \
-    ++model.early_stop=true \
+    ++model.alpha_annealing=${aa} \
+    ++model.beta_annealing=${beta_anneal} \
+    ++model.early_stop=${early_stop} \
     ++model.latent_dim=${ld} \
     ++model.lr=${lr} \
     ++model.epochs=${n_ep} \
@@ -57,10 +64,10 @@ python main_mv_wsl.py \
     dataset=${dataset} \
     ++dataset.modalities_order=${mod} \
     ++log.wandb_offline=false \
-    ++log.downstream_logging_frequency=${log_freq_downstream} \
-    ++log.coherence_logging_frequency=${log_freq_coherence} \
-    ++log.likelihood_logging_frequency=${log_freq_lhood} \
-    ++log.img_plotting_frequency=${log_freq_plotting} \
+    ++log.downstream_logging_frequency=${log_freq} \
+    ++log.coherence_logging_frequency=${log_freq} \
+    ++log.likelihood_logging_frequency=${log_freq} \
+    ++log.img_plotting_frequency=${log_freq} \
     ++log.wandb_offline=false \
     ++log.wandb_local_instance=true \
     ++log.wandb_entity=${wandb_entity} \

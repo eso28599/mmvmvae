@@ -52,9 +52,6 @@ class MVVAE(pl.LightningModule):
             self.modalities_size = {
                 "m" + str(m): 3 * 28 * 28 for m in range(cfg.dataset.num_views)
             }
-            self.betas = {
-                "m" + str(m): cfg.model.beta for m in range(cfg.dataset.num_views)
-            }
         elif cfg.dataset.name.startswith("sc"):
             self.train_clf_lr = train_clf_lr_scMNC
             self.eval_clf_lr = eval_clf_lr_scMNC
@@ -67,9 +64,6 @@ class MVVAE(pl.LightningModule):
             self.modalities_size = {
                 "exp": 1302, "feat": 39
             }
-            self.betas = {
-                "exp": cfg.model.beta, "feat": cfg.model.beta
-            }
         elif cfg.dataset.name.startswith("celeba"):
             self.train_clf_lr = train_clf_lr_celeba
             self.eval_clf_lr = eval_clf_lr_celeba
@@ -77,7 +71,6 @@ class MVVAE(pl.LightningModule):
             self.calc_coherence = calc_coherence_ap
             self.from_preds_to_clf_metric = from_preds_to_ap
             self.modality_names = ["img", "text"]
-            self.betas = {"img": cfg.dataset.beta_img, "text": cfg.dataset.beta_text}
             if cfg.dataset.use_rec_weight and cfg.dataset.include_channels_rec_weight:
                 self.ref_mod_d_size = 3 * cfg.dataset.img_size * cfg.dataset.img_size
                 self.modalities_size = {

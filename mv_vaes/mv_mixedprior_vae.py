@@ -98,9 +98,9 @@ class MVMixedPriorVAE(MVVAE):
             beta_weight = self.cfg.model.final_beta_value
         self.log("beta annealing", beta_weight)
         klds = []
-        for m, key in enumerate(self.modality_names):
+        for _, key in enumerate(self.modality_names):
             dist_m = dists_out[key]
-            for m_tilde, key_tilde in enumerate(self.modality_names):
+            for _, key_tilde in enumerate(self.modality_names):
                 dist_m_tilde = priors[key_tilde]
                 kld_m_m_tilde = self.kl_div_z_two_dists(dist_m, dist_m_tilde)
                 # KL(q_m | q_m_tilde) * (1-alpha)
