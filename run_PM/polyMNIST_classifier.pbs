@@ -2,18 +2,17 @@
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
 #PBS -l walltime=01:00:00
 #PBS -N poly_classifier
-#PBS -o /rds/general/user/eso18/home/mmvmvae/run_PM/logs/run_poly_classifier.out
-#PBS -e /rds/general/user/eso18/home/mmvmvae/run_PM/logs/run_poly_classifier.err
+#PBS -o run_PM/logs/run_poly_classifier.out
+#PBS -e run_PM/logs/run_poly_classifier.err
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
-
-# wandb login $WANDB_API_KEY
+export folder_path=${PWD}
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
-export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
+export PYTHONPATH="${PYTHONPATH}:${folder_path}"
 
-# run the classifier first
+# run the classifier
 python run_PM/main_train_clf_PM.py 

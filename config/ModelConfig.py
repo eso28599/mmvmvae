@@ -1,23 +1,22 @@
 from dataclasses import dataclass
 
-
 @dataclass
 class ModelConfig:
     device: str = "cuda"
-    batch_size: int = 128 # 128, I had 256
+    batch_size: int = 128 
     batch_size_eval: int = 64
-    lr: float = 5e-4 # 5e-4
-    epochs: int = 400 #500
-    temp_annealing: str = "cosine"
+    lr: float = 5e-4 
+    epochs: int = 400 
+    temp_annealing: str = "cosine" # alpha annealing procedure for mixed prior
     seed: int = 1
     latent_dim: int = 256
-    hidden_dim: int = 512
+    hidden_dim: int = 512 # for encoders/decoders hidden layers for scMNC
     early_stop: bool = False
 
     # loss hyperparameters
     beta_annealing: bool = True # True
-    init_beta_value: float = 0 # 1
-    final_beta_value: float = 1.0 # 0
+    init_beta_value: float = 0 
+    final_beta_value: float = 1.0 
     schedule: str = "cyclical"
     beta_annealing_steps: int = 250000
     beta_M: int = 4

@@ -47,11 +47,9 @@ torch.set_float32_matmul_precision('high')
 def run_experiment(cfg: MyMVWSLConfig):
     print(cfg)
     
-    # WANDB_API_KEY=$YOUR_API_KEY
     if cfg.log.wandb_local_instance:
         wandb.login(host=os.getenv("WANDB_LOCAL_URL"))
     elif not cfg.log.wandb_offline:
-        # wandb.login(host="https://api.wandb.ai")
         wandb.login()
         
     pl.seed_everything(cfg.model.seed, workers=True)
@@ -60,7 +58,7 @@ def run_experiment(cfg: MyMVWSLConfig):
     train_loader, train_dst, val_loader, _ = dataset.get_dataset(cfg)
     label_names = train_dst.label_names
 
-    # init model
+    # initialise model
     model = None
     if cfg.model.name == "joint":
         model = MVJointVAE(cfg)
@@ -75,9 +73,8 @@ def run_experiment(cfg: MyMVWSLConfig):
     summary = ModelSummary(model, max_depth=2)
     print(summary)
 
+    # early stopping specification
     early_stopping = EarlyStopping(monitor="val/loss/loss_rec", mode="min")
-
-    # train the model (hint: here are some helpful Trainer arguments for rapid idea iteration)
     wandb_logger = WandbLogger(
         name=cfg.log.wandb_run_name,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
@@ -99,7 +96,9 @@ def run_experiment(cfg: MyMVWSLConfig):
 
     if cfg.log.debug:
         trainer.logger.watch(model, log="all")
+    # train and evaluate model
     trainer.fit(model=model, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    # log metrics
     model.logger.log_metrics({"final_scores/rec_loss": model.final_scores_rec_loss})
     model.logger.log_metrics(
         {"final_scores/cond_rec_loss": model.final_scores_cond_rec_loss}
@@ -108,7 +107,6 @@ def run_experiment(cfg: MyMVWSLConfig):
       {"final_scores/cond_rec_loss_cov": model.final_scores_cond_rec_loss_cov }
     )
       
-    
     for m, key in enumerate(model.modality_names):
         model.logger.log_metrics(
             {

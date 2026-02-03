@@ -5,7 +5,3 @@ defaults:
   - eval: eval
   - model: mixedprior
   - dataset: PMtranslated75
-
-dataset:
-  dir_data_base: "/rds/general/user/eso18/home/mmvmvae/data"
-  dir_clfs_base: "/rds/general/user/eso18/home/mmvmvae/trained_classifiers"

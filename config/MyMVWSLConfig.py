@@ -4,12 +4,12 @@ from omegaconf import MISSING
 
 from config.DatasetConfig import DataConfig
 from config.ModelConfig import ModelConfig
-
+from config.UserVariables import folder_path, wandb_entity
 
 @dataclass
 class LogConfig:
     # wandb
-    wandb_entity: str = "eso18-imperial-college-london"
+    wandb_entity: str = wandb_entity
     wandb_group: str = ""
     wandb_run_name: str = ""
     wandb_project_name: str = "multi_view_vae"
@@ -18,12 +18,12 @@ class LogConfig:
     wandb_local_instance: bool = False
 
     # logs
-    dir_logs: str = "/rds/general/user/eso18/home/mmvmvae/clfs"
+    dir_logs: str = folder_path + "logs"
 
     # logging frequencies
-    downstream_logging_frequency: int = 50 #50
-    coherence_logging_frequency: int = 50 #50
-    img_plotting_frequency: int = 50 #50
+    downstream_logging_frequency: int = 50 
+    coherence_logging_frequency: int = 50 
+    img_plotting_frequency: int = 50 
     fid_logging_frequency: int = 50
     val_freq: int = 50
 
@@ -43,7 +43,7 @@ class EvalConfig:
 
     # fid
     path_inception_weights: str = (
-        "/rds/general/user/eso18/home/mmvmvae/utils/pt_inception-2015-12-05-6726825d.pth"
+        folder_path + "utils/pt_inception-2015-12-05-6726825d.pth"
     )
 
 

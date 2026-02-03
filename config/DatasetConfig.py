@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 from omegaconf import MISSING
-
+from config.UserVariables import folder_path
 
 @dataclass
 class DataConfig:
@@ -15,9 +15,9 @@ class DataConfig:
 class PolyMNISTDataConfig(DataConfig):
     num_views: int = 5
     modalities_order: int = 0
-    dir_data_base: str = "/rds/general/user/eso18/home/mmvmvae/data"
+    dir_data_base: str = folder_path + "data"
     dir_clfs_base: str = (
-        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_polyMNIST"
+        folder_path + "trained_classifiers/trained_clfs_polyMNIST"
     )
     n_clfs_outputs: int = 10
     num_labels: int = 1
@@ -35,15 +35,15 @@ class PMtranslatedData75Config(PolyMNISTDataConfig):
 class CelebADataConfig(DataConfig):
     name: str = "celeba"
     num_views: int = 2
-    dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/CelebA"
+    dir_data: str = folder_path + "data/CelebA"
     dir_alphabet: str = (
-        "/rds/general/user/eso18/home/mmvmvae/utils"
+        folder_path + "utils"
     )
     dir_clf: str = (
-        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba"
+        folder_path + "trained_classifiers/trained_clfs_celeba"
     )
     dir_clfs_base: str = (
-        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_celeba"
+        folder_path + "trained_classifiers/trained_clfs_celeba"
     )
 
     len_sequence: int = 256
@@ -72,10 +72,10 @@ class CelebADataConfig(DataConfig):
 class scMNCDataConfig(DataConfig):
     name: str = "scMNC"
     num_views: int = 2
-    dir_data: str = "/rds/general/user/eso18/home/mmvmvae/data/scMNC"
+    dir_data: str = folder_path + "data/scMNC"
     num_labels: int = 6
     dir_clf: str = (
-        "/rds/general/user/eso18/home/mmvmvae/trained_classifiers/trained_clfs_scMNC"
+        folder_path + "trained_classifiers/trained_clfs_scMNC"
     )
     n_clfs_outputs: int = 6
     label_names: List[str] = field(

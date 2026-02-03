@@ -1,27 +1,23 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=00:40:00
-#PBS -N scMNC_smaller_ld
-#PBS -o /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.log
-#PBS -e /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.err
+#PBS -l walltime=00:10:00
+#PBS -N test_log_path
+#PBS -o run_scMNC/logs/test.log
+#PBS -e run_scMNC/logs/test.err
 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
 
+# define user specific variables
+export folder_path=${PWD}
+project_name="mvvae_scMNC" # project name in wandb
+
 # Set environment variables
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
-
-# user specific variables
-export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
-wandb_entity="eso18-imperial-college-london"
-project_name="mvvae_scMNC"
-dir_experiments="/rds/general/user/eso18/home/mmvmvae"
-dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/scMNC"
-wandb_logdir="${dir_experiments}/run_scMNC/logs"
-device="cuda"  # 'cuda' if you are useing a GPU
+export PYTHONPATH="${PYTHONPATH}:${folder_path}"
 cd $(pwd)
 
 # dataset specific variables
@@ -29,7 +25,7 @@ dataset="scMNC"
 
 # model specific variables
 model="jointprior"
-alpha=0.95 ## alpha value if using for jointprior
+alpha=0.95 # alpha value if using for jointprior
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
 agg="avg" # aggregation method for joint: 'mopoe', 'moe', 'avg'
 aa=true  # whether to use alpha annealing for mixedprior
@@ -42,6 +38,8 @@ batch_size=32 # batch size
 # experimental running variables
 seed=1
 log_freq=1
+wandb_logdir="${folder_path}/run_scMNC/logs"
+device="cuda"  # 'cuda' if you are using a GPU
 
 # training specific variables
 beta_anneal=true # whether to use beta/kl annealing
@@ -67,7 +65,6 @@ python main_mv_wsl.py \
     ++model.aggregation="${agg}" \
     dataset=${dataset} \
     ++dataset.modalities_order=${mod} \
-    ++log.wandb_offline=false \
     ++log.downstream_logging_frequency=${log_freq} \
     ++log.coherence_logging_frequency=${log_freq} \
     ++log.likelihood_logging_frequency=${log_freq} \
@@ -75,7 +72,6 @@ python main_mv_wsl.py \
     ++log.val_freq=${log_freq} \
     ++log.wandb_offline=false \
     ++log.wandb_local_instance=true \
-    ++log.wandb_entity=${wandb_entity} \
     ++log.wandb_group="full_runs" \
     ++log.wandb_project_name=${project_name} \
     ++log.dir_logs=${wandb_logdir}
