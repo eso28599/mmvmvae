@@ -97,7 +97,7 @@ def run_experiment(cfg: MyMVWSLConfig):
         devices=1,
         accelerator="gpu" if cfg.model.device == "cuda" else cfg.model.device,
         logger=wandb_logger,
-        check_val_every_n_epoch=1,
+        check_val_every_n_epoch=cfg.log.val_freq,
         deterministic=True,
         callbacks=[early_stopping] if cfg.model.early_stop else [],
     )

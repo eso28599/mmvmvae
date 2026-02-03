@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=05:00:00
-#PBS -N scMNC_early_stop
+#PBS -l walltime=00:30:00
+#PBS -N scMNC_smaller_ld
 #PBS -o /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.log
 #PBS -e /rds/general/user/eso18/home/mmvmvae/run_scMNC/logs/test.err
 
@@ -9,36 +9,47 @@ eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
 cd mmvmvae
 
+# Set environment variables
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:/rds/general/user/eso18/home/mmvmvae/"
-dataset="scMNC"
-model="jointprior"
-seed=1
-agg="avg"
-alpha=0.95 
+
+# user specific variables
 wandb_entity="eso18-imperial-college-london"
 project_name="mvvae_scMNC"
 dir_experiments="/rds/general/user/eso18/home/mmvmvae"
 dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/scMNC"
 wandb_logdir="${dir_experiments}/run_scMNC/logs"
-WD=$(pwd)
 device="cuda"  # 'cuda' if you are useing a GPU
-log_freq_downstream=50
-log_freq_coherence=50
-log_freq_lhood=50
-log_freq_plotting=50
-ld=256
-hd=512
-beta=1      # KL weight (float)
-aa=true     # alpha annealing steps (int)
-a_w=0.5
-ld=512 
-lr=5e-4 
-n_ep=2500 
-gamma=0.0001
+WD=$(pwd)
+
+# dataset specific variables
+dataset="scMNC"
+
+# model specific variables
+model="jointprior"
+agg="avg" # aggregation method: 'avg' or 'moe' or 'mopoe'
+alpha=0.95 # needed for jointprior
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
+
+# architecture variables
+ld=256 # latent dimension of encoder/decoder
+hd=512 # hidden dimension of encoder/decoder 
+
+# experimental running variables
+seed=1
+log_freq=1
+
+# training specific variables
+beta_anneal=true # whether to use beta annealing
+beta=1  # KL weight (float)
+aa=true  # alpha annealing steps (int)
+a_w=0.5
+lr=5e-4 # learning rate
+n_ep=2500 # number of epochs
+gamma=0.0001
+early_stop=true
 
 # run the classifier with a jointposterior
 cd $WD
@@ -50,8 +61,8 @@ python main_mv_wsl.py \
     ++model.device=${device} \
     ++model.beta=${beta} \
     ++model.batch_size=32 \
-    ++model.beta_annealing=false \
-    ++model.early_stop=true \
+    ++model.beta_annealing=${beta_anneal} \
+    ++model.early_stop=${early_stop} \
     ++model.latent_dim=${ld} \
     ++model.hidden_dim=${hd} \
     ++model.lr=${lr} \
@@ -60,10 +71,11 @@ python main_mv_wsl.py \
     dataset=${dataset} \
     ++dataset.modalities_order=${mod} \
     ++log.wandb_offline=false \
-    ++log.downstream_logging_frequency=${log_freq_downstream} \
-    ++log.coherence_logging_frequency=${log_freq_coherence} \
-    ++log.likelihood_logging_frequency=${log_freq_lhood} \
-    ++log.img_plotting_frequency=${log_freq_plotting} \
+    ++log.downstream_logging_frequency=${log_freq} \
+    ++log.coherence_logging_frequency=${log_freq} \
+    ++log.likelihood_logging_frequency=${log_freq} \
+    ++log.img_plotting_frequency=${log_freq} \
+    ++log.val_freq=${log_freq} \
     ++log.wandb_offline=false \
     ++log.wandb_local_instance=true \
     ++log.wandb_entity=${wandb_entity} \

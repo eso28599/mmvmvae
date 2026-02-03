@@ -25,6 +25,7 @@ class LogConfig:
     coherence_logging_frequency: int = 50 #50
     img_plotting_frequency: int = 50 #50
     fid_logging_frequency: int = 50
+    val_freq: int = 50
 
     # debug level wandb
     debug: bool = False

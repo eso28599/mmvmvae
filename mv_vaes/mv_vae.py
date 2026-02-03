@@ -570,7 +570,6 @@ class MVVAE(pl.LightningModule):
                     self.coherence_plot_all_labels_celeba(acc_coh)
                     self.coherence_plot_all_labels_celeba(acc_coh_cov, True)
                     
-                    # do we want this?
                 self.log(
                     "val/condition_generation/avg_rec_loss",
                     torch.cat(cond_rec_loss).mean(),

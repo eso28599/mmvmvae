@@ -22,7 +22,6 @@ wandb_entity="eso18-imperial-college-london"
 project_name="mvvae_celeba"
 dir_experiments="/rds/general/user/eso18/home/mmvmvae"
 dir_data_base="/rds/general/user/eso18/home/mmvmvae/data/CelebA"
-dataset_name_tar="CelebA.tar.gz"
 wandb_logdir="${dir_experiments}/run_celeba/logs"
 WD=$(pwd)
 device="cuda"  # 'cuda' if you are useing a GPU
