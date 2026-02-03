@@ -3,7 +3,7 @@ data/CelebA/*
 data/celeba_data.zip  
 data/CelebA.tar.gz  
 data/data/*  
-download_data.pbs  
+# download_data.pbs  
 data/MMNIST/*  
 data/MMNIST.tar.gz  
 data/PolyMNIST.zip  

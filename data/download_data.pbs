@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=8:mem=450gb
+#PBS -l walltime=01:30:00
+#PBS -N download_data
+eval "$(~/anaconda3/bin/conda shell.bash hook)"
+source activate mvvae
+pip install --upgrade --no-cache-dir gdown
+pip install gdown==4.6.0
+cd mmvmvae
+export folder_path=${PWD}
+
+# Download CelebA and PolyMNIST dataset
+gdown --folder https://drive.google.com/drive/folders/1lr-laYwjDq3AzalaIe9jN4shpt1wBsYM -O "${folder_path}/tmp.zip"
+
+## if the above doesn't work, try the following 
+# fileid="1lr-laYwjDq3AzalaIe9jN4shpt1wBsYM"
+# filename="tmp.zip"
+# curl -L "https://drive.usercontent.google.com/download?id={fileId}&confirm=xxx" -o filename
+# html=`curl -c ./cookie -s -L "https://drive.google.com/uc?export=download&id=${fileid}"`
+# curl -Lb ./cookie "https://drive.google.com/uc?export=download&`echo ${html}|grep -Po '(confirm=[a-zA-Z0-9\-_]+)'`&id=${fileid}" -o ${filename}
+# unzip "${folder_path}/tmp.zip"
+
+# Unzip the downloaded data
+unzip "${folder_path}/celeba_data.zip" -d "${folder_path}/data/"
+mv celeba_data.zip data/celeba_data.zip
+unzip "${folder_path}/PolyMNIST.zip" -d "${folder_path}/data/"
+mv PolyMNIST.zip data/PolyMNIST.zip
+
+tar -czf CelebA.tar.gz data/CelebA/
+tar -czf MMNIST.tar.gz data/MMNIST/
+
