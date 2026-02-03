@@ -4,12 +4,14 @@ clfs/wandb/*
 clfs/multi_view_vae/*
 not_needed/logs_mmvmvae/*
 trained_classifiers/*
+run_PM/logs/*
+run_scMNC/logs/*
+run_celeba/logs/*
 run_PM/logs/wandb/*
 run_PM/logs/mvvae_polymnist/*
 run_celeba/logs/wandb/*
 run_celeba/logs/mvvae_celeba/*
 run_scMNC/logs/*
-# utils/pt_inception-2015-12-05-6726825d.pth
 Untitled.ipynb
 not_needed/cub.zip
 cub/cub.zip
