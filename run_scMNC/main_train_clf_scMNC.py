@@ -5,18 +5,20 @@ from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 import torch
 from omegaconf import OmegaConf
 import hydra
+import wandb
+import os
 from hydra.core.config_store import ConfigStore
 
-
-from config.ClfConfig import ClfConfig
-from config.ClfConfig import ModelConfig
-from config.ClfConfig import LogConfig
+from config.MyClfConfig import MyClfConfig
+from config.MyClfConfig import ModelConfig
+from config.MyClfConfig import LogConfig
 from config.DatasetConfig import scMNCDataConfig
 
 from utils import dataset
 from clfs.scMNC_clf import ClfscMNC
 
 torch.set_float32_matmul_precision('high')
+os.environ["WANDB__SERVICE_WAIT"] = "300"
 
 
 cs = ConfigStore.instance()
@@ -24,12 +26,14 @@ cs = ConfigStore.instance()
 cs.store(group="log", name="log", node=LogConfig)
 cs.store(group="model", name="model", node=ModelConfig)
 cs.store(group="dataset", name="scMNC", node=scMNCDataConfig)
-cs.store(name="base_config", node=ClfConfig)
+cs.store(name="base_config", node=MyClfConfig)
 
 @hydra.main(version_base=None,
             config_path="../config",
             config_name="config_clf_scMNC")
-def run_experiment(cfg: ClfConfig):
+def run_experiment(cfg: MyClfConfig):
+    if  cfg.model.device != "cuda":
+          cfg.dataset.dir_clf = cfg.dataset.dir_clf + "_cpu"
     print(cfg)
     pl.seed_everything(cfg.seed, workers=True)
 
@@ -38,8 +42,7 @@ def run_experiment(cfg: ClfConfig):
 
     # load model
     model = ClfscMNC(cfg)
-
-    # train the model (hint: here are some helpful Trainer arguments for rapid idea iteration)
+  
     checkpoint_callback = ModelCheckpoint(
         dirpath=cfg.dataset.dir_clf,
         monitor=cfg.checkpoint_metric,

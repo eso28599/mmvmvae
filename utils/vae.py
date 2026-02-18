@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from config.ExperimentCoMnfig import ExperimentConfig
+from config.ExperimentConfig import ExperimentConfig
 
 from networks.NetworksImgCelebA import EncoderImg, DecoderImg
 from networks.NetworksTextCelebA import EncoderText, DecoderText

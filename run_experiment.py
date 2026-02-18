@@ -2,6 +2,7 @@ import os
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.utilities.model_summary.model_summary import ModelSummary
+from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 import wandb
 
@@ -10,8 +11,9 @@ from hydra.core.config_store import ConfigStore
 from omegaconf import OmegaConf
 import torch # added for torch.set_float32_matmul_precision
 from utils import dataset
+from config.UserVariables import folder_path
 torch.set_float32_matmul_precision('high')
-
+os.environ["WANDB__SERVICE_WAIT"] = "300"
 
 # experiment configs 
 from config.ExperimentConfig import ExperimentConfig
@@ -60,6 +62,9 @@ def run_experiment(cfg: ExperimentConfig):
     train_loader, train_dst, val_loader, _ = dataset.get_dataset(cfg)
     label_names = train_dst.label_names
 
+    # if using the cpu, use cpu specific classifier directoryß
+    if cfg.model.device != "cuda":
+        cfg.dataset.dir_clf = cfg.dataset.dir_clf + "_cpu"
     # initialise model
     model = None
     if cfg.model.name == "joint":
@@ -74,9 +79,16 @@ def run_experiment(cfg: ExperimentConfig):
     model.assign_label_names(label_names)
     summary = ModelSummary(model, max_depth=2)
     print(summary)
-
+    filename = f'{cfg.dataset.name}_{cfg.model.name}_agg{cfg.model.aggregation}_alpha{cfg.model.alpha_scalar}_batch_size_{cfg.model.batch_size}_{cfg.model.epochs}_seed{cfg.model.seed}_estop{cfg.model.early_stop}_beta_anneal{cfg.model.beta_annealing}_beta_M{cfg.model.beta_M}'
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=folder_path + "/runs",
+        monitor=cfg.checkpoint_metric,
+        mode="max",
+        save_last=True,
+        filename=filename
+    )
     # early stopping specification
-    early_stopping = EarlyStopping(monitor="val/loss/loss_rec", mode="min")
+    early_stopping = EarlyStopping(monitor="val/loss/loss", mode="min")
     wandb_logger = WandbLogger(
         name=cfg.log.wandb_run_name,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),
@@ -93,7 +105,7 @@ def run_experiment(cfg: ExperimentConfig):
         logger=wandb_logger,
         check_val_every_n_epoch=cfg.log.val_freq,
         deterministic=True,
-        callbacks=[early_stopping] if cfg.model.early_stop else [],
+        callbacks=[checkpoint_callback, early_stopping] if cfg.model.early_stop else [checkpoint_callback],
     )
 
     if cfg.log.debug:

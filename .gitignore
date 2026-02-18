@@ -1,5 +1,7 @@
 # data/*
+lightning_logs/*
 data/CelebA/*
+runs/*
 data/celeba_data.zip  
 data/CelebA.tar.gz  
 data/data/*  
@@ -15,6 +17,7 @@ not_needed/logs_mmvmvae/*
 trained_classifiers/*
 run_PM/logs/*
 run_scMNC/logs/*
+run_scMNC/runs/*
 run_celeba/logs/*
 run_PM/logs/wandb/*
 run_PM/logs/mvvae_polymnist/*

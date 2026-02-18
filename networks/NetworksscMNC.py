@@ -23,7 +23,27 @@ class scEncoder(nn.Module):
             nn.Linear(self.hidden_dim, self.latent_dim),  
             nn.ReLU(),
         )
-         # latent representation
+        # self.encoder = nn.Sequential(  # input shape (, input_dim)
+        #     nn.Linear(self.input_dim, 2*self.input_dim),  
+        #     nn.BatchNorm1d(2*self.input_dim),
+        #     nn.LeakyReLU(),
+        #     nn.Dropout(0.6),
+        #     nn.Linear(2*self.input_dim, self.latent_dim),
+        #     nn.BatchNorm1d(self.latent_dim),
+        #     nn.LeakyReLU(),
+        #     nn.Dropout(0.6),
+        # )
+        # self.encoder = nn.Sequential(  # input shape (, input_dim)
+        #     nn.Linear(self.input_dim, self.hidden_dim),  
+        #     nn.BatchNorm1d(self.hidden_dim),
+        #     nn.LeakyReLU(),
+        #     nn.Dropout(0.6),
+        #     nn.Linear(self.hidden_dim, self.latent_dim),
+        #     nn.BatchNorm1d(self.latent_dim),
+        #     nn.LeakyReLU(),
+        #     nn.Dropout(0.6),
+        # )
+        # latent representation
         self.mu = nn.Linear(self.latent_dim, self.latent_dim)
         self.logvar = nn.Linear(self.latent_dim, self.latent_dim)
 
@@ -53,6 +73,16 @@ class scDecoder(nn.Module):
             nn.Linear(self.hidden_dim, self.output_dim),  
             nn.ReLU(),
         )
+        # self.decoder = nn.Sequential(  # input shape (, input_dim)
+        #     nn.Linear(self.latent_dim, self.hidden_dim),  
+        #     nn.BatchNorm1d(self.hidden_dim),
+        #     nn.LeakyReLU(),
+        #     nn.Dropout(0.6),
+        #     nn.Linear(self.hidden_dim, self.output_dim),
+        #     nn.BatchNorm1d(self.output_dim),
+        #     nn.LeakyReLU(),
+        #     nn.Dropout(0.6),
+        # )
 
     def forward(self, z):
         x_hat = self.decoder(z)

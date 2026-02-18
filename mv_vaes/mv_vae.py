@@ -115,9 +115,9 @@ class MVVAE(pl.LightningModule):
         self.save_hyperparameters()
 
         # buffer for final scores
-        self.register_buffer("final_scores_rec_loss", torch.zeros(1))
-        self.register_buffer("final_scores_cond_rec_loss", torch.zeros(1))
-        self.register_buffer("final_scores_cond_rec_loss_cov", torch.zeros(1))
+        self.register_buffer("final_scores_rec_loss", torch.tensor(0))
+        self.register_buffer("final_scores_cond_rec_loss", torch.tensor(0))
+        self.register_buffer("final_scores_cond_rec_loss_cov", torch.tensor(0))
         self.register_buffer(
             "final_scores_lr_unimodal", torch.zeros(cfg.dataset.num_views)
         )
@@ -126,22 +126,22 @@ class MVVAE(pl.LightningModule):
         )
         self.register_buffer(
             "final_scores_lr_unimodal_alllabels",
-            torch.zeros(cfg.dataset.num_views, cfg.dataset.num_labels),
+            torch.zeros(cfg.dataset.num_views, 1),
         )
         self.register_buffer(
             "final_scores_lr_aggregated_alllabels",
-            torch.zeros(cfg.dataset.num_views, cfg.dataset.num_labels),
+            torch.zeros(cfg.dataset.num_views, 1),
         )
         self.register_buffer(
             "final_scores_coh",
             torch.zeros(
-                (cfg.dataset.num_views, cfg.dataset.num_views, cfg.dataset.num_labels)
+                (cfg.dataset.num_views, cfg.dataset.num_views,1)
             ),
         )
         self.register_buffer(
             "final_scores_coh_cov",
             torch.zeros(
-                (cfg.dataset.num_views, cfg.dataset.num_views, cfg.dataset.num_labels)
+                (cfg.dataset.num_views, cfg.dataset.num_views, 1)
             ),
         )
 

@@ -26,7 +26,7 @@ class ModelConfig:
 
 
 @dataclass
-class ClfConfig:
+class MyClfConfig:
     seed: int = 0
     checkpoint_metric: str = "val/loss/loss" # was "val/loss/mean_metric" "val/loss/mean_acc" for CelebA
     model: ModelConfig = MISSING

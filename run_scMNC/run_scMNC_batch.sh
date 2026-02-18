@@ -1,54 +1,49 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=8:mem=256gb:ngpus=1
-#PBS -l walltime=00:10:00
-#PBS -N M1000_es
-#PBS -o run_scMNC/logs/test.log
-#PBS -e run_scMNC/logs/test.err
-
+#PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
+#PBS -l walltime=00:20:00
+#PBS -N scMNC_batch_og_archictecture
+#PBS -J 1-85
+#PBS -o run_scMNC/logs/output.log
+#PBS -e run_scMNC/logs/error.log 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
 source activate mvvae
-cd mmvmvae
 
 # define user specific variables
+cd mmvmvae
 export folder_path=${PWD}
 project_name="mvvae_scMNC" # project name in wandb
-
 # Set environment variables
+cd $PBS_O_WORKDIR
+wandb login $WANDB_API_KEY
 export CUDA_LAUNCH_BLOCKING=1
 export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
-export PYTHONPATH="${PYTHONPATH}:${folder_path}"
-cd $(pwd)
 
-# dataset specific variables
-dataset="scMNC"
-
-# model specific variables
-model="jointprior"
-alpha=0.97 # alpha value if using for jointprior
-cov_scalar=$(echo "1 - ($alpha^2)" | bc -l)
-agg="avg" # aggregation method for joint: 'mopoe', 'moe', 'avg'
-aa=true  # whether to use alpha annealing for mixedprior
-
-# architecture variables
-ld=256 # latent dimension
-hd=512 # hidden dimension of encoder/decoder 
+# Get params for this array index
+params=$(sed -n "${PBS_ARRAY_INDEX}p" run_scMNC/scMNC_params.txt) 
+read dataset model seed agg alpha <<< "$params"
 
 # experimental running variables
-seed=2
 log_freq=1
 wandb_logdir="${folder_path}/run_scMNC/logs"
 device="cuda"  # 'cuda' if you are using a GPU
 
-# training specific variables
-beta_anneal=true # whether to use beta/kl annealing
-beta_M=100
-lr=5e-4 # learning rate
-n_ep=100 # number of epochs
+# model specific variables
+aa=true  # whether to use alpha annealing for mixedprior
+cov_scalar=$(echo "1 - ($alpha^2)" | bc -l) # covariance scalar for jointprior
+
+# arrchitecture variables
+ld=256  # latent dimension
+hd=512 # hidden dimension
+
+# training variables
+lr=5e-4  # learning rate
+n_ep=150 # number of epochs
 early_stop=false # whether to use early stopping
+beta_anneal=false # whether to use beta/kl annealing
+beta_M=100 # frequency of beta increase
 batch_size=32 # batch size
 
-# run the classifier with a jointposterior
 python run_experiment.py \
     model=${model} \
     ++model.seed=${seed} \
@@ -56,12 +51,13 @@ python run_experiment.py \
     ++model.cov_scalar=${cov_scalar} \
     ++model.device=${device} \
     ++model.beta=${beta} \
-    ++model.beta_M=${beta_M} \
     ++model.batch_size=${batch_size} \
-    ++model.beta_annealing=${beta_anneal} \
-    ++model.early_stop=${early_stop} \
     ++model.latent_dim=${ld} \
     ++model.hidden_dim=${hd} \
+    ++model.alpha_annealing=${aa} \
+    ++model.early_stop=${early_stop} \
+    ++model.beta_annealing=${beta_anneal} \
+    ++model.beta_M=${beta_M} \
     ++model.lr=${lr} \
     ++model.epochs=${n_ep} \
     ++model.aggregation="${agg}" \

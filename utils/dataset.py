@@ -7,6 +7,7 @@ from torchvision import transforms
 from utils.PolyMNISTDataset import PolyMNIST
 from utils.CelebADataset import CelebADataset
 from utils.scMNCDataset import scMNC
+from utils.scMNCDataset import full_dataset_scMNC
 
 transform = transforms.Compose([transforms.ToTensor()])
 
@@ -18,6 +19,22 @@ def get_dataset(cfg):
         ds = get_dataset_celeba(cfg)
     elif cfg.dataset.name.startswith("sc"):
         ds = get_dataset_sc(cfg)
+    else:
+        print("dataset unknown...exit")
+        sys.exit()
+    return ds
+
+def get_full_dataset(cfg, training=False):
+    if cfg.dataset.name.startswith("PM"):
+        print("not implemented yet...exit")
+        sys.exit()
+        ds = get_dataset_PM(cfg)
+    elif cfg.dataset.name.startswith("celeba"):
+        print("not implemented yet...exit")
+        sys.exit()
+        ds = get_dataset_celeba(cfg)
+    elif cfg.dataset.name.startswith("sc"):
+        ds = full_dataset_scMNC(cfg, training=training)
     else:
         print("dataset unknown...exit")
         sys.exit()
@@ -98,6 +115,7 @@ def get_dataset_celeba(cfg):
     return train_loader, d_train, val_loader, d_eval
 
 def get_transform_celeba(cfg):
+    # crop the original 218x178 image to 148x148, then resize to cfg.dataset.img_size x cfg.dataset.img_size (default 64x64)
     offset_height = (218 - cfg.dataset.crop_size_img) // 2
     offset_width = (178 - cfg.dataset.crop_size_img) // 2
     crop = lambda x: x[

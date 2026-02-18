@@ -51,8 +51,12 @@ class scMNC(Dataset):
             range(num_samples), test_size=0.2,
             random_state = seed
             )[dp] for x in range(num_samples)]
-        self.exp_data = self.exp_data.loc[partition].to_numpy()
-        self.feat_data = pd.read_csv(filename_feat).loc[partition].to_numpy()
+        self.exp_data = preprocessing.scale(
+          self.exp_data.loc[partition].to_numpy()
+          )
+        self.feat_data = preprocessing.scale(
+          pd.read_csv(filename_feat).loc[partition].to_numpy()
+         ) 
         self.labels = pd.read_csv(filename_labels).loc[partition].to_numpy().reshape(-1)
         self.num_files = len(self.labels)
 
@@ -143,6 +147,20 @@ class scMNC(Dataset):
     def __len__(self):
         return self.num_files
 
+class full_dataset_scMNC(scMNC):
+    def __init__(self, cfg, training=False):
+        super().__init__(cfg.dataset.dir_data, cfg.model.seed,train=training)
+        self.data_loader = torch.utils.data.DataLoader(
+            self,
+            batch_size=3654 if training else 731,
+            shuffle=False,
+            num_workers=cfg.dataset.num_workers,
+            drop_last=False,
+        )
+        self.batch = next(iter(self.data_loader))
+        self.exp_data = self.batch[0]["exp"].numpy() # expression data
+        self.feat_data = self.batch[0]["feat"].numpy() # feature data
+        self.labels = self.batch[1].numpy() # tensor of labels
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

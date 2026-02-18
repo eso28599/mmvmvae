@@ -1,0 +1,5 @@
+scMNC jointprior 1 avg 0.97
+scMNC jointprior 2 avg 0.97
+scMNC jointprior 3 avg 0.97
+scMNC jointprior 4 avg 0.97
+scMNC jointprior 5 avg 0.97

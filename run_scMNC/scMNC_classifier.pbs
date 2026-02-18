@@ -1,7 +1,7 @@
 #!/bin/bash
-#PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
+#PBS -l select=1:ncpus=8:mem=250gb:ngpus=0
 #PBS -l walltime=00:10:00
-#PBS -N scMNC_classifier
+#PBS -N scMNC_wait_time
 #PBS -o run_scMNC/logs/run_scMNC_classifier.out
 #PBS -e run_scMNC/logs/run_scMNC_classifier.err
 
@@ -14,5 +14,7 @@ export TORCH_USE_CUDA_DSA=1
 export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:${folder_path}"
 
-# run the classifier
-python run_scMNC/main_train_clf_scMNC.py 
+device="cpu"  # 'cuda' if you are using a GPU
+
+# run the classifier 
+python run_scMNC/main_train_clf_scMNC.py ++model.device=${device}

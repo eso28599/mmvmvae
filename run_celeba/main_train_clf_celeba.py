@@ -9,9 +9,9 @@ from hydra.core.config_store import ConfigStore
 from utils import dataset
 from clfs.celeba_clf import ClfCelebA
 
-from config.ClfConfig import ClfConfig
-from config.ClfConfig import ModelConfig
-from config.ClfConfig import LogConfig
+from config.MyClfConfig import MyClfConfig
+from config.MyClfConfig import ModelConfig
+from config.MyClfConfig import LogConfig
 from config.DatasetConfig import CelebADataConfig
 
 cs = ConfigStore.instance()
@@ -19,13 +19,13 @@ cs = ConfigStore.instance()
 cs.store(group="log", name="log", node=LogConfig)
 cs.store(group="model", name="model", node=ModelConfig)
 cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
-cs.store(name="base_config", node=ClfConfig)
+cs.store(name="base_config", node=MyClfConfig)
 
 
 @hydra.main(version_base=None,
             config_path="../config",
             config_name="config_clf_celeba")
-def run_experiment(cfg: ClfConfig):
+def run_experiment(cfg: MyClfConfig):
     print(cfg)
     pl.seed_everything(cfg.seed, workers=True)
 

@@ -16,9 +16,15 @@ def char2Index(alphabet, character):
 
 
 def one_hot_encode(len_seq, alphabet, seq):
+    """Returns a one-hot encoded tensor of shape (length of sequence, length of alphabet) for the given sequence and alphabet."""
+    # length of the sequence (including padding) x length of the alphabet
     X = torch.zeros(len_seq, len(alphabet))
     if len(seq) > len_seq:
         seq = seq[:len_seq]
+    # X_ij = 1 if the i-th character in the sequence is the 
+    # j-th character in the alphabet, 0 otherwise
+    # if the sequence is shorter than the maximum length
+    # the corresponding rows will be all zeros (padding)
     for index_char, char in enumerate(seq):
         if char2Index(alphabet, char) != -1:
             X[index_char, char2Index(alphabet, char)] = 1.0
