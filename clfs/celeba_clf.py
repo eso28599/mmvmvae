@@ -9,9 +9,7 @@ import pytorch_lightning as pl
 import wandb
 from sklearn.metrics import average_precision_score
 
-from networks.NetworkImgClfCelebA import ClfImg
-from networks.NetworkTextClfCelebA import ClfText
-
+from networks.ClfCelebA import ClfImg, ClfText
 
 class ClfCelebA(pl.LightningModule):
     def __init__(self, cfg):
@@ -26,32 +24,16 @@ class ClfCelebA(pl.LightningModule):
 
         self.save_hyperparameters()
 
-    def training_step(self, batch, batch_idx):
+    def training_step(self, batch):
         out = self.forward(self.cfg, batch)
-        # loss, mean_ap = self.compute_loss("train", batch, out)
-        imgs, labels = batch
-        preds, losses = out
+        _, losses = out
         loss = losses.mean(dim=1).mean(dim=0)
-
-        n_labels = labels.shape[1]
-        accs = []
-        # for m in range(self.cfg.dataset.num_views):
-        # loss_m = losses[:, m, :].mean(dim=0)
-        # pred_m = preds[:, m, :]
-        # accs_m = torch.zeros(n_labels)
-        # for k in range(0, n_labels):
-        #     accs_m[k] = average_precision_score(labels[:, k].cpu(), pred_m[:, k].detach().cpu().numpy())
-        # accs.append(accs_m.mean())
-        # self.log(str_set + "/loss/v" + str(m), loss_m)
-        # self.log(str_set + "/accuracy/v" + str(m), accs_m.mean())
-        # mean_ap = torch.tensor(accs).mean()
         self.log("train/loss/loss", loss)
-        # self.log(str_set + "/loss/mean_ap", mean_ap)
         return loss
 
-    def validation_step(self, batch, batch_idx):
+    def validation_step(self, batch):
         out = self.forward(self.cfg, batch)
-        imgs, labels = batch
+        _, labels = batch
         preds, losses = out
         loss = losses.mean(dim=1).mean(dim=0)
 
@@ -75,29 +57,7 @@ class ClfCelebA(pl.LightningModule):
         return loss
 
     def on_validation_epoch_end(self):
-        mean_acc = torch.tensor(self.validation_step_outputs).mean()
         self.validation_step_outputs.clear()  # free memory
-
-    # def compute_loss(self, str_set, batch, out):
-    #     imgs, labels = batch
-    #     preds, losses = out
-    #     loss = losses.mean(dim=1).mean(dim=0)
-
-    #     n_labels = labels.shape[1]
-    #     accs = []
-    #     for m in range(self.cfg.dataset.num_views):
-    #         loss_m = losses[:, m, :].mean(dim=0)
-    #         pred_m = preds[:, m, :]
-    #         accs_m = torch.zeros(n_labels)
-    #         for k in range(0, n_labels):
-    #             accs_m[k] = average_precision_score(labels[:, k].cpu(), pred_m[:, k].detach().cpu().numpy())
-    #         accs.append(accs_m.mean())
-    #         self.log(str_set + "/loss/v" + str(m), loss_m)
-    #         self.log(str_set + "/accuracy/v" + str(m), accs_m.mean())
-    #     mean_acc = torch.tensor(accs).mean()
-    #     self.log(str_set + "/loss/loss", loss)
-    #     self.log(str_set + "/loss/mean_acc", mean_acc)
-    #     return loss, mean_acc
 
     def forward(self, cfg, batch):
         data, labels = batch

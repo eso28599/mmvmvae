@@ -1,6 +1,60 @@
 import torch.nn as nn
 
-from networks.ResidualBlocks import ResidualBlock2dConv
+class ResidualBlock2dConv(nn.Module):
+    def __init__(
+        self,
+        channels_in,
+        channels_out,
+        kernelsize,
+        stride,
+        padding,
+        dilation,
+        downsample,
+        a=1.0,
+        b=1.0,
+    ):
+        super(ResidualBlock2dConv, self).__init__()
+        self.conv1 = nn.Conv2d(
+            channels_in,
+            channels_in,
+            kernel_size=1,
+            stride=1,
+            padding=0,
+            dilation=dilation,
+            bias=False,
+        )
+        self.dropout1 = nn.Dropout2d(p=0.5)
+        self.bn1 = nn.BatchNorm2d(channels_in)
+        self.relu = nn.ReLU()
+        self.bn2 = nn.BatchNorm2d(channels_in)
+        self.conv2 = nn.Conv2d(
+            channels_in,
+            channels_out,
+            kernel_size=kernelsize,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            bias=False,
+        )
+        self.dropout2 = nn.Dropout2d(p=0.5)
+        self.downsample = downsample
+        self.a = a
+        self.b = b
+
+    def forward(self, x):
+        residual = x
+        out = self.bn1(x)
+        out = self.relu(out)
+        out = self.conv1(out)
+        out = self.dropout1(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.dropout2(out)
+        if self.downsample is not None:
+            residual = self.downsample(x)
+        out = self.a * residual + self.b * out
+        return out
 
 
 def make_res_block_feature_extractor(
@@ -10,10 +64,11 @@ def make_res_block_feature_extractor(
     stride,
     padding,
     dilation,
-    a_val=1.0,
-    b_val=1.0,
+    a_val=1.0, # fixed as 1 throughout exps
+    b_val=1.0, # fixed as 1 throughout exps
 ):
     downsample = None
+    # in_channels!=out_channels for all exps, so downsampling is always performed
     if (stride != 2) or (in_channels != out_channels):
         downsample = nn.Sequential(
             nn.Conv2d(
@@ -44,6 +99,9 @@ def make_res_block_feature_extractor(
 
 
 class FeatureExtractorImg(nn.Module):
+  # filter_dim_img is fixed as 64 throughout exps
+  # num_layers_img is fixed as 5 throughout exps
+  
     def __init__(self, cfg, a, b):
         super(FeatureExtractorImg, self).__init__()
         self.conv1 = nn.Conv2d(

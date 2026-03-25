@@ -1,7 +1,55 @@
-import torch
 import torch.nn as nn
 
-from networks.ResidualBlocks import ResidualBlock1dTransposeConv
+class ResidualBlock1dTransposeConv(nn.Module):
+    def __init__(
+        self,
+        channels_in,
+        channels_out,
+        kernelsize,
+        stride,
+        padding,
+        dilation,
+        o_padding,
+        upsample,
+        a=1.0,
+        b=1.0,
+    ):
+        super(ResidualBlock1dTransposeConv, self).__init__()
+        self.bn1 = nn.BatchNorm1d(channels_in)
+        self.conv1 = nn.ConvTranspose1d(
+            channels_in, channels_in, kernel_size=1, stride=1, padding=0
+        )
+        self.dropout1 = nn.Dropout(p=0.5)
+        self.relu = nn.ReLU()
+        self.bn2 = nn.BatchNorm1d(channels_in)
+        self.conv2 = nn.ConvTranspose1d(
+            channels_in,
+            channels_out,
+            kernel_size=kernelsize,
+            stride=stride,
+            padding=padding,
+            dilation=dilation,
+            output_padding=o_padding,
+        )
+        self.dropout2 = nn.Dropout(p=0.5)
+        self.upsample = upsample
+        self.a = a
+        self.b = b
+
+    def forward(self, x):
+        residual = x
+        out = self.bn1(x)
+        out = self.relu(out)
+        out = self.conv1(out)
+        out = self.dropout1(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+        out = self.conv2(out)
+        out = self.dropout2(out)
+        if self.upsample:
+            residual = self.upsample(x)
+        out = self.a * residual + self.b * out
+        return out
 
 
 def res_block_decoder(
@@ -138,7 +186,6 @@ class DataGeneratorText(nn.Module):
         self.softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, feats):
-        n_samples = feats.shape[0]
         d = self.resblock_1(feats)
         d = self.resblock_2(d)
         d = self.resblock_3(d)

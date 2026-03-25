@@ -407,7 +407,7 @@ class MVVAE(pl.LightningModule):
         if len(self.training_step_outputs) == 0:
             return
         # select samples for training of classifier
-        for idx, train_out in enumerate(self.training_step_outputs):
+        for _, train_out in enumerate(self.training_step_outputs):
             out, batch = train_out
             data, labels = batch
             dists_out = out[0]
@@ -468,17 +468,9 @@ class MVVAE(pl.LightningModule):
         cond_rec_loss = []
         preds_coherence_cov = []
         preds_coherence_cov = []
-        preds_coherence_cov_zero = []
-        preds_coherence_id = []
-        preds_coherence_id_zero = []
-        preds_coherence_z_in = []
         cond_rec_loss_cov = []
-        cond_rec_loss_cov_zero = []
-        cond_rec_loss_id = []
-        cond_rec_loss_id_zero = []
-        cond_rec_loss_z_in = []
         rec_loss = []
-        for idx, val_out in enumerate(self.validation_step_outputs):
+        for _, val_out in enumerate(self.validation_step_outputs):
             (
                 out,
                 labels,
@@ -837,20 +829,12 @@ class MVVAE(pl.LightningModule):
 
     def kl_div_z(self, dist):
         mu, lv = dist
-        # prior_mu = torch.zeros_like(mu)
-        # prior_lv = torch.zeros_like(lv)
-        # prior_d = torch.distributions.normal.Normal(prior_mu, prior_lv.exp() + 1e-6)
-        # d1 = torch.distributions.normal.Normal(mu, lv.exp() + 1e-6)
-        # kld = torch.distributions.kl.kl_divergence(d1, prior_d).sum(dim=-1)
         kld = self.calc_kl_divergence(mu, lv)
         return kld
 
     def kl_div_z_two_dists(self, dist1, dist2):
         mu1, lv1 = dist1
         mu2, lv2 = dist2
-        # d1 = torch.distributions.normal.Normal(mu1, lv1.exp() + 1e-6)
-        # d2 = torch.distributions.normal.Normal(mu2, lv2.exp() + 1e-6)
-        # kld = torch.distributions.kl.kl_divergence(d1, d2).sum(dim=-1)
         kld = self.calc_kl_divergence(mu1, lv1, mu2, lv2)
         return kld
     

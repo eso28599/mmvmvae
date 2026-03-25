@@ -9,7 +9,7 @@ import pytorch_lightning as pl
 import wandb
 from sklearn.metrics import accuracy_score
 
-from networks.ClfImgPolyMNIST import ClfImgPolyMNIST
+from networks.ClfPolyMNIST import ClfImgPolyMNIST
 
 
 class ClfPolyMNIST(pl.LightningModule):

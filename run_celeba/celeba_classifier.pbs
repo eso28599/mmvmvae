@@ -16,5 +16,6 @@ export HYDRA_FULL_ERROR=1
 export PYTHONPATH="${PYTHONPATH}:${folder_path}"
 
 # run the classifier
-python run_celeba/main_train_clf_celeba.py
+python run_celeba/main_train_clf_celeba.py \
+  checkpoint_metric="val/loss/mean_ap"
 

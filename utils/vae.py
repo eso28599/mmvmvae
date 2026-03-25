@@ -2,11 +2,10 @@ import torch
 from torch import nn
 from config.ExperimentConfig import ExperimentConfig
 
-from networks.NetworksImgCelebA import EncoderImg, DecoderImg
-from networks.NetworksTextCelebA import EncoderText, DecoderText
-from networks.ConvNetworksPolyMNIST import Encoder, Decoder
-from networks.NetworksscMNC import scEncoder, scDecoder
-from networks.ConvNetworksPolyMNIST import ResnetEncoder, ResnetDecoder
+from networks.CelebA import EncoderText, DecoderText, EncoderImg, DecoderImg
+from networks.PolyMNIST import Encoder, Decoder
+from networks.scMNC import scEncoder, scDecoder
+from networks.PolyMNIST import ResnetEncoder, ResnetDecoder
 from networks.JointPrior import OrthogMat
 # from networks.NetworksRatsspike import Encoder as RatsEncoder
 # from networks.NetworksRatsspike import Decoder as RatsDecoder
