@@ -16,8 +16,8 @@ class ClfImg(nn.Module):
         h = self.dropout(h)
         h = h.view(h.size(0), -1)
         h = self.linear(h)
-        # out = self.sigmoid(h)
-        return h
+        out = self.sigmoid(h)
+        return out
 
     def get_activations(self, x_img):
         h = self.feature_extractor(x_img)

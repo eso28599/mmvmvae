@@ -1,12 +1,6 @@
-import os
-import math
-import numpy as np
-
 import torch
 from torch import nn
-import torch.nn.functional as F
 import pytorch_lightning as pl
-import wandb
 from sklearn.metrics import average_precision_score
 
 from networks.ClfCelebA import ClfImg, ClfText

@@ -29,8 +29,23 @@ class ClfscMNC_FC(nn.Module):
 
         self.resnet = nn.Sequential(*layers)
         self.fc_out = nn.Linear(hidden_dim, n_classes)
+        self.encoder = nn.Sequential(  # input shape (, input_dim)
+            nn.Linear(n_features, 2*n_features),  
+            nn.BatchNorm1d(2*n_features),
+            nn.LeakyReLU(),
+            nn.Dropout(0.6),
+            nn.Linear(2*n_features, n_features),
+            nn.BatchNorm1d(n_features),
+            nn.LeakyReLU(),
+            nn.Dropout(0.6),
+        )
+        self.final_layer = nn.Linear(n_features, n_classes)
+        self.softmax = nn.Softmax(dim=1)
 
     def forward(self, x):
-        out = self.resnet(x)
-        out = self.fc_out(actvn(out))
+        out = self.encoder(x)
+        # out = self.fc_out(actvn(out))
+        # out = self.fc_out(actvn(out))
+        out = self.final_layer(out)
+        out = self.softmax(out)
         return out
