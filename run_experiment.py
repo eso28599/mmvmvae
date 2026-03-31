@@ -121,6 +121,14 @@ def run_experiment(cfg: ExperimentConfig):
     model.logger.log_metrics(
       {"final_scores/cond_rec_loss_cov": model.final_scores_cond_rec_loss_cov }
     )
+    model.logger.log_metrics({"best_scores/val_loss": model.best_val_loss})
+    model.logger.log_metrics({"best_scores/rec_loss": model.best_scores_rec_loss})
+    model.logger.log_metrics(
+        {"best_scores/cond_rec_loss": model.best_scores_cond_rec_loss}
+    )
+    model.logger.log_metrics(
+        {"best_scores/cond_rec_loss_cov": model.best_scores_cond_rec_loss_cov }
+    )
       
     for m, key in enumerate(model.modality_names):
         model.logger.log_metrics(
@@ -133,6 +141,20 @@ def run_experiment(cfg: ExperimentConfig):
         model.logger.log_metrics(
             {
                 f"final_scores/downstream_lr/unimodal/{key}": model.final_scores_lr_unimodal[
+                    m
+                ]
+            }
+        )
+        model.logger.log_metrics(
+            {
+                f"best_scores/downstream_lr/aggregated/{key}": model.best_scores_lr_aggregated[
+                    m
+                ]
+            }
+        )
+        model.logger.log_metrics(
+            {
+                f"best_scores/downstream_lr/unimodal/{key}": model.best_scores_lr_unimodal[
                     m
                 ]
             }
@@ -153,6 +175,20 @@ def run_experiment(cfg: ExperimentConfig):
                         ]
                     }
                 )
+                model.logger.log_metrics(
+                    {
+                        f"best_scores/downstream_lr/aggregated/{key}/{l_name}": model.best_scores_lr_aggregated_alllabels[
+                            m, k
+                        ]
+                    }
+                )
+                model.logger.log_metrics(
+                    {
+                        f"best_scores/downstream_lr/unimodal/{key}/{l_name}": model.best_scores_lr_unimodal_alllabels[
+                            m, k
+                        ]
+                    }
+                )
 
     for m, key in enumerate(model.modality_names):
         for m_tilde, key_tilde in enumerate(model.modality_names):
@@ -166,6 +202,20 @@ def run_experiment(cfg: ExperimentConfig):
             model.logger.log_metrics(
                 {
                     f"final_scores/coherence/{key}_to_{key_tilde}_cov": model.final_scores_coh_cov[
+                        m, m_tilde, :
+                    ].mean()
+                }
+            )
+            model.logger.log_metrics(
+                {
+                    f"best_scores/coherence/{key}_to_{key_tilde}": model.best_scores_coh[
+                        m, m_tilde, :
+                    ].mean()
+                }
+            )
+            model.logger.log_metrics(
+                {
+                    f"best_scores/coherence/{key}_to_{key_tilde}_cov": model.best_scores_coh_cov[
                         m, m_tilde, :
                     ].mean()
                 }

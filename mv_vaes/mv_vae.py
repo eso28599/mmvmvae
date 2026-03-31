@@ -144,6 +144,64 @@ class MVVAE(pl.LightningModule):
                 (cfg.dataset.num_views, cfg.dataset.num_views, 1)
             ),
         )
+        self.register_buffer("best_val_loss", torch.tensor(float("inf")))
+        self.register_buffer("best_scores_rec_loss", torch.tensor(0.0))
+        self.register_buffer("best_scores_cond_rec_loss", torch.tensor(0.0))
+        self.register_buffer("best_scores_cond_rec_loss_cov", torch.tensor(0.0))
+        self.register_buffer(
+            "best_scores_lr_unimodal", torch.zeros(cfg.dataset.num_views)
+        )
+        self.register_buffer(
+            "best_scores_lr_aggregated", torch.zeros(cfg.dataset.num_views)
+        )
+        self.register_buffer(
+            "best_scores_lr_unimodal_alllabels",
+            torch.zeros(cfg.dataset.num_views, 1),
+        )
+        self.register_buffer(
+            "best_scores_lr_aggregated_alllabels",
+            torch.zeros(cfg.dataset.num_views, 1),
+        )
+        self.register_buffer(
+            "best_scores_coh",
+            torch.zeros(
+                (cfg.dataset.num_views, cfg.dataset.num_views, 1)
+            ),
+        )
+        self.register_buffer(
+            "best_scores_coh_cov",
+            torch.zeros(
+                (cfg.dataset.num_views, cfg.dataset.num_views, 1)
+            ),
+        )
+
+    def _snapshot_best_scores(self):
+        self.best_scores_rec_loss.copy_(self.final_scores_rec_loss.detach())
+        self.best_scores_cond_rec_loss.copy_(self.final_scores_cond_rec_loss.detach())
+        self.best_scores_cond_rec_loss_cov.copy_(
+            self.final_scores_cond_rec_loss_cov.detach()
+        )
+        self.best_scores_lr_unimodal.copy_(self.final_scores_lr_unimodal.detach())
+        self.best_scores_lr_aggregated.copy_(self.final_scores_lr_aggregated.detach())
+        self.best_scores_lr_unimodal_alllabels.copy_(
+            self.final_scores_lr_unimodal_alllabels.detach()
+        )
+        self.best_scores_lr_aggregated_alllabels.copy_(
+            self.final_scores_lr_aggregated_alllabels.detach()
+        )
+        self.best_scores_coh.copy_(self.final_scores_coh.detach())
+        self.best_scores_coh_cov.copy_(self.final_scores_coh_cov.detach())
+
+    def _get_current_beta_weight(self):
+        if self.cfg.model.beta_annealing:
+            return self.compute_current_beta(
+                self.cfg.model.init_beta_value,
+                self.cfg.model.final_beta_value,
+                self.cfg.model.beta_annealing_steps,
+                self.cfg.model.beta_M,
+                self.cfg.model.beta_R,
+            )
+        return self.cfg.model.final_beta_value
 
     def initialize_fid_scores(self):
         self.fid_scores = {}
@@ -552,7 +610,6 @@ class MVVAE(pl.LightningModule):
                 self.final_scores_cond_rec_loss = torch.cat(cond_rec_loss).mean()
                 self.final_scores_cond_rec_loss_cov = torch.cat(cond_rec_loss_cov).mean()
 
-        if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
             if self.cfg.eval.eval_downstream_task:
                 scores_agg = self.eval_downstream_task(
                     "aggregated", clfs_out, enc_mu_out_val, labels_val
@@ -566,6 +623,30 @@ class MVVAE(pl.LightningModule):
                 self.final_scores_lr_unimodal_alllabels = scores_unimodal
                 self.final_scores_lr_aggregated_alllabels = scores_agg
 
+         # check whether this is best validation loss yet and if yes, then save the scores for this epoch
+        current_beta = self._get_current_beta_weight()
+        if isinstance(current_beta, torch.Tensor):
+            current_beta_value = float(current_beta.detach().cpu().item())
+        else:
+            current_beta_value = float(current_beta)
+        is_beta_one = math.isclose(current_beta_value, 1.0, rel_tol=1e-6, abs_tol=1e-6)
+        current_val_loss = self.trainer.callback_metrics.get("val/loss/loss")
+        if current_val_loss is None:
+            current_val_loss = self.final_scores_rec_loss
+        if not isinstance(current_val_loss, torch.Tensor):
+            current_val_loss = torch.tensor(
+                current_val_loss,
+                device=self.best_val_loss.device,
+                dtype=self.best_val_loss.dtype,
+            )
+        else:
+            current_val_loss = current_val_loss.detach().to(self.best_val_loss.device)
+
+        if is_beta_one and torch.lt(current_val_loss, self.best_val_loss).item():
+            self.best_val_loss.copy_(current_val_loss)
+            self._snapshot_best_scores()
+        
+        # log images
         if (self.current_epoch + 1) % self.cfg.log.img_plotting_frequency == 0:
             n_samples_plot = min(100, self.cfg.model.batch_size_eval)
             n_samples_row = int(math.sqrt(n_samples_plot))
@@ -896,14 +977,6 @@ class MVVAE(pl.LightningModule):
                 mod_d_out_m = torch.distributions.laplace.Laplace(
                     mod_rec_m[0], torch.tensor(0.75).to(self.device)
                 )
-                # log_p_mod_m = -torch.nn.functional.mse_loss(
-                #     mod_rec_m[0], mod_gt_m, reduction='none'
-                # ).sum(dim=[1])
-                # mod_d_out_m = torch.distributions.laplace.Laplace(
-                #     mod_rec_m[0], 0
-                # )
-                # mod_d_out_m = mod_rec_m[0].to(self.device)
-                # print("mod_gt_m shape:", mod_gt_m.shape )
                 log_p_mod_m = mod_d_out_m.log_prob(mod_gt_m).sum(dim=[1])
             else:
                 mod_d_out_m = torch.distributions.laplace.Laplace(
