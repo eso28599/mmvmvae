@@ -52,7 +52,7 @@ def run_experiment(cfg: MyClfConfig):
         save_dir=cfg.log.dir_logs,
     )
     trainer = pl.Trainer(
-        max_epochs=cfg.model.epochs,
+        max_epochs=30,
         devices=1,
         accelerator="gpu" if cfg.model.device == "cuda" else cfg.model.device,
         logger=wandb_logger,

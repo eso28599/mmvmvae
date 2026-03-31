@@ -82,7 +82,7 @@ class MVJointVAE(MVVAE):
         
         # kl divergence of latent distribution
         klds = []
-        for m, key in enumerate(self.modality_names):
+        for _, key in enumerate(self.modality_names):
             dist_m = dists_out[key]
             kld_m = self.kl_div_z(dist_m)
             klds.append(kld_m.unsqueeze(1))

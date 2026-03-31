@@ -79,11 +79,12 @@ def run_experiment(cfg: ExperimentConfig):
     model.assign_label_names(label_names)
     summary = ModelSummary(model, max_depth=2)
     print(summary)
-    filename = f'{cfg.dataset.name}_{cfg.model.name}_agg{cfg.model.aggregation}_alpha{cfg.model.alpha_scalar}_batch_size_{cfg.model.batch_size}_{cfg.model.epochs}_seed{cfg.model.seed}_estop{cfg.model.early_stop}_beta_anneal{cfg.model.beta_annealing}_beta_M{cfg.model.beta_M}'
+    #{model_name}_{aggregation}_{alpha_scalar}_{batch_size}_{epochs}_{early_stop}_{beta_annealing}_{beta_M}_{seed}
+    filename= f'{cfg.model.name}_{cfg.model.aggregation}_{cfg.model.alpha_scalar}_{cfg.model.batch_size}_{cfg.model.epochs}_{cfg.model.early_stop}_{cfg.model.beta_annealing}_{cfg.model.beta_M}_{cfg.model.seed}'
     checkpoint_callback = ModelCheckpoint(
-        dirpath=folder_path + "/runs",
+        dirpath=cfg.log.dir_logs,
         monitor=cfg.checkpoint_metric,
-        mode="max",
+        mode="min",
         save_last=True,
         filename=filename
     )

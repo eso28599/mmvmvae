@@ -7,8 +7,8 @@ class ClfImg(nn.Module):
     def __init__(self, cfg):
         super(ClfImg, self).__init__()
         self.feature_extractor = FeatureExtractorImg(cfg, a=2.0, b=0.3)
-        self.dropout = nn.Dropout(p=0.5, inplace=False)
-        self.linear = nn.Linear(in_features=cfg.dataset.num_layers_img*cfg.dataset.filter_dim_img, out_features=40, bias=True)
+        self.dropout = nn.Dropout(p=0.5)
+        self.linear = nn.Linear(in_features=cfg.dataset.num_layers_img*cfg.dataset.filter_dim_img, out_features=40)
         self.sigmoid = nn.Sigmoid()
 
     def forward(self, x_img):

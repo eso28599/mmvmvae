@@ -86,17 +86,17 @@ class CelebADataset(Dataset):
     def get_text_str(self, index):
         return self.y[index]
 
-class full_dataset_celebA(scMNC):
-    def __init__(self, cfg, training=False):
-        super().__init__(cfg.dataset.dir_data, cfg.model.seed,train=training)
-        self.data_loader = torch.utils.data.DataLoader(
-            self,
-            batch_size=3654 if training else 731,
-            shuffle=False,
-            num_workers=cfg.dataset.num_workers,
-            drop_last=False,
-        )
-        self.batch = next(iter(self.data_loader))
-        self.exp_data = self.batch[0]["exp"].numpy() # expression data
-        self.feat_data = self.batch[0]["feat"].numpy() # feature data
-        self.labels = self.batch[1].numpy() # tensor of labels
+# class full_dataset_celebA(scMNC):
+#     def __init__(self, cfg, training=False):
+#         super().__init__(cfg.dataset.dir_data, cfg.model.seed,train=training)
+#         self.data_loader = torch.utils.data.DataLoader(
+#             self,
+#             batch_size=3654 if training else 731,
+#             shuffle=False,
+#             num_workers=cfg.dataset.num_workers,
+#             drop_last=False,
+#         )
+#         self.batch = next(iter(self.data_loader))
+#         self.exp_data = self.batch[0]["exp"].numpy() # expression data
+#         self.feat_data = self.batch[0]["feat"].numpy() # feature data
+#         self.labels = self.batch[1].numpy() # tensor of labels

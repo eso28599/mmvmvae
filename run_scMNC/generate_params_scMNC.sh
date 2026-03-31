@@ -2,13 +2,11 @@
 # generate_params_scMNC.sh
 
 # common file names
-dataset_names=("scMNC")
 seeds=(1 2 3 4 5)
 models=("joint" "mixedprior" "jointprior")
 outfile=run_scMNC/scMNC_params.txt 
 > $outfile
 
-for dataset in "${dataset_names[@]}"; do
 for model in "${models[@]}"; do
 if [ "$model" = "joint" ]; then 
   aggregation_fs=("moe")
@@ -23,30 +21,25 @@ fi
 for seed in "${seeds[@]}"; do
 for agg in "${aggregation_fs[@]}"; do
 for alpha in "${alphas[@]}"; do
-    echo "$dataset $model $seed $agg $alpha" >> $outfile
-done
+    echo "$model $seed $agg $alpha" >> $outfile
 done
 done
 done
 done
 
 
-
-
-dataset_names=("scMNC")
 seeds=(1 2 3 4 5)
 models=("jointprior")
 aggregation_fs=("avg")
 alphas=(0.97)
-latent_dims=(256 128 64)
-lrs=(5e-4 5e-5)
 beta_anneals=(true false)
+# over 150 epochs, this corresponds to 1.5 and 3 epochs to increase beta respectively, 
+# usually it converges in 20 epochs, so this corresponds to a very fast and fast anneal respectively
 beta_Ms=(100 50 25 10 5)
-batch_size=(16 32 64)
 outfile=run_scMNC/scMNC_params_97.txt
 > $outfile
 
-for dataset in "${dataset_names[@]}"; do
+
 for model in "${models[@]}"; do
 for seed in "${seeds[@]}"; do
 for latent_dim in "${latent_dims[@]}"; do
@@ -55,8 +48,7 @@ for beta_M in "${beta_Ms[@]}"; do
 for batch in "${batch_size[@]}"; do
 for lr in "${lrs[@]}"; do
 for alpha in "${alphas[@]}"; do
-    echo "$dataset $model $seed $agg $alpha $latent_dim $beta_anneal $beta_M $batch $lr" >> $outfile
-done
+    echo "$model $seed $agg $alpha $latent_dim $beta_anneal $beta_M $batch $lr" >> $outfile
 done
 done
 done

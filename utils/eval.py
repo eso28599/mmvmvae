@@ -3,8 +3,7 @@ import os
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import average_precision_score
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import average_precision_score∂
 
 import torch
 

@@ -20,7 +20,7 @@ class PolyMNISTDataConfig(DataConfig):
     modalities_order: int = 0
     dir_data_base: str = folder_path + "data"
     dir_clfs_base: str = (
-        folder_path + "trained_classifiers/trained_clfs_polyMNIST"
+        folder_path + "trained_classifiers/polyMNIST"
     )
     n_clfs_outputs: int = 10
     # the number of corresponding labels for the image (default 1 for the digit label, but could be 2 if we also include the color label) (NCDE)
@@ -44,10 +44,10 @@ class CelebADataConfig(DataConfig):
         folder_path + "utils"
     )
     dir_clf: str = (
-        folder_path + "trained_classifiers/trained_clfs_celeba"
+        folder_path + "trained_classifiers/celeba"
     )
     dir_clfs_base: str = (
-        folder_path + "trained_classifiers/trained_clfs_celeba"
+        folder_path + "trained_classifiers/celeba"
     )
     
     ## none of the following variables were changed during the experiments
@@ -90,7 +90,7 @@ class scMNCDataConfig(DataConfig):
     dir_data: str = folder_path + "data/scMNC"
     num_labels: int = 6
     dir_clf: str = (
-        folder_path + "trained_classifiers/trained_clfs_scMNC"
+        folder_path + "trained_classifiers/scMNC"
     )
     n_clfs_outputs: int = 6
     label_names: List[str] = field(

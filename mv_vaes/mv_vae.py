@@ -172,18 +172,10 @@ class MVVAE(pl.LightningModule):
       
     def on_train_epoch_end(self):
         self.eval()  # set to eval mode
-       
-          
-        # dataloader = self.trainer.train_dataloader() # not callable
         dataloader = self.trainer.train_dataloader # doesn't work
-        # dataloader = self.train_dataloader # doesn't work 
         # device = self.device  # current device (CPU or GPU)
         # device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         device = self.cfg.model.device
-        # find number of 
-        # latent_dim = self.cfg.model.latent_dim
-        # outputs = []
-        # outputs_T = []
         total_num_latents = self.cfg.model.latent_dim * self.cfg.dataset.num_views# get correct dim
         mu = torch.zeros(total_num_latents).to(self.cfg.model.device)
         cov = torch.zeros(total_num_latents, total_num_latents).to(self.cfg.model.device)
@@ -239,9 +231,6 @@ class MVVAE(pl.LightningModule):
             self.update_fid_scores(out, batch)
 
         self.last_val_batch = batch
-        # self.validation_step_outputs.append(
-        #     [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss, pred_coh_cov, cond_rec_loss_cov]
-        # )
         self.validation_step_outputs.append(
             [out[1:], batch[1], pred_coh, cond_rec_loss, rec_loss, pred_coh_cov, cond_rec_loss_cov]
         )
@@ -251,8 +240,7 @@ class MVVAE(pl.LightningModule):
                 n_samples_plot = min(100, self.cfg.model.batch_size_eval)
                 n_samples_row = int(math.sqrt(n_samples_plot))
                 # reconstructions
-                # for m in range(self.cfg.dataset.num_views):
-                for m, key in enumerate(self.modality_names):
+                for _, key in enumerate(self.modality_names):
                     mod_m = self.last_val_batch[0][key][:n_samples_plot]
                     mod_rec_m = self.get_reconstructions(out[0], key, n_samples_plot)
                     if key == "text" and self.cfg.dataset.name.startswith("celeba"):
@@ -351,8 +339,6 @@ class MVVAE(pl.LightningModule):
       
     def extract_relevant_cov(self, m_in, m_out):
         # extract the covariance matrix for the two modalities
-        # C_m_in_m_out = self.C[m_in - 1][m_out - 1]
-        # wrong way around
         col_start = m_in * self.cfg.model.latent_dim
         col_end = (m_in + 1) * self.cfg.model.latent_dim
         row_start = m_out * self.cfg.model.latent_dim
@@ -407,32 +393,31 @@ class MVVAE(pl.LightningModule):
         if len(self.training_step_outputs) == 0:
             return
         # select samples for training of classifier
-        for _, train_out in enumerate(self.training_step_outputs):
-            out, batch = train_out
-            data, labels = batch
-            dists_out = out[0]
-            dists_enc = out[1]
-            # for m in range(self.cfg.dataset.num_views):
-            for m, key in enumerate(self.modality_names):
-                mu_out_m, lv_out_m = dists_out[key]
-                mu_enc_m, lv_enc_m = dists_enc[key]
-                enc_mus_out_m = enc_mu_out_train[key]
-                enc_mus_enc_m = enc_mu_enc_train[key]
-                enc_mus_out_m.append(mu_out_m)
-                enc_mus_enc_m.append(mu_enc_m)
-                enc_mu_out_train[key] = enc_mus_out_m
-                enc_mu_enc_train[key] = enc_mus_enc_m
-            labels_train.append(labels)
-        # for m in range(self.cfg.dataset.num_views):
-        for m, key in enumerate(self.modality_names):
-            enc_mu_out_m_train = enc_mu_out_train[key]
-            enc_mu_out_m_train = torch.cat(enc_mu_out_m_train, dim=0)
-            enc_mu_out_train[key] = enc_mu_out_m_train
-            enc_mu_enc_m_train = enc_mu_enc_train[key]
-            enc_mu_enc_m_train = torch.cat(enc_mu_enc_m_train, dim=0)
-            enc_mu_enc_train[key] = enc_mu_enc_m_train
-        labels_train = torch.cat(labels_train, dim=0)
-        # do everything using training output before this line
+        if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
+          for _, train_out in enumerate(self.training_step_outputs):
+              out, batch = train_out
+              data, labels = batch
+              dists_out = out[0]
+              dists_enc = out[1]
+              for m, key in enumerate(self.modality_names):
+                  mu_out_m, lv_out_m = dists_out[key]
+                  mu_enc_m, lv_enc_m = dists_enc[key]
+                  enc_mus_out_m = enc_mu_out_train[key]
+                  enc_mus_enc_m = enc_mu_enc_train[key]
+                  enc_mus_out_m.append(mu_out_m)
+                  enc_mus_enc_m.append(mu_enc_m)
+                  enc_mu_out_train[key] = enc_mus_out_m
+                  enc_mu_enc_train[key] = enc_mus_enc_m
+              labels_train.append(labels)
+          for m, key in enumerate(self.modality_names):
+              enc_mu_out_m_train = enc_mu_out_train[key]
+              enc_mu_out_m_train = torch.cat(enc_mu_out_m_train, dim=0)
+              enc_mu_out_train[key] = enc_mu_out_m_train
+              enc_mu_enc_m_train = enc_mu_enc_train[key]
+              enc_mu_enc_m_train = torch.cat(enc_mu_enc_m_train, dim=0)
+              enc_mu_enc_train[key] = enc_mu_enc_m_train
+          labels_train = torch.cat(labels_train, dim=0)
+          # do everything using training output before this line
         self.training_step_outputs.clear()  # free memory
 
         if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
@@ -510,22 +495,23 @@ class MVVAE(pl.LightningModule):
         self.log("val/loss/avg_rec_loss_epoch", torch.cat(rec_loss).mean())
         self.final_scores_rec_loss = torch.cat(rec_loss).mean()
 
-        for m, key in enumerate(self.modality_names):
-            enc_mu_out_m_val = enc_mu_out_val[key]
-            enc_mu_out_m_val = torch.cat(enc_mu_out_m_val, dim=0)
-            enc_mu_out_val[key] = enc_mu_out_m_val
-            enc_lv_out_m_val = enc_lv_out_val[key]
-            enc_lv_out_m_val = torch.cat(enc_lv_out_m_val, dim=0)
-            enc_lv_out_val[key] = enc_lv_out_m_val
-            enc_mu_enc_m_val = enc_mu_enc_val[key]
-            enc_mu_enc_m_val = torch.cat(enc_mu_enc_m_val, dim=0)
-            enc_mu_enc_val[key] = enc_mu_enc_m_val
-            enc_lv_enc_m_val = enc_lv_enc_val[key]
-            enc_lv_enc_m_val = torch.cat(enc_lv_enc_m_val, dim=0)
-            enc_lv_enc_val[key] = enc_lv_enc_m_val
-        labels_val = torch.cat(labels_val, dim=0)
-
+        # log coherence results
         if (self.current_epoch + 1) % self.cfg.log.coherence_logging_frequency == 0:
+            for m, key in enumerate(self.modality_names):
+              enc_mu_out_m_val = enc_mu_out_val[key]
+              enc_mu_out_m_val = torch.cat(enc_mu_out_m_val, dim=0)
+              enc_mu_out_val[key] = enc_mu_out_m_val
+              enc_lv_out_m_val = enc_lv_out_val[key]
+              enc_lv_out_m_val = torch.cat(enc_lv_out_m_val, dim=0)
+              enc_lv_out_val[key] = enc_lv_out_m_val
+              enc_mu_enc_m_val = enc_mu_enc_val[key]
+              enc_mu_enc_m_val = torch.cat(enc_mu_enc_m_val, dim=0)
+              enc_mu_enc_val[key] = enc_mu_enc_m_val
+              enc_lv_enc_m_val = enc_lv_enc_val[key]
+              enc_lv_enc_m_val = torch.cat(enc_lv_enc_m_val, dim=0)
+              enc_lv_enc_val[key] = enc_lv_enc_m_val
+            
+            labels_val = torch.cat(labels_val, dim=0)
             if self.cfg.eval.coherence:
                 # coherence of conditional generation
                 pred_coherence = torch.cat(preds_coherence)
@@ -910,6 +896,13 @@ class MVVAE(pl.LightningModule):
                 mod_d_out_m = torch.distributions.laplace.Laplace(
                     mod_rec_m[0], torch.tensor(0.75).to(self.device)
                 )
+                # log_p_mod_m = -torch.nn.functional.mse_loss(
+                #     mod_rec_m[0], mod_gt_m, reduction='none'
+                # ).sum(dim=[1])
+                # mod_d_out_m = torch.distributions.laplace.Laplace(
+                #     mod_rec_m[0], 0
+                # )
+                # mod_d_out_m = mod_rec_m[0].to(self.device)
                 # print("mod_gt_m shape:", mod_gt_m.shape )
                 log_p_mod_m = mod_d_out_m.log_prob(mod_gt_m).sum(dim=[1])
             else:

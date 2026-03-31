@@ -1,85 +1,85 @@
-scMNC joint 1 moe 0
-scMNC joint 2 moe 0
-scMNC joint 3 moe 0
-scMNC joint 4 moe 0
-scMNC joint 5 moe 0
-scMNC mixedprior 1 avg 0
-scMNC mixedprior 2 avg 0
-scMNC mixedprior 3 avg 0
-scMNC mixedprior 4 avg 0
-scMNC mixedprior 5 avg 0
-scMNC jointprior 1 avg 0.05
-scMNC jointprior 1 avg 0.1
-scMNC jointprior 1 avg 0.15
-scMNC jointprior 1 avg 0.2
-scMNC jointprior 1 avg 0.3
-scMNC jointprior 1 avg 0.4
-scMNC jointprior 1 avg 0.5
-scMNC jointprior 1 avg 0.6
-scMNC jointprior 1 avg 0.7
-scMNC jointprior 1 avg 0.8
-scMNC jointprior 1 avg 0.9
-scMNC jointprior 1 avg 0.93
-scMNC jointprior 1 avg 0.95
-scMNC jointprior 1 avg 0.97
-scMNC jointprior 1 avg 0.99
-scMNC jointprior 2 avg 0.05
-scMNC jointprior 2 avg 0.1
-scMNC jointprior 2 avg 0.15
-scMNC jointprior 2 avg 0.2
-scMNC jointprior 2 avg 0.3
-scMNC jointprior 2 avg 0.4
-scMNC jointprior 2 avg 0.5
-scMNC jointprior 2 avg 0.6
-scMNC jointprior 2 avg 0.7
-scMNC jointprior 2 avg 0.8
-scMNC jointprior 2 avg 0.9
-scMNC jointprior 2 avg 0.93
-scMNC jointprior 2 avg 0.95
-scMNC jointprior 2 avg 0.97
-scMNC jointprior 2 avg 0.99
-scMNC jointprior 3 avg 0.05
-scMNC jointprior 3 avg 0.1
-scMNC jointprior 3 avg 0.15
-scMNC jointprior 3 avg 0.2
-scMNC jointprior 3 avg 0.3
-scMNC jointprior 3 avg 0.4
-scMNC jointprior 3 avg 0.5
-scMNC jointprior 3 avg 0.6
-scMNC jointprior 3 avg 0.7
-scMNC jointprior 3 avg 0.8
-scMNC jointprior 3 avg 0.9
-scMNC jointprior 3 avg 0.93
-scMNC jointprior 3 avg 0.95
-scMNC jointprior 3 avg 0.97
-scMNC jointprior 3 avg 0.99
-scMNC jointprior 4 avg 0.05
-scMNC jointprior 4 avg 0.1
-scMNC jointprior 4 avg 0.15
-scMNC jointprior 4 avg 0.2
-scMNC jointprior 4 avg 0.3
-scMNC jointprior 4 avg 0.4
-scMNC jointprior 4 avg 0.5
-scMNC jointprior 4 avg 0.6
-scMNC jointprior 4 avg 0.7
-scMNC jointprior 4 avg 0.8
-scMNC jointprior 4 avg 0.9
-scMNC jointprior 4 avg 0.93
-scMNC jointprior 4 avg 0.95
-scMNC jointprior 4 avg 0.97
-scMNC jointprior 4 avg 0.99
-scMNC jointprior 5 avg 0.05
-scMNC jointprior 5 avg 0.1
-scMNC jointprior 5 avg 0.15
-scMNC jointprior 5 avg 0.2
-scMNC jointprior 5 avg 0.3
-scMNC jointprior 5 avg 0.4
-scMNC jointprior 5 avg 0.5
-scMNC jointprior 5 avg 0.6
-scMNC jointprior 5 avg 0.7
-scMNC jointprior 5 avg 0.8
-scMNC jointprior 5 avg 0.9
-scMNC jointprior 5 avg 0.93
-scMNC jointprior 5 avg 0.95
-scMNC jointprior 5 avg 0.97
-scMNC jointprior 5 avg 0.99
+joint 1 moe 0
+joint 2 moe 0
+joint 3 moe 0
+joint 4 moe 0
+joint 5 moe 0
+mixedprior 1 avg 0
+mixedprior 2 avg 0
+mixedprior 3 avg 0
+mixedprior 4 avg 0
+mixedprior 5 avg 0
+jointprior 1 avg 0.05
+jointprior 1 avg 0.1
+jointprior 1 avg 0.15
+jointprior 1 avg 0.2
+jointprior 1 avg 0.3
+jointprior 1 avg 0.4
+jointprior 1 avg 0.5
+jointprior 1 avg 0.6
+jointprior 1 avg 0.7
+jointprior 1 avg 0.8
+jointprior 1 avg 0.9
+jointprior 1 avg 0.93
+jointprior 1 avg 0.95
+jointprior 1 avg 0.97
+jointprior 1 avg 0.99
+jointprior 2 avg 0.05
+jointprior 2 avg 0.1
+jointprior 2 avg 0.15
+jointprior 2 avg 0.2
+jointprior 2 avg 0.3
+jointprior 2 avg 0.4
+jointprior 2 avg 0.5
+jointprior 2 avg 0.6
+jointprior 2 avg 0.7
+jointprior 2 avg 0.8
+jointprior 2 avg 0.9
+jointprior 2 avg 0.93
+jointprior 2 avg 0.95
+jointprior 2 avg 0.97
+jointprior 2 avg 0.99
+jointprior 3 avg 0.05
+jointprior 3 avg 0.1
+jointprior 3 avg 0.15
+jointprior 3 avg 0.2
+jointprior 3 avg 0.3
+jointprior 3 avg 0.4
+jointprior 3 avg 0.5
+jointprior 3 avg 0.6
+jointprior 3 avg 0.7
+jointprior 3 avg 0.8
+jointprior 3 avg 0.9
+jointprior 3 avg 0.93
+jointprior 3 avg 0.95
+jointprior 3 avg 0.97
+jointprior 3 avg 0.99
+jointprior 4 avg 0.05
+jointprior 4 avg 0.1
+jointprior 4 avg 0.15
+jointprior 4 avg 0.2
+jointprior 4 avg 0.3
+jointprior 4 avg 0.4
+jointprior 4 avg 0.5
+jointprior 4 avg 0.6
+jointprior 4 avg 0.7
+jointprior 4 avg 0.8
+jointprior 4 avg 0.9
+jointprior 4 avg 0.93
+jointprior 4 avg 0.95
+jointprior 4 avg 0.97
+jointprior 4 avg 0.99
+jointprior 5 avg 0.05
+jointprior 5 avg 0.1
+jointprior 5 avg 0.15
+jointprior 5 avg 0.2
+jointprior 5 avg 0.3
+jointprior 5 avg 0.4
+jointprior 5 avg 0.5
+jointprior 5 avg 0.6
+jointprior 5 avg 0.7
+jointprior 5 avg 0.8
+jointprior 5 avg 0.9
+jointprior 5 avg 0.93
+jointprior 5 avg 0.95
+jointprior 5 avg 0.97
+jointprior 5 avg 0.99
