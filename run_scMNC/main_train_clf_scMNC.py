@@ -46,7 +46,7 @@ def run_experiment(cfg: MyClfConfig):
     checkpoint_callback = ModelCheckpoint(
         dirpath=cfg.dataset.dir_clf,
         monitor=cfg.checkpoint_metric,
-        mode="max",
+        mode="min",
         save_last=True,
     )
     wandb_logger = WandbLogger(

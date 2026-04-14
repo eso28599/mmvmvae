@@ -66,6 +66,7 @@ python run_experiment.py \
     ++log.coherence_logging_frequency=${log_freq} \
     ++log.likelihood_logging_frequency=${log_freq} \
     ++log.img_plotting_frequency=${log_freq} \
+    ++log.val_freq=${log_freq} \
     ++log.wandb_offline=false \
     ++log.wandb_local_instance=true \
     ++log.wandb_entity=${wandb_entity} \

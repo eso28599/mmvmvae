@@ -8,6 +8,7 @@ mixedprior 2 avg 0
 mixedprior 3 avg 0
 mixedprior 4 avg 0
 mixedprior 5 avg 0
+jointprior 1 avg 0
 jointprior 1 avg 0.05
 jointprior 1 avg 0.1
 jointprior 1 avg 0.15
@@ -23,6 +24,7 @@ jointprior 1 avg 0.93
 jointprior 1 avg 0.95
 jointprior 1 avg 0.97
 jointprior 1 avg 0.99
+jointprior 2 avg 0
 jointprior 2 avg 0.05
 jointprior 2 avg 0.1
 jointprior 2 avg 0.15
@@ -38,6 +40,7 @@ jointprior 2 avg 0.93
 jointprior 2 avg 0.95
 jointprior 2 avg 0.97
 jointprior 2 avg 0.99
+jointprior 3 avg 0
 jointprior 3 avg 0.05
 jointprior 3 avg 0.1
 jointprior 3 avg 0.15
@@ -53,6 +56,7 @@ jointprior 3 avg 0.93
 jointprior 3 avg 0.95
 jointprior 3 avg 0.97
 jointprior 3 avg 0.99
+jointprior 4 avg 0
 jointprior 4 avg 0.05
 jointprior 4 avg 0.1
 jointprior 4 avg 0.15
@@ -68,6 +72,7 @@ jointprior 4 avg 0.93
 jointprior 4 avg 0.95
 jointprior 4 avg 0.97
 jointprior 4 avg 0.99
+jointprior 5 avg 0
 jointprior 5 avg 0.05
 jointprior 5 avg 0.1
 jointprior 5 avg 0.15

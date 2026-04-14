@@ -10,6 +10,7 @@ data/MMNIST/*
 data/MMNIST.tar.gz  
 data/PolyMNIST.zip  
 data/scMNC/*
+logs/*
 outputs/*
 clfs/wandb/*
 clfs/multi_view_vae/*

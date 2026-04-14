@@ -156,11 +156,11 @@ class MVVAE(pl.LightningModule):
         )
         self.register_buffer(
             "best_scores_lr_unimodal_alllabels",
-            torch.zeros(cfg.dataset.num_views, 1),
+            torch.zeros(cfg.dataset.num_views, cfg.dataset.n_clfs_outputs),
         )
         self.register_buffer(
             "best_scores_lr_aggregated_alllabels",
-            torch.zeros(cfg.dataset.num_views, 1),
+            torch.zeros(cfg.dataset.num_views, cfg.dataset.n_clfs_outputs),
         )
         self.register_buffer(
             "best_scores_coh",
@@ -450,34 +450,34 @@ class MVVAE(pl.LightningModule):
         labels_train = []
         if len(self.training_step_outputs) == 0:
             return
-        # select samples for training of classifier
-        if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
-          for _, train_out in enumerate(self.training_step_outputs):
-              out, batch = train_out
-              data, labels = batch
-              dists_out = out[0]
-              dists_enc = out[1]
-              for m, key in enumerate(self.modality_names):
-                  mu_out_m, lv_out_m = dists_out[key]
-                  mu_enc_m, lv_enc_m = dists_enc[key]
-                  enc_mus_out_m = enc_mu_out_train[key]
-                  enc_mus_enc_m = enc_mu_enc_train[key]
-                  enc_mus_out_m.append(mu_out_m)
-                  enc_mus_enc_m.append(mu_enc_m)
-                  enc_mu_out_train[key] = enc_mus_out_m
-                  enc_mu_enc_train[key] = enc_mus_enc_m
-              labels_train.append(labels)
-          for m, key in enumerate(self.modality_names):
-              enc_mu_out_m_train = enc_mu_out_train[key]
-              enc_mu_out_m_train = torch.cat(enc_mu_out_m_train, dim=0)
-              enc_mu_out_train[key] = enc_mu_out_m_train
-              enc_mu_enc_m_train = enc_mu_enc_train[key]
-              enc_mu_enc_m_train = torch.cat(enc_mu_enc_m_train, dim=0)
-              enc_mu_enc_train[key] = enc_mu_enc_m_train
-          labels_train = torch.cat(labels_train, dim=0)
+        
+        for _, train_out in enumerate(self.training_step_outputs):
+            out, batch = train_out
+            data, labels = batch
+            dists_out = out[0]
+            dists_enc = out[1]
+            for m, key in enumerate(self.modality_names):
+                mu_out_m, lv_out_m = dists_out[key]
+                mu_enc_m, lv_enc_m = dists_enc[key]
+                enc_mus_out_m = enc_mu_out_train[key]
+                enc_mus_enc_m = enc_mu_enc_train[key]
+                enc_mus_out_m.append(mu_out_m)
+                enc_mus_enc_m.append(mu_enc_m)
+                enc_mu_out_train[key] = enc_mus_out_m
+                enc_mu_enc_train[key] = enc_mus_enc_m
+            labels_train.append(labels)
+        for m, key in enumerate(self.modality_names):
+            enc_mu_out_m_train = enc_mu_out_train[key]
+            enc_mu_out_m_train = torch.cat(enc_mu_out_m_train, dim=0)
+            enc_mu_out_train[key] = enc_mu_out_m_train
+            enc_mu_enc_m_train = enc_mu_enc_train[key]
+            enc_mu_enc_m_train = torch.cat(enc_mu_enc_m_train, dim=0)
+            enc_mu_enc_train[key] = enc_mu_enc_m_train
+        labels_train = torch.cat(labels_train, dim=0)
           # do everything using training output before this line
         self.training_step_outputs.clear()  # free memory
-
+        
+        # select samples for training of classifier
         if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
             clfs_out = []
             clfs_enc = []
@@ -553,9 +553,7 @@ class MVVAE(pl.LightningModule):
         self.log("val/loss/avg_rec_loss_epoch", torch.cat(rec_loss).mean())
         self.final_scores_rec_loss = torch.cat(rec_loss).mean()
 
-        # log coherence results
-        if (self.current_epoch + 1) % self.cfg.log.coherence_logging_frequency == 0:
-            for m, key in enumerate(self.modality_names):
+        for m, key in enumerate(self.modality_names):
               enc_mu_out_m_val = enc_mu_out_val[key]
               enc_mu_out_m_val = torch.cat(enc_mu_out_m_val, dim=0)
               enc_mu_out_val[key] = enc_mu_out_m_val
@@ -569,7 +567,9 @@ class MVVAE(pl.LightningModule):
               enc_lv_enc_m_val = torch.cat(enc_lv_enc_m_val, dim=0)
               enc_lv_enc_val[key] = enc_lv_enc_m_val
             
-            labels_val = torch.cat(labels_val, dim=0)
+        labels_val = torch.cat(labels_val, dim=0)
+        # log coherence results
+        if (self.current_epoch + 1) % self.cfg.log.coherence_logging_frequency == 0:
             if self.cfg.eval.coherence:
                 # coherence of conditional generation
                 pred_coherence = torch.cat(preds_coherence)
@@ -610,20 +610,21 @@ class MVVAE(pl.LightningModule):
                 self.final_scores_cond_rec_loss = torch.cat(cond_rec_loss).mean()
                 self.final_scores_cond_rec_loss_cov = torch.cat(cond_rec_loss_cov).mean()
 
-            if self.cfg.eval.eval_downstream_task:
-                scores_agg = self.eval_downstream_task(
-                    "aggregated", clfs_out, enc_mu_out_val, labels_val
-                )
-                scores_unimodal = self.eval_downstream_task(
-                    "unimodal", clfs_enc, enc_mu_enc_val, labels_val
-                )
-                # Save current final scores
-                self.final_scores_lr_unimodal = scores_unimodal.mean(dim=1)
-                self.final_scores_lr_aggregated = scores_agg.mean(dim=1)
-                self.final_scores_lr_unimodal_alllabels = scores_unimodal
-                self.final_scores_lr_aggregated_alllabels = scores_agg
+        if (self.current_epoch + 1) % self.cfg.log.downstream_logging_frequency == 0:
+          if self.cfg.eval.eval_downstream_task:
+              scores_agg = self.eval_downstream_task(
+                  "aggregated", clfs_out, enc_mu_out_val, labels_val
+              )
+              scores_unimodal = self.eval_downstream_task(
+                  "unimodal", clfs_enc, enc_mu_enc_val, labels_val
+              )
+              # Save current final scores
+              self.final_scores_lr_unimodal = scores_unimodal.mean(dim=1)
+              self.final_scores_lr_aggregated = scores_agg.mean(dim=1)
+              self.final_scores_lr_unimodal_alllabels = scores_unimodal
+              self.final_scores_lr_aggregated_alllabels = scores_agg
 
-         # check whether this is best validation loss yet and if yes, then save the scores for this epoch
+        # check whether this is best validation loss yet and if yes, then save the scores for this epoch
         current_beta = self._get_current_beta_weight()
         if isinstance(current_beta, torch.Tensor):
             current_beta_value = float(current_beta.detach().cpu().item())

@@ -1,8 +1,8 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=50gb:ngpus=1
-#PBS -l walltime=00:40:00
-#PBS -N recon_loss
-#PBS -J 1-85
+#PBS -l walltime=00:20:00
+#PBS -N sc_1_5
+#PBS -J 1-90
 #PBS -o run_scMNC/logs/output.log
 #PBS -e run_scMNC/logs/error.log 
 eval "$(~/anaconda3/bin/conda shell.bash hook)"
@@ -21,6 +21,7 @@ export HYDRA_FULL_ERROR=1
 
 # Get params for this array index
 params=$(sed -n "${PBS_ARRAY_INDEX}p" run_scMNC/scMNC_params.txt) 
+# params=$(sed -n "${PBS_ARRAY_INDEX}p" run_scMNC/indiv.txt) 
 read model seed agg alpha <<< "$params"
 
 # experimental running variables
@@ -41,8 +42,8 @@ n_ep=150 # number of epochs
 batch_size=32 # batch size
 
 # training variables, investigated
-early_stop=true # whether to use early stopping
-beta_anneal=false # whether to use beta/kl annealing
+early_stop=false # whether to use early stopping
+beta_anneal=true # whether to use beta/kl annealing
 beta_M=20 # frequency of beta increase
 
 python run_experiment.py \

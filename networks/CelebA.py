@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch 
 
 from networks.CelebaEncoderTxt import FeatureExtractorText
 from networks.CelebADecoderTxt import DataGeneratorText

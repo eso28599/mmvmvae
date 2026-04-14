@@ -47,6 +47,26 @@ cs.store(group="dataset", name="CelebA", node=CelebADataConfig)
 cs.store(group="dataset", name="scMNC", node=scMNCDataConfig)
 cs.store(name="base_config", node=ExperimentConfig)
 
+class BetaEarlyStopping(EarlyStopping):
+    def __init__(self, *args, beta_threshold=1.0, tolerance=1e-6, **kwargs):
+        kwargs.setdefault("check_on_train_epoch_end", False)
+        super().__init__(*args, **kwargs)
+        self.beta_threshold = beta_threshold
+        self.tolerance = tolerance
+
+    def on_validation_end(self, trainer, pl_module):
+        beta = float(pl_module._get_current_beta_weight())
+        enabled = abs(beta - self.beta_threshold) <= self.tolerance
+        
+        if enabled:
+            # Call parent's validation end, which triggers early stopping check
+            super().on_validation_end(trainer, pl_module)
+        # else: do nothing, skip the parent call
+
+    def on_train_epoch_end(self, trainer, pl_module):
+        # Explicitly block any train-epoch early stopping checks
+        pass
+
 @hydra.main(version_base=None, config_path="config", config_name="config")
 def run_experiment(cfg: ExperimentConfig):
     print(cfg)
@@ -79,8 +99,8 @@ def run_experiment(cfg: ExperimentConfig):
     model.assign_label_names(label_names)
     summary = ModelSummary(model, max_depth=2)
     print(summary)
-    #{model_name}_{aggregation}_{alpha_scalar}_{batch_size}_{epochs}_{early_stop}_{beta_annealing}_{beta_M}_{seed}
-    filename= f'{cfg.model.name}_{cfg.model.aggregation}_{cfg.model.alpha_scalar}_{cfg.model.batch_size}_{cfg.model.epochs}_{cfg.model.early_stop}_{cfg.model.beta_annealing}_{cfg.model.beta_M}_{cfg.model.seed}'
+     #{model_name}_{aggregation}_{alpha_scalar}_{early_stop}_{beta_annealing}_{beta_M}_{seed}
+    filename= f'{cfg.model.name}_{cfg.model.aggregation}_{cfg.model.alpha_scalar}_{cfg.model.early_stop}_{cfg.model.beta_annealing}_{cfg.model.beta_M}_{cfg.model.seed}'
     checkpoint_callback = ModelCheckpoint(
         dirpath=cfg.log.dir_logs,
         monitor=cfg.checkpoint_metric,
@@ -88,8 +108,9 @@ def run_experiment(cfg: ExperimentConfig):
         save_last=True,
         filename=filename
     )
+    
     # early stopping specification
-    early_stopping = EarlyStopping(monitor="val/loss/loss", mode="min")
+    early_stopping = BetaEarlyStopping(monitor="val/loss/loss", mode="min")
     wandb_logger = WandbLogger(
         name=cfg.log.wandb_run_name,
         config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),

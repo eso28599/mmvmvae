@@ -3,7 +3,7 @@ import os
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import average_precision_score∂
+from sklearn.metrics import average_precision_score
 
 import torch
 
@@ -84,7 +84,6 @@ def conditional_generation_cov(mvvae, dists):
         for m in range(len(mvvae.decoders)):
             z_out = mvvae.reparametrize(mu, lv)
             cond_gen_m = mvvae.cond_generate_samples_cov(idx, m, z_out)[0]
-            # cond_gen_m = mvvae.decoders[m](z_out)[0]
             imgs_gen_dist.append(cond_gen_m)
         imgs_gen.append(imgs_gen_dist)
     return imgs_gen

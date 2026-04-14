@@ -1,6 +1,6 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
-#PBS -l walltime=72:00:00
+#PBS -l walltime=10:00:00
 #PBS -N celeba_batch
 #PBS -J 41-45
 #PBS -o run_celeba/logs/output.log
@@ -29,7 +29,8 @@ params=$(sed -n "${PBS_ARRAY_INDEX}p" run_celeba/celeba_params.txt)
 read dataset model seed agg alpha <<< "$params"
 
 # experimental running variables
-log_freq=50
+log_freq=1
+img_log_freq=50
 wandb_logdir="${folder_path}/run_celeba/logs"
 device="cuda"  # 'cuda' if you are using a GPU
 
@@ -43,12 +44,12 @@ ld=512  # latent dimension
 # training variables
 lr=5e-4  # learning rate
 
-# og paper
-ld=128  # latent dimension
-lr=2e-4  # learning rate
+# # og paper
+# ld=128  # latent dimension
+# lr=2e-4  # learning rate
 
 n_ep=400 # number of epochs
-early_stop=false # whether to use early stopping
+early_stop=true # whether to use early stopping
 beta_anneal=true # whether to use beta/kl annealing
 
 python run_experiment.py \
@@ -70,7 +71,8 @@ python run_experiment.py \
     ++log.downstream_logging_frequency=${log_freq} \
     ++log.coherence_logging_frequency=${log_freq} \
     ++log.likelihood_logging_frequency=${log_freq} \
-    ++log.img_plotting_frequency=${log_freq} \
+    ++log.img_plotting_frequency=${img_log_freq} \
+    ++log.val_freq=${log_freq} \
     ++log.wandb_offline=false \
     ++log.wandb_local_instance=true \
     ++log.wandb_group="full_runs" \
