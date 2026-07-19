@@ -29,17 +29,3 @@ CelebA jointprior 3 avg 0.93
 CelebA jointprior 3 avg 0.95
 CelebA jointprior 3 avg 0.97
 CelebA jointprior 3 avg 0.99
-CelebA jointprior 4 avg 0.1
-CelebA jointprior 4 avg 0.5
-CelebA jointprior 4 avg 0.9
-CelebA jointprior 4 avg 0.93
-CelebA jointprior 4 avg 0.95
-CelebA jointprior 4 avg 0.97
-CelebA jointprior 4 avg 0.99
-CelebA jointprior 5 avg 0.1
-CelebA jointprior 5 avg 0.5
-CelebA jointprior 5 avg 0.9
-CelebA jointprior 5 avg 0.93
-CelebA jointprior 5 avg 0.95
-CelebA jointprior 5 avg 0.97
-CelebA jointprior 5 avg 0.99

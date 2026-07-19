@@ -165,13 +165,13 @@ class MVVAE(pl.LightningModule):
         self.register_buffer(
             "best_scores_coh",
             torch.zeros(
-                (cfg.dataset.num_views, cfg.dataset.num_views, 1)
+                (cfg.dataset.num_views, cfg.dataset.num_views, cfg.dataset.n_clfs_outputs)
             ),
         )
         self.register_buffer(
             "best_scores_coh_cov",
             torch.zeros(
-                (cfg.dataset.num_views, cfg.dataset.num_views, 1)
+                (cfg.dataset.num_views, cfg.dataset.num_views, cfg.dataset.n_clfs_outputs)
             ),
         )
 

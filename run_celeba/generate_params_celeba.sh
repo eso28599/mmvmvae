@@ -16,6 +16,7 @@ if [ "$model" = "joint" ]; then
 elif [ "$model" = "jointprior" ]; then
   aggregation_fs=("avg")
   alphas=(0.1 0.5 0.9 0.93 0.95 0.97 0.99)
+  seeds=(1 2 3)
 else
   aggregation_fs=("avg")
   alphas=(0)

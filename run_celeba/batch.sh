@@ -1,8 +1,8 @@
 #!/bin/bash
 #PBS -l select=1:ncpus=8:mem=250gb:ngpus=1
-#PBS -l walltime=10:00:00
-#PBS -N celeba_batch
-#PBS -J 41-45
+#PBS -l walltime=20:00:00
+#PBS -N cel_28_30
+#PBS -J 28-30
 #PBS -o run_celeba/logs/output.log
 #PBS -e run_celeba/logs/error.log 
 
@@ -38,19 +38,13 @@ device="cuda"  # 'cuda' if you are using a GPU
 aa=true  # whether to use alpha annealing for mixedprior
 cov_scalar=$(echo "1 - ($alpha^2)" | bc -l) # covariance scalar for jointprior
 
-# arrchitecture variables
-ld=512  # latent dimension
-
-# training variables
-lr=5e-4  # learning rate
-
-# # og paper
-# ld=128  # latent dimension
-# lr=2e-4  # learning rate
+# architecture variables
+ld=128  # latent dimension
+lr=2e-4  # learning rate
 
 n_ep=400 # number of epochs
 early_stop=true # whether to use early stopping
-beta_anneal=true # whether to use beta/kl annealing
+beta_anneal=false # whether to use beta/kl annealing
 
 python run_experiment.py \
     model=${model} \
@@ -63,6 +57,7 @@ python run_experiment.py \
     ++model.alpha_annealing=${aa} \
     ++model.early_stop=${early_stop} \
     ++model.beta_annealing=${beta_anneal} \
+    ++model.beta_M=20 \
     ++model.lr=${lr} \
     ++model.epochs=${n_ep} \
     ++model.aggregation="${agg}" \
@@ -77,3 +72,4 @@ python run_experiment.py \
     ++log.wandb_local_instance=true \
     ++log.wandb_group="full_runs" \
     ++log.wandb_project_name=${project_name} \
+    ++log.dir_logs="${wandb_logdir}" \
