@@ -1,0 +1,6 @@
+Metric,Mean Absolute Difference
+Conditional reconstruction loss,0.2768337673611111
+View to view coherence (Exp),0.0
+View to view coherence (Feat),0.0010416679912143283
+Downstream LR accuracy (Exp),0.001089015934202405
+Downstream LR accuracy (Feat),0.001357322931289674
