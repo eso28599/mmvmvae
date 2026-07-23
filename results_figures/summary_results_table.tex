@@ -1,16 +1,16 @@
 \begin{table}
 \caption{Summary of Results for Each Method}
 \label{tab:summary_results}
-\begin{tabular}{lrrrr}
+\begin{tabular}{lrrrrrr}
 \toprule
- & Coherence & FID & LR Accuracy & Reconstruction Loss \\
+ & Coherence (D) & Coherence (I) & FID (D) & FID (I) & LR Accuracy & Reconstruction Loss \\
 \midrule
-independent & 268.958 & 268.958 & 0.689 & -1088.931 \\
-AVG & 151.342 & 151.342 & 0.908 & -1205.418 \\
-MoE & 208.793 & 208.793 & 0.956 & -1533.541 \\
-MoPoE & 179.920 & 179.920 & 0.940 & -1399.875 \\
-MMVM & 65.435 & 65.435 & 0.975 & -1162.172 \\
-JP & 203.878 & 203.878 & 0.966 & -1088.614 \\
+independent & 0.913 & 0.467 & 48.499 & 0.467 & 0.689 & -1088.931 \\
+AVG & 0.656 & 0.645 & 138.450 & 0.645 & 0.908 & -1205.418 \\
+MoE & 0.861 & 0.880 & 93.463 & 0.880 & 0.956 & -1533.541 \\
+MoPoE & 0.794 & 0.772 & 77.223 & 0.772 & 0.940 & -1399.875 \\
+MMVM & 0.913 & 0.868 & 60.761 & 0.868 & 0.975 & -1162.172 \\
+JPVAE & 0.945 & 0.825 & 48.263 & 0.825 & 0.966 & -1088.614 \\
 \bottomrule
 \end{tabular}
 \end{table}

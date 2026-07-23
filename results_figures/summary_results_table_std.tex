@@ -1,0 +1,16 @@
+\begin{table}
+\caption{Summary of Results for Each Method}
+\label{tab:summary_results}
+\begin{tabular}{lrrrrrr}
+\toprule
+ & Coherence (D) & Coherence (I) & FID (D) & FID (I) & LR Accuracy & Reconstruction Loss \\
+\midrule
+independent & 0.063 & 0.317 & 19.492 & 0.317 & 0.279 & 51.727 \\
+AVG & 0.148 & 0.190 & 25.728 & 0.190 & 0.057 & 81.280 \\
+MoE & 0.044 & 0.026 & 22.017 & 0.026 & 0.010 & 150.335 \\
+MoPoE & 0.065 & 0.043 & 22.160 & 0.043 & 0.027 & 106.944 \\
+MMVM & 0.039 & 0.034 & 21.394 & 0.034 & 0.009 & 66.838 \\
+JPVAE & 0.030 & 0.124 & 19.157 & 0.124 & 0.010 & 51.106 \\
+\bottomrule
+\end{tabular}
+\end{table}

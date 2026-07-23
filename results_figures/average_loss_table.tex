@@ -1,16 +1,17 @@
 \begin{table}
-\caption{Average reconstruction loss for each method. }
-\label{tab:average_loss}
+\caption{Average Coherence for Each Method}
+\label{tab:average_coherence}
 \begin{tabular}{lrrrrr}
 \toprule
- & M0 & M1 & M2 & M3 & M4 \\
+ & val/loss/rec_loss_m0 & val/loss/rec_loss_m1 & val/loss/rec_loss_m2 & val/loss/rec_loss_m3 & val/loss/rec_loss_m4 \\
+model.name &  &  &  &  &  \\
 \midrule
-independent & \underline{-1128.343} & \underline{-1025.942} & \textbf{-1056.939} & \underline{-1152.870} & \textbf{-1080.560 }\\
+independent & -1128.343 & -1025.942 & -1056.939 & -1152.870 & -1080.560 \\
 AVG & -1280.238 & -1113.733 & -1146.096 & -1298.284 & -1188.738 \\
 MoE & -1795.168 & -1463.581 & -1413.382 & -1503.473 & -1492.102 \\
 MoPoE & -1573.038 & -1315.726 & -1309.588 & -1416.777 & -1384.246 \\
 MMVM & -1221.647 & -1092.143 & -1109.317 & -1241.960 & -1145.794 \\
-JP & \textbf{-1127.442} & \textbf{-1025.645} & \underline{-1057.511} & \textbf{-1151.457} & \underline{-1081.015} \\
+JPVAE & -1127.442 & -1025.645 & -1057.511 & -1151.457 & -1081.015 \\
 \bottomrule
 \end{tabular}
 \end{table}
